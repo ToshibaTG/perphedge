@@ -60,7 +60,51 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .guide p,.guide ul,.guide ol{margin:0}
 .guide li{margin:3px 0}
 .guide code{font-family:var(--mono);font-size:13px;background:var(--chip);padding:1px 5px;border-radius:4px}
+.guide{max-width:86ch;gap:18px}
+.g-hero{display:flex;flex-direction:column;gap:10px}
+.g-hero h2{font-size:24px;margin:6px 0 0;text-wrap:balance}
+.g-toc{display:flex;flex-wrap:wrap;gap:6px}
+.g-toc a{font-size:12.5px;color:var(--fg);text-decoration:none;background:var(--chip);border-radius:999px;padding:3px 10px}
+.g-toc a:hover{background:var(--accent);color:#fff}
+.g-sec{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;scroll-margin-top:120px}
+.g-sec h2{margin:0;font-size:18px}
+.g-sec h3{margin:6px 0 0;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.g-key{border-color:var(--accent)}
+.g-formula{font:600 16px/1.5 var(--sans);background:var(--chip);border-radius:10px;padding:12px 14px;text-align:center}
+.g-formula span{font-family:var(--mono);color:var(--accent);white-space:nowrap}
+.g-formula.small{font-size:14px;text-align:left}
+.g-fig{margin:0;display:flex;flex-direction:column;gap:6px}
+.g-fig svg{width:100%;max-width:620px;height:auto;align-self:center}
+.g-fig figcaption{font-size:13px;color:var(--muted);text-align:center}
+.g-zero{stroke:var(--muted);stroke-dasharray:6 4}
+.g-line{fill:none;stroke:var(--accent);stroke-width:3}
+.g-in{fill:var(--good)} .g-out{fill:var(--warn)}
+.g-t{font:12px var(--sans);fill:var(--muted)} .g-tin{fill:var(--good);font-weight:600} .g-tout{fill:var(--warn);font-weight:600}
+.g-arrow{stroke:var(--good);stroke-width:2} .g-dash{stroke:var(--good);stroke-dasharray:3 4;opacity:.6}
+.g-terms{display:grid;grid-template-columns:minmax(150px,200px) 1fr;gap:8px 16px;margin:0}
+.g-terms dt{font:600 13.5px var(--mono);color:var(--fg)}
+.g-terms dd{margin:0;font-size:14.5px}
+.g-terms .tag,.g-terms .sig{font-size:11px;margin-right:2px}
+.g-steps,.g-check{padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.g-warn{padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.g-warn li::marker{color:var(--warn)}
+.g-table table{font-size:14px}
+.g-table td{white-space:normal}
+.g-table td:nth-child(2){white-space:nowrap;font-weight:600}
+#g-faq h3{text-transform:none;letter-spacing:0;color:var(--fg);font-size:15px}
+.g-table .g-sum td{font-weight:600;border-top:2px solid var(--line)}
+.g-safe{border-left:3px solid var(--accent)}
+@media (max-width:720px){
+  .g-terms{grid-template-columns:1fr;gap:2px}
+  .g-terms dd{margin-bottom:8px}
+  .g-sec{padding:14px}
+  .g-formula{font-size:14px}
+  .g-table td{display:block;text-align:left;padding:2px 0}
+  .g-table tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}
+}
 .callout{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.exbanner{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;background:var(--chip);border:1px solid var(--warn);border-left-width:4px;border-radius:10px;padding:10px 14px;font-size:13.5px}
+.exbanner span{flex:1 1 320px}
 .welcome{grid-column:1/-1;background:var(--panel);border:1px dashed var(--accent);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
 .welcome b{font-size:16px}
 footer{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:12px;line-height:1.55;max-width:100ch}
@@ -101,7 +145,7 @@ tbody tr.row{cursor:pointer} tbody tr.row:hover{background:var(--hover)}
 .sig{font:600 12px var(--sans);border-radius:999px;padding:2px 9px;border:1px solid currentColor}
 .sig.open{color:var(--good)} .sig.close{color:var(--warn)} .sig.wait{color:var(--muted);border-color:var(--line)}
 .bar-z{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;margin-left:6px}
-tr.detail td{background:var(--hover);padding:10px 12px;white-space:normal}
+tr.detail td{background:var(--hover);padding:10px 12px;white-space:normal;text-align:left}
 svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--mono)}
 .chart .grid{stroke:var(--line);stroke-width:1}
 .chart .zero{stroke:var(--fg);stroke-width:1.2;stroke-dasharray:6 4}
@@ -113,15 +157,53 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
 .chart .z-entry{fill:var(--good);opacity:.12}
 .chart .z-exit{fill:var(--warn);opacity:.14}
 .chart .zl{font:600 12px var(--sans)} .chart .ze{fill:var(--good)} .chart .zx{fill:var(--warn)}
+.chartwrap{position:relative}
+.tip{text-align:left;position:absolute;pointer-events:none;z-index:2;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font:12px/1.4 var(--mono);display:flex;flex-direction:column;gap:1px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.chart .vgrid{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
+.chart .hx{stroke:var(--fg);stroke-width:1;opacity:.45}
+.chart .hdot{fill:var(--accent);stroke:var(--panel);stroke-width:2}
+.chart .hover{cursor:crosshair}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font:12px var(--sans);color:var(--muted);margin-top:6px}
 .legend .sw{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .ln-sw{background:var(--accent)} .ze-sw{background:var(--good);opacity:.4} .zx-sw{background:var(--warn);opacity:.45} .med-sw{border-top:2px dotted var(--muted);height:0!important}
+
+/* ---------- phone layout ---------- */
+.chart .halo{paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round}
+@media (max-width:720px){
+  body{padding-top:8px}
+  .appbar{gap:8px 10px}
+  .brand small{display:none}
+  .tabs{order:3;width:100%;display:flex}
+  .tabs button{flex:1;padding:8px 4px;font-size:13px}
+  .status{order:4;font-size:11.5px}
+  .theme{font-size:12px;padding:5px 10px}
+  .walletbar>*{flex:1 1 100%;width:100%!important;min-width:0!important}
+  .bar>*{flex:1 1 auto}
+  .seg{width:100%;display:flex} .seg button{flex:1;padding:7px 2px}
+  .tw{background:transparent;border:0;overflow:visible;border-radius:0}
+  .tw table{min-width:0!important}
+  .tw thead{display:none}
+  .tw table,.tw tbody,.tw tfoot{display:block}
+  .tw tr{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+  .tw td{display:flex;justify-content:space-between;align-items:baseline;gap:6px;padding:3px 0;border:0!important;white-space:normal;text-align:right;min-width:0}
+  .tw td::before{content:attr(data-label);color:var(--muted);font:11px/1.3 var(--sans);text-align:left;letter-spacing:.02em}
+  .tw td:first-child{grid-column:1/-1;font-size:14px;justify-content:flex-start;flex-wrap:wrap}
+  .tw td:first-child::before{content:none}
+  .tw tr.detail{display:block;padding:8px 6px} .tw tr.detail td{display:block;padding:0}
+  .tw tr.detail td::before{content:none}
+  #scan tr.row td:nth-child(5),#scan tr.row td:nth-child(7),#scan tr.row td:nth-child(8),#scan tr.row td:nth-child(12){display:none}
+  #scan tr.row td:nth-child(2){grid-column:1/-1}
+  .bar-z{display:none}
+  td input{width:110px}
+  .legend{font-size:11px}
+  .guide{font-size:14.5px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="appbar">
-    <a class="brand" href="./" aria-label="PerpHedge"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><span><b>PerpHedge</b><small>хедж-мониторинг Robinhood ↔ Core</small></span></a>
+    <a class="brand" href="./" aria-label="PerpHedge"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><span><b>PerpHedge</b><small>хедж-мониторинг Robinhood ↔ Core · v1.4</small></span></a>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-desk" data-tab="desk" aria-selected="true">Мои связки</button>
       <button role="tab" id="tab-scan" data-tab="scan" aria-selected="false">Сканер спреда</button>
@@ -142,6 +224,10 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
       <button class="primary" id="go">Загрузить и сохранить</button>
     </div>
 
+    <div class="exbanner" id="exbanner" hidden>
+      <span><b>Это пример.</b> Вы смотрите публичный кошелёк одного из активных фармеров Lighter — только чтение, так выглядит PerpHedge с реальными связками. Позиции в нём меняются: он может закрыть их или уйти в минус. Чтобы видеть свои связки, добавьте свой адрес выше.</span>
+      <button id="exexit">Выйти из примера</button>
+    </div>
     <div class="cards" id="acc"></div>
 
     <section>
@@ -190,8 +276,11 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
     <div class="bar">
       <span class="dim">Окно:</span>
       <div class="seg" id="win">
-        <button data-h="3">3 ч</button><button data-h="6">6 ч</button><button data-h="12">12 ч</button><button data-h="24">24 ч</button>
+        <button data-h="1">1 ч</button><button data-h="3">3 ч</button><button data-h="6">6 ч</button><button data-h="12">12 ч</button><button data-h="24">24 ч</button><button data-h="168">1 нед</button>
       </div>
+      <select id="cres" aria-label="Свечи графика" title="Детализация графика по клику на строку">
+        <option value="auto">График: свечи авто</option><option value="1m">График: свечи 1 мин</option><option value="5m">График: свечи 5 мин</option><option value="15m">График: свечи 15 мин</option><option value="1h">График: свечи 1 час</option>
+      </select>
       <select id="dir" aria-label="Направление">
         <option value="shortRH">Шорт RH / лонг Core</option>
         <option value="longRH">Лонг RH / шорт Core</option>
@@ -216,7 +305,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
       <tbody id="tb"></tbody>
     </table></div>
     <p class="note">
-      Спред = (цена RH − цена Core) / цена Core по последним сделкам, как и история (5-минутные свечи за выбранное окно). «По марку» — тот же спред по марк-ценам: на неликвидных рынках последняя сделка бывает старой, тогда марк точнее.
+      Спред = (цена RH − цена Core) / цена Core по последним сделкам, как и история за выбранное окно (свечи: 1 мин для окон 1–6 ч, 5 мин для 12–24 ч, 1 час для недели). «По марку» — тот же спред по марк-ценам: на неликвидных рынках последняя сделка бывает старой, тогда марк точнее.
       <b>Выгода входа</b> — насколько текущий спред лучше медианы окна для выбранного направления: чем выше, тем удачнее момент открыть связку.
       <b>Перцентиль</b> — какая доля окна была хуже текущего момента для входа; «открывать» — от 80%, «закрывать» — до 20%.
       <b>Размах</b> — как сильно ходил спред. Метка «в позиции» — рынки, где у выбранного кошелька сейчас открыта позиция.
@@ -226,54 +315,181 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
 
   <!-- ================= TAB 3: КАК ПОЛЬЗОВАТЬСЯ ================= -->
   <div id="guide" class="guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
-    <h2>Что такое PerpHedge</h2>
-    <p>Бесплатный инструмент для тех, кто фармит поинты Lighter хеджем: держит противоположные позиции по одному рынку на <b>Lighter on Robinhood Chain</b> и на <b>Lighter Core</b>. Рыночный риск почти нулевой, а поинты начисляются на обеих площадках.</p>
-    <div class="callout">PerpHedge только читает публичные данные Lighter. Ему не нужны ключи, подключение кошелька или подписи — он не может открыть, закрыть или вывести что-либо. Адреса, поинты и настройки хранятся только в вашем браузере и никуда не отправляются.</div>
 
-    <h2>Как начать</h2>
-    <ol>
-      <li>Скопируйте адрес кошелька (<code>0x…</code>), которым вы входите в Lighter. Один адрес работает и для Robinhood Chain, и для Core.</li>
-      <li>На вкладке «Мои связки» вставьте адрес, дайте ему имя и нажмите «Загрузить и сохранить».</li>
-      <li>Готово: позиции с обеих площадок подтянутся сами и сложатся в связки по тикеру.</li>
-    </ol>
+    <header class="g-hero">
+      <h2>Как пользоваться PerpHedge</h2>
+      <p>PerpHedge помогает фармить поинты Lighter хеджем: держать противоположные позиции по одному рынку на <b>Lighter on Robinhood Chain (RH)</b> и на <b>Lighter Core</b>. Рыночный риск почти нулевой, а заработок или потери на самой связке определяются только разницей цен между двумя площадками.</p>
+      <nav class="g-toc" aria-label="Содержание">
+        <a href="#g-start">Быстрый старт</a><a href="#g-formula">Главная формула</a><a href="#g-desk">Мои связки</a><a href="#g-example">Разбор примера</a><a href="#g-scan">Сканер спреда</a><a href="#g-chart">График</a><a href="#g-choose">Как выбрать рынок</a><a href="#g-risks">Риски</a><a href="#g-faq">Вопросы</a>
+      </nav>
+    </header>
 
-    <h2>Вкладка «Мои связки»</h2>
-    <ul>
-      <li><b>Аккаунты</b> — баланс на каждой площадке и сколько маржи занято. Маржа считается отдельно: прибыль на одной площадке не спасёт от ликвидации на другой. Полоска желтеет после 50% и краснеет после 70%.</li>
-      <li><b>Открытые связки</b> — по каждому рынку: «хедж» (ноги равны и противоположны), «перекос» (размеры разошлись больше чем на 2%), «одна нога» или «не хедж». «Заложено на входе» — сколько вы выиграли или потеряли на разнице цен между площадками в момент открытия. «Выход сейчас» — сколько это даст, если закрыть обе ноги прямо сейчас по стакану.</li>
-      <li><b>Неделя за неделей</b> — объём и итог торговли по неделям (фандинг и комиссии включены, пополнения и выводы — нет). Впишите начисленные поинты и цену поинта — и увидите, во сколько обходится один поинт и чистый результат.</li>
-      <li><b>Последние сделки</b> — с обеих площадок, с пометкой лимитка или маркет.</li>
-    </ul>
+    <div class="callout g-safe"><b>Безопасно по устройству.</b> PerpHedge только читает публичные данные Lighter. Ему не нужны ключи, подключение кошелька или подписи — он не может открыть, закрыть или вывести что-либо. Адреса, поинты и настройки хранятся только в вашем браузере.</div>
 
-    <h2>Вкладка «Сканер спреда»</h2>
-    <p>Показывает все рынки, которые есть на обеих площадках, и разницу цен между ними: <code>(цена RH − цена Core) / цена Core</code>.</p>
-    <ul>
-      <li><b>Сигнал</b> сравнивает текущий спред с выбранным окном (3, 6, 12 или 24 часа): «открывать» — момент лучше 80% окна, «закрывать» — хуже 20%.</li>
-      <li><b>Направление</b> выбирается вверху: шорт RH / лонг Core или наоборот. Зоны и сигналы пересчитываются сами.</li>
-      <li><b>Клик по строке</b> открывает график: шкала в процентах, линия 0% (цены равны), медиана, зоны входа и выхода, текущая точка.</li>
-      <li>Если «Спред сейчас» и «По марку» сильно расходятся, рынок неликвидный и последняя сделка устарела — доверяйте марку.</li>
-      <li>Сканер работает только пока открыта его вкладка — так меньше нагрузка на API.</li>
-    </ul>
+    <section class="g-sec" id="g-start">
+      <h2>Быстрый старт</h2>
+      <ol class="g-steps">
+        <li><b>Скопируйте адрес кошелька</b> (<code>0x…</code>), которым входите в Lighter. Один адрес подходит и для RH, и для Core.</li>
+        <li>На вкладке <b>«Мои связки»</b> вставьте адрес, дайте ему название и нажмите <b>«Загрузить и сохранить»</b>.</li>
+        <li>Хотите сначала посмотреть, как это выглядит? На пустой вкладке нажмите <b>«Посмотреть пример»</b> — откроется публичный кошелёк активного фармера (только чтение).</li>
+        <li>Позиции с обеих площадок подтянутся сами и сложатся в связки по тикеру. Кнопка <b>⟳</b> вверху обновляет данные текущей вкладки без перезагрузки страницы.</li>
+      </ol>
+    </section>
 
-    <h2>Пара правил хеджа</h2>
-    <ul>
-      <li>Открывайте ноги одну за другой, без пауз: пока вторая нога не открыта, позиция без хеджа.</li>
-      <li>Сравнивайте размеры в монетах, а не в долларах: цены на площадках различаются.</li>
-      <li>Не исполняйте свои же ордера и не крутите объём ради объёма: Lighter прямо пишет, что искусственная активность поинтов не получает.</li>
-      <li>Следите за маржой на обеих площадках и держите плечо умеренным.</li>
-    </ul>
+    <section class="g-sec g-key" id="g-formula">
+      <h2>Главная формула</h2>
+      <p class="g-formula">Результат связки на спреде = <span>спред при входе</span> − <span>спред при выходе</span></p>
+      <p><b>Спред</b> = (цена RH − цена Core) / цена Core. Плюс — RH дороже Core, минус — дешевле.</p>
+      <figure class="g-fig">
+        <svg viewBox="0 0 620 200" role="img" aria-label="Схема: вход при высоком спреде, выход при низком">
+          <line x1="40" y1="150" x2="600" y2="150" class="g-zero"/>
+          <text x="604" y="154" class="g-t">0%</text>
+          <path d="M40,120 C110,110 140,60 190,55 S260,90 300,100 S400,165 470,160 S560,130 600,125" class="g-line"/>
+          <circle cx="190" cy="55" r="7" class="g-in"/>
+          <circle cx="470" cy="160" r="7" class="g-out"/>
+          <text x="190" y="38" text-anchor="middle" class="g-t g-tin">вход: шорт RH / лонг Core</text>
+          <text x="470" y="188" text-anchor="middle" class="g-t g-tout">выход: закрыть обе ноги</text>
+          <line x1="520" y1="55" x2="520" y2="160" class="g-arrow"/>
+          <line x1="190" y1="55" x2="530" y2="55" class="g-dash"/>
+          <text x="528" y="105" class="g-t g-tin">заработано</text>
+        </svg>
+        <figcaption>Для связки «шорт RH / лонг Core» выгодно входить, когда RH дороже обычного, и выходить, когда RH подешевел относительно Core.</figcaption>
+      </figure>
+      <ul>
+        <li>Важен не знак спреда, а <b>насколько он изменится</b> между входом и выходом. Вход при −1.10% и выход при −1.20% — это тоже плюс 0.1%.</li>
+        <li>Для обратной связки (лонг RH / шорт Core) всё наоборот: входить на низком спреде, выходить на высоком.</li>
+        <li>В долларах: изменение спреда × размер позиции. 0.1% на связке $2 000 ≈ $2.</li>
+      </ul>
+    </section>
 
-    <h2>Вопросы</h2>
-    <h3>Это официальный инструмент Lighter?</h3>
-    <p>Нет. PerpHedge — независимый проект, не связан с Lighter, Robinhood или их командами.</p>
-    <h3>Почему поинты нужно вписывать вручную?</h3>
-    <p>Lighter отдаёт поинты только авторизованным пользователям, а PerpHedge принципиально работает без ключей и входа.</p>
-    <h3>Можно посмотреть чужой кошелёк?</h3>
-    <p>Да: данные аккаунтов Lighter публичны, как в блокчейн-эксплорере. Сохраняйте сколько угодно адресов.</p>
+    <section class="g-sec" id="g-desk">
+      <h2>Вкладка «Мои связки»</h2>
+
+      <h3>Карточки аккаунтов</h3>
+      <dl class="g-terms">
+        <dt>Баланс</dt><dd>Стоимость аккаунта на площадке: деньги плюс нереализованный результат позиций.</dd>
+        <dt>Свободно</dt><dd>Сколько можно использовать под новые позиции.</dd>
+        <dt>Маржа занята</dt><dd>Какая доля баланса держит позиции. Полоска желтеет после 50% и краснеет после 70%. <b>Маржа считается отдельно на каждой площадке:</b> прибыль на Core не спасёт от ликвидации на RH.</dd>
+      </dl>
+
+      <h3>Таблица «Открытые связки»</h3>
+      <dl class="g-terms">
+        <dt>Статус</dt><dd><span class="tag ok">хедж</span> ноги равны и противоположны · <span class="tag warn">перекос</span> размеры разошлись больше чем на 2% · <span class="tag bad">одна нога</span> позиция только на одной площадке · <span class="tag bad">не хедж</span> обе ноги в одну сторону.</dd>
+        <dt>RH / Core</dt><dd>Сторона и количество монет в каждой ноге.</dd>
+        <dt>Вход RH / Вход Core</dt><dd>Средние цены открытия ног.</dd>
+        <dt>Перекос</dt><dd>Разница размеров ног в монетах. Близко к нулю — хорошо.</dd>
+        <dt>Заложено на входе</dt><dd>Результат на спреде в момент открытия: разница цен входа × размер. Зафиксирован, пока позиция открыта. Минус здесь — не ошибка сам по себе: его может компенсировать выход.</dd>
+        <dt>PnL RH / PnL Core</dt><dd>Результат каждой ноги по данным Lighter. По отдельности смысла не имеют — одна нога всегда в плюсе, другая в минусе.</dd>
+        <dt>Фандинг</dt><dd>Сумма полученных (+) и уплаченных (−) фандинговых платежей по обеим ногам.</dd>
+        <dt>Связка</dt><dd>PnL RH + PnL Core + фандинг — итог по марк-цене Lighter.</dd>
+        <dt>Спред сейчас</dt><dd>Разница цен между площадками в данный момент (по середине стакана).</dd>
+        <dt>Выход сейчас</dt><dd>Сколько добавит закрытие прямо сейчас по реальным ценам стакана: для шорта RH — покупка на RH по лучшему предложению и продажа на Core по лучшему спросу. Плюс — хороший момент для выхода.</dd>
+      </dl>
+      <p class="g-formula small">Итог, если закрыть сейчас ≈ <span>Заложено на входе</span> + <span>Выход сейчас</span> + <span>Фандинг</span></p>
+
+      <h3>Неделя за неделей</h3>
+      <dl class="g-terms">
+        <dt>Объём RH / Core</dt><dd>Оборот за неделю на каждой площадке.</dd>
+        <dt>Итог</dt><dd>Изменение торгового результата за неделю: закрытые и открытые позиции, фандинг и комиссии. Пополнения и выводы не учитываются.</dd>
+        <dt>Поинты</dt><dd>Впишите вручную после еженедельной раздачи Lighter.</dd>
+        <dt>$ за поинт</dt><dd>Сколько стоил один поинт: минус итога недели / поинты.</dd>
+        <dt>Цена поинта OTC</dt><dd>Впишите текущую рыночную оценку поинта — получите стоимость поинтов и чистый результат.</dd>
+      </dl>
+      <p>Неделя по умолчанию начинается в пятницу 00:00 UTC — в день, когда Lighter публикует раздачу. Можно поменять.</p>
+    </section>
+
+    <section class="g-sec" id="g-example">
+      <h2>Разбор примера</h2>
+      <p>Связка ANTHROPIC: шорт 1.035 на RH по 1 931.6, лонг 1.030 на Core по 1 941.7.</p>
+      <div class="g-table"><table>
+        <tbody>
+          <tr><td class="l">Заложено на входе</td><td class="neg">−10.40</td><td class="l dim">шорт на RH открыт на $10.1 дешевле лонга на Core × 1.03 монеты</td></tr>
+          <tr><td class="l">Выход сейчас</td><td class="neg">−4.43</td><td class="l dim">RH сейчас дороже Core на 0.2% — закрываться невыгодно</td></tr>
+          <tr><td class="l">Фандинг</td><td>0.00</td><td class="l dim">почти ноль</td></tr>
+          <tr class="g-sum"><td class="l">Итог при закрытии сейчас</td><td class="neg">≈ −14.83</td><td class="l dim">для сравнения, «Связка» по марк-цене: −14.59</td></tr>
+        </tbody>
+      </table></div>
+      <p>«Заложено на входе» уже не изменить. Хороший момент для выхода — когда «Выход сейчас» станет плюсовым: тогда он отобьёт часть минуса на входе. Пока позиция открыта, она продолжает приносить поинты.</p>
+    </section>
+
+    <section class="g-sec" id="g-scan">
+      <h2>Вкладка «Сканер спреда»</h2>
+      <p>Все рынки, которые есть на обеих площадках, с оценкой: удачный ли сейчас момент для входа или выхода. Сканер работает, только пока открыта его вкладка.</p>
+
+      <h3>Настройки</h3>
+      <dl class="g-terms">
+        <dt>Окно</dt><dd>За какой период сравнивать текущий спред: 1 ч, 3 ч, 6 ч, 12 ч, 24 ч или неделя. Короткое окно — для быстрых циклов, длинное — для общей картины.</dd>
+        <dt>График: свечи</dt><dd>Детализация графика по клику на строку: 1 мин, 5 мин, 15 мин, 1 час или авто.</dd>
+        <dt>Направление</dt><dd>Шорт RH / лонг Core или наоборот. Сигналы и зоны пересчитываются под выбор.</dd>
+        <dt>Показывать крипту</dt><dd>Добавляет в список криптовалютные рынки. По умолчанию показаны акции, ETF, pre-IPO и сырьё.</dd>
+      </dl>
+
+      <h3>Колонки</h3>
+      <dl class="g-terms">
+        <dt>Сигнал</dt><dd><span class="sig open">открывать</span> текущий спред лучше 80% окна · <span class="sig close">закрывать</span> хуже 20% окна — хороший момент для выхода · <span class="sig wait">ждать</span> обычный момент. Сигнал <b>относительный</b>: «лучше обычного для этого рынка», а не «много денег».</dd>
+        <dt>Выгода входа</dt><dd>Насколько текущий момент лучше обычного: 0 — как всегда, 1 — заметно лучше, 2 и выше — редкий хороший момент, минус — хуже обычного.</dd>
+        <dt>Спред сейчас</dt><dd>Разница цен по последним сделкам.</dd>
+        <dt>По марку</dt><dd>Та же разница по марк-ценам. Если сильно расходится со «Спредом сейчас» — рынок неликвидный, последняя сделка устарела, доверяйте марку.</dd>
+        <dt>Медиана окна</dt><dd>Обычный уровень спреда за окно — куда он, как правило, возвращается.</dd>
+        <dt>Мин / Макс</dt><dd>Самый низкий и самый высокий спред за окно.</dd>
+        <dt>Размах</dt><dd>Макс − Мин: насколько спред вообще гуляет. Маленький размах — на спреде не заработать, только дешёвый вход.</dd>
+        <dt>Перцентиль</dt><dd>Какая доля окна была хуже текущего момента для входа.</dd>
+        <dt>OI / Объём на RH</dt><dd>Открытый интерес и оборот за сутки — насколько рынок популярный.</dd>
+      </dl>
+      <p>Метка <span class="tag held">в позиции</span> отмечает рынки, где у выбранного кошелька есть открытая позиция.</p>
+    </section>
+
+    <section class="g-sec" id="g-chart">
+      <h2>Как читать график</h2>
+      <dl class="g-terms">
+        <dt>Линия</dt><dd>Спред за выбранное окно. Шкала слева — в процентах, снизу — время.</dd>
+        <dt>Пунктир «0%»</dt><dd>Цены на площадках равны. Если весь график выше или ниже нуля, справа будет подпись «0% выше/ниже графика».</dd>
+        <dt>Точечная линия</dt><dd>Медиана — обычный уровень за окно.</dd>
+        <dt>Зелёная зона</dt><dd>Зона входа: спред в лучших 20% окна для выбранного направления.</dd>
+        <dt>Оранжевая зона</dt><dd>Зона выхода: спред в худших 20% окна — выгодно закрывать связку.</dd>
+        <dt>Точка «сейчас»</dt><dd>Текущий спред.</dd>
+        <dt>Подсказка</dt><dd>Наведите курсор или коснитесь графика — увидите время, спред и цены на обеих площадках в этот момент.</dd>
+      </dl>
+    </section>
+
+    <section class="g-sec" id="g-choose">
+      <h2>Как выбрать рынок для входа</h2>
+      <ol class="g-check">
+        <li><b>Сигнал «открывать»</b> и выгода входа от 1.</li>
+        <li><b>Разница «Спред сейчас» − «Медиана»</b> заметная: это и есть ваш потенциальный заработок на спреде. Умножьте на размер позиции, чтобы получить доллары.</li>
+        <li><b>«По марку» близко к «Спреду сейчас»</b> — иначе цифры недостоверны.</li>
+        <li><b>Медиана около нуля</b> — нет риска внезапного схлопывания постоянного перекоса цен.</li>
+        <li><b>Размах побольше</b> — спред ходит, есть что ловить на циклах.</li>
+        <li>По наблюдениям сообщества, поинтов больше на менее популярных рынках (меньше OI и объём).</li>
+      </ol>
+    </section>
+
+    <section class="g-sec" id="g-risks">
+      <h2>Риски и правила</h2>
+      <ul class="g-warn">
+        <li><b>Постоянный перекос цен.</b> На некоторых рынках (особенно pre-IPO) одна площадка стабильно дороже другой — например, на 1.2%. Если разница однажды схлопнется к нулю, связка, открытая «в расчёте на норму», потеряет весь перекос.</li>
+        <li><b>Неликвидные рынки.</b> Широкий стакан и старые сделки: вход и выход по стакану могут стоить больше, чем покажет спред.</li>
+        <li><b>Маржа на каждой площадке.</b> При сильном движении цены одна нога растёт, другая падает — следите за маржой обеих и держите плечо умеренным.</li>
+        <li><b>Открывайте ноги одну за другой без пауз</b> — пока вторая нога не открыта, позиция не захеджирована. Сравнивайте размеры в монетах, а не в долларах.</li>
+        <li><b>Не исполняйте свои же ордера и не крутите объём ради объёма.</b> Lighter прямо пишет, что искусственная активность поинтов не получает.</li>
+      </ul>
+    </section>
+
+    <section class="g-sec" id="g-faq">
+      <h2>Вопросы</h2>
+      <h3>Это официальный инструмент Lighter?</h3>
+      <p>Нет. PerpHedge — независимый проект, не связан с Lighter, Robinhood или их командами.</p>
+      <h3>Почему поинты нужно вписывать вручную?</h3>
+      <p>Lighter отдаёт поинты только авторизованным пользователям, а PerpHedge принципиально работает без ключей и входа.</p>
+      <h3>Можно посмотреть чужой кошелёк?</h3>
+      <p>Да: данные аккаунтов Lighter публичны, как в блокчейн-эксплорере. Сохраняйте сколько угодно адресов.</p>
+      <h3>Почему «Связка» и «Итог при закрытии» немного отличаются?</h3>
+      <p>«Связка» считается по марк-цене Lighter, а «Выход сейчас» — по реальным ценам стакана. Разница обычно в пределах нескольких центов или долларов.</p>
+    </section>
   </div>
 
   <footer>
-    PerpHedge — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    PerpHedge v1.4 — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -285,9 +501,17 @@ const j=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}
 const n=v=>v==null||!isFinite(v)?'—':(Math.abs(v)>=1000?v.toFixed(0):v.toFixed(2));
 const sgn=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+n(v);
 const cls=v=>v==null||!isFinite(v)?'':v>0.005?'pos':v<-0.005?'neg':'';
-const pc=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+v.toFixed(3)+'%';
+const pc=v=>{if(v==null||!isFinite(v))return '—';if(Math.abs(v)<0.0005)v=0;return (v>0?'+':'')+v.toFixed(3)+'%'};
 const usdk=v=>!isFinite(v)?'—':v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+v.toFixed(0);
 const tstr=()=>new Date().toLocaleTimeString('ru-RU');
+
+// copy column titles into each cell (used as captions in the phone card layout)
+function labelize(sel){
+  const body=document.querySelector(sel); if(!body) return;
+  const ths=[...body.closest('table').querySelectorAll('thead th')].map(th=>th.textContent.trim());
+  body.querySelectorAll('tr').forEach(tr=>{ if(tr.querySelector('td[colspan]')) return;
+    [...tr.children].forEach((td,i)=>{ if(ths[i]!=null) td.dataset.label=ths[i]; }); });
+}
 let held=new Set();          // symbols with an open position on the selected wallet (for the scanner)
 const statusText={desk:'Загрузка…',scan:'Открой вкладку, чтобы загрузить сканер'};
 let activeTab='desk';
@@ -362,7 +586,7 @@ const Desk=(()=>{
         <td class="${cls(spread)}">${spread==null?'—':pc(spread)}</td>
         <td class="${cls(exitUsd)}">${sgn(exitUsd)}</td></tr>`;
     }));
-    $('#pairs').innerHTML=rows.join('');
+    $('#pairs').innerHTML=rows.join(''); labelize('#pairs');
   }
   function weekStart(ts){const d=new Date(ts);d.setUTCHours(0,0,0,0);const back=(d.getUTCDay()-st.wday+7)%7;d.setUTCDate(d.getUTCDate()-back);return d.getTime()}
   async function pnlSeries(k){
@@ -412,6 +636,7 @@ const Desk=(()=>{
     const tot=T.pr+T.pc;
     $('#wtot').innerHTML=`<tr><td class="l">Всего</td><td>${usdk(T.vr)}</td><td>${usdk(T.vc)}</td><td class="${cls(T.pr)}">${sgn(T.pr)}</td><td class="${cls(T.pc)}">${sgn(T.pc)}</td>
       <td class="${cls(tot)}">${sgn(tot)}</td><td>${T.pts||'—'}</td><td>${T.pts?'$'+n(-tot/T.pts):'—'}</td><td></td><td>${T.val?'$'+n(T.val):'—'}</td><td class="${cls(T.val+tot)}">${T.val?sgn(T.val+tot):'—'}</td></tr>`;
+    labelize('#weeks'); labelize('#wtot');
     document.querySelectorAll('#weeks input').forEach(inp=>inp.onchange=()=>{
       const v=parseFloat(inp.value.replace(',','.')), bag=inp.dataset.f==='points'?st.points:st.otc;
       const key=pk(inp.dataset.w); if(isNaN(v)) delete bag[key]; else bag[key]=v; save(); renderWeeks();
@@ -427,6 +652,7 @@ const Desk=(()=>{
         <td class="l ${sell?'neg':'pos'}">${sell?'продажа':'покупка'}</td><td>${t.size}</td><td>${t.price}</td><td>$${n(+t.usd_amount)}</td>
         <td class="l dim">${maker?'мейкер (лимитка)':'тейкер (маркет)'}</td></tr>`;
     }).join('')||'<tr><td class="l dim" colspan="8">Сделок нет</td></tr>';
+    labelize('#trades');
   }
   let busy=false, lastSlow=0, pending=false;
   async function tick(force){
@@ -441,7 +667,7 @@ const Desk=(()=>{
       if(forAddr!==st.addr) throw 'switched';
       const a={RH:r,CORE:c}; renderAcc(a); await renderPairs(a);
       if(force||Date.now()-lastSlow>5*60e3){lastSlow=Date.now(); await Promise.all([loadWeeks().then(renderWeeks),renderTrades()]);}
-      setStatus('desk',`Мои связки · обновлено ${tstr()} · Robinhood ${acc.RH??'—'} · Core ${acc.CORE??'—'} · позиции каждые 15 с, недели и сделки каждые 5 мин`);
+      setStatus('desk',`${isExample()?'Пример':'Мои связки'} · обновлено ${tstr()} · Robinhood ${acc.RH??'—'} · Core ${acc.CORE??'—'} · позиции каждые 15 с, недели и сделки каждые 5 мин`);
     }catch(e){ if(e!=='switched'&&e!=='none') setStatus('desk','Ошибка загрузки. Проверьте интернет и нажмите ⟳.')}
     busy=false; if(activeTab==='desk') spinning(false);
     if(pending||forAddr!==st.addr){pending=false; tick(true);}
@@ -450,9 +676,13 @@ const Desk=(()=>{
     held=new Set();
     ['#pairs','#weeks','#wtot','#trades'].forEach(s=>$(s).innerHTML='');
     $('#acc').innerHTML=`<div class="welcome"><b>Добавьте адрес кошелька</b>
-      <span class="sub">Вставьте выше адрес (0x…), которым вы входите в Lighter, дайте ему название и нажмите «Загрузить и сохранить». Ключи и подключение кошелька не нужны — PerpHedge только читает публичные данные.</span></div>`;
+      <span class="sub">Вставьте выше адрес (0x…), которым вы входите в Lighter, дайте ему название и нажмите «Загрузить и сохранить». Ключи и подключение кошелька не нужны — PerpHedge только читает публичные данные.</span>
+      <span><button class="primary" id="exshow">Посмотреть пример</button> <span class="sub">— откроет публичный кошелёк активного фармера, чтобы вы увидели, как всё выглядит</span></span></div>`;
+    $('#exshow').onclick=()=>load(EXAMPLE);
     setStatus('desk','Мои связки · добавьте адрес кошелька, чтобы начать');
   }
+  const EXAMPLE='0x3d4891e4757F1892364Faa1E57DE69c20EB91AAc';
+  const isExample=()=>!!st.addr&&same(st.addr,EXAMPLE)&&!st.wallets.some(w=>same(w.addr,EXAMPLE));
   const short=a=>a.slice(0,6)+'…'+a.slice(-4);
   const same=(a,b)=>a.toLowerCase()===b.toLowerCase();
   function fillWallets(){
@@ -460,6 +690,9 @@ const Desk=(()=>{
     $('#wsel').disabled=!st.wallets.length; $('#wdel').disabled=!st.wallets.length;
     const i=st.wallets.findIndex(w=>same(w.addr,st.addr)); if(i>=0) $('#wsel').value=String(i);
     const cur=st.wallets[i]; $('#addr').value=st.addr||''; $('#wname').value=cur?cur.name:'';
+    const ex=isExample(); $('#exbanner').hidden=!ex;
+    if(ex){ $('#addr').value=''; $('#wname').value='';
+      $('#wsel').insertAdjacentHTML('afterbegin','<option value="ex">Пример · кошелёк фармера</option>'); $('#wsel').value='ex'; $('#wsel').disabled=false; $('#wdel').disabled=true; }
   }
   function load(addr){
     st.addr=addr; save(); acc={RH:null,CORE:null}; lastSlow=0; cacheWeeks=null; held=new Set();
@@ -469,6 +702,7 @@ const Desk=(()=>{
   function init(){
     $('#wday').value=String(st.wday); fillWallets();
     $('#wsel').onchange=e=>{const w=st.wallets[+e.target.value]; if(w) load(w.addr)};
+    $('#exexit').onclick=()=>{ if(st.wallets.length) load(st.wallets[0].addr); else {st.addr='';save();acc={RH:null,CORE:null};fillWallets();welcome();} };
     $('#go').onclick=()=>{
       const a=$('#addr').value.trim(), name=$('#wname').value.trim();
       if(!/^0x[0-9a-fA-F]{40}$/.test(a)){setStatus('desk','Адрес должен начинаться с 0x и содержать 40 символов после него.');return}
@@ -477,7 +711,7 @@ const Desk=(()=>{
       load(a);
     };
     $('#wdel').onclick=()=>{
-      if(!st.wallets.length) return;
+      if(!st.wallets.length||isExample()) return;
       st.wallets.splice(+$('#wsel').value,1);
       if(st.wallets.length) load(st.wallets[0].addr); else {st.addr='';save();acc={RH:null,CORE:null};fillWallets();welcome();}
     };
@@ -495,35 +729,54 @@ const Scan=(()=>{
   const COMMOD=new Set('XAU XAG'.split(' '));
   const kind=s=>PREIPO.has(s)?'pre-IPO':ETF.has(s)?'ETF':COMMOD.has(s)?'сырьё':CRYPTO.has(s)?'крипта':'акция';
   const LS='perphedge.scan.v1';
-  let ui={h:6,dir:'shortRH',crypto:false,sort:'score',desc:true,open:null};
+  const H=3600e3, RES_MS={'1m':60e3,'5m':300e3,'15m':900e3,'1h':H};
+  // table statistics use one candle size per window (≤500 candles = one request per market)
+  const AUTO_RES={1:'1m',3:'1m',6:'1m',12:'5m',24:'5m',168:'1h'};
+  const WIN_TXT={1:'1 ч',3:'3 ч',6:'6 ч',12:'12 ч',24:'24 ч',168:'1 нед'};
+  let ui={h:6,dir:'shortRH',crypto:false,sort:'score',desc:true,open:null,cres:'auto'};
   try{Object.assign(ui,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
+  if(!WIN_TXT[ui.h]) ui.h=6;
   const save=()=>{try{localStorage.setItem(LS,JSON.stringify(ui))}catch(e){}};
-  let markets=[], histAt=0, started=false, timers=[], busy=false;
+  let markets=[], started=false, timers=[], busy=false;
+  const hist={};   // key "res|hours" -> {at, data:{sym:[[t,spread,pRH,pCore],...]}}
+  const chartCache={}; // key "sym|res|hours" -> {at, pts}
   async function pool(tasks,k){let i=0;await Promise.all(Array(k).fill(0).map(async()=>{while(i<tasks.length){const t=tasks[i++];try{await t()}catch(e){}}}))}
   async function loadMarkets(){
     const [a,b]=await Promise.all([j(API.RH+'/orderBookDetails'),j(API.CORE+'/orderBookDetails')]);
     const bm={}; b.order_book_details.forEach(x=>bm[x.symbol]=x);
-    const prev={}; markets.forEach(m=>prev[m.sym]=m);
     markets=a.order_book_details.filter(x=>x.status==='active'&&bm[x.symbol]&&bm[x.symbol].status==='active').map(x=>{
       const y=bm[x.symbol];
       return {sym:x.symbol,rh:x.market_id,core:y.market_id,kind:kind(x.symbol),mRH:+x.mark_price,mCore:+y.mark_price,lRH:+x.last_trade_price,lCore:+y.last_trade_price,
-        oi:(+x.open_interest)*(+x.mark_price),vol:+x.daily_quote_token_volume,hist:prev[x.symbol]?.hist||[]};
+        oi:(+x.open_interest)*(+x.mark_price),vol:+x.daily_quote_token_volume};
     });
   }
-  async function loadHist(){
-    const now=Date.now(), s=now-24*3600e3;
-    const g=(b,id)=>j(`${b}/candles?market_id=${id}&resolution=5m&start_timestamp=${s}&end_timestamp=${now}&count_back=300`).then(r=>{const m={};(r.c||[]).forEach(c=>m[c.t]=c.c);return m});
-    const list=markets.filter(m=>ui.crypto||m.kind!=='крипта');
+  // candles for one market on one instance, paged by 450 candles per request
+  async function candles(base,id,res,hours){
+    const step=RES_MS[res], end=Date.now(), start=end-hours*H, page=450*step, m={};
+    for(let s=start;s<end;s+=page){
+      const e=Math.min(s+page,end);
+      const cb=Math.min(500,Math.ceil((e-s)/step)+1);
+      const r=await j(`${base}/candles?market_id=${id}&resolution=${res}&start_timestamp=${s}&end_timestamp=${e}&count_back=${cb}`);
+      (r.c||[]).forEach(c=>{ if(c.t>=start-step) m[c.t]=c.c; });   // the API may return older candles than asked
+    }
+    return m;
+  }
+  const pair=(A,B)=>Object.keys(A).filter(t=>B[t]!=null&&B[t]>0).sort((x,y)=>x-y).map(t=>[+t,(A[t]-B[t])/B[t]*100,A[t],B[t]]);
+  async function loadHist(force){
+    const res=AUTO_RES[ui.h], key=res+'|'+ui.h, h=hist[key];
+    if(h&&!force&&Date.now()-h.at<5*60e3) return;
+    const list=markets.filter(m=>ui.crypto||m.kind!=='крипта'), data={};
     let done=0;
     await pool(list.map(m=>async()=>{
-      const [A,B]=await Promise.all([g(API.RH,m.rh),g(API.CORE,m.core)]);
-      m.hist=Object.keys(A).filter(t=>B[t]!=null&&B[t]>0).sort((x,y)=>x-y).map(t=>[+t,(A[t]-B[t])/B[t]*100]);
-      done++; setStatus('scan',`Сканер · загружаю историю… ${done}/${list.length}`);
+      const [A,B]=await Promise.all([candles(API.RH,m.rh,res,ui.h),candles(API.CORE,m.core,res,ui.h)]);
+      data[m.sym]=pair(A,B);
+      done++; setStatus('scan',`Сканер · загружаю историю (${WIN_TXT[ui.h]}, свечи ${res})… ${done}/${list.length}`);
     }),4);
-    histAt=Date.now();
+    hist[key]={at:Date.now(),data};
   }
+  const curHist=()=>hist[AUTO_RES[ui.h]+'|'+ui.h];
   function stats(m){
-    const from=Date.now()-ui.h*3600e3, wt=m.hist.filter(x=>x[0]>=from), w=wt.map(x=>x[1]);
+    const wt=(curHist()?.data[m.sym])||[], w=wt.map(x=>x[1]);
     const now=(m.lRH-m.lCore)/m.lCore*100, mark=(m.mRH-m.mCore)/m.mCore*100;
     if(w.length<6) return {now,mark,n:w.length};
     const s=[...w].sort((a,b)=>a-b), q=p=>s[Math.floor(p*(s.length-1))];
@@ -532,52 +785,115 @@ const Scan=(()=>{
     const score=sign*(now-med)/Math.max(sd,0.01);
     const pctl=w.filter(v=>sign*v<sign*now).length/w.length*100;
     const sig=pctl>=80?'open':pctl<=20?'close':'wait';
-    return {now,mark,med,lo,hi,range:hi-lo,score,pctl,sig,n:w.length,wt,p20:q(.2),p80:q(.8)};
+    return {now,mark,med,lo,hi,range:hi-lo,score,pctl,sig,n:w.length,p20:q(.2),p80:q(.8)};
   }
-  function chart(s,sym){
-    const wt=s.wt; if(!wt||!wt.length) return '';
-    const short=ui.dir==='shortRH';
-    const vals=[...wt.map(x=>x[1]),s.now];
-    let mn=Math.min(...vals), mx=Math.max(...vals);
+  // ---- chart: own candles for the opened market at the chosen candle size ----
+  function chartRes(){
+    if(ui.cres==='auto') return AUTO_RES[ui.h];
+    const pts=ui.h*H/RES_MS[ui.cres];
+    return pts>2000?(ui.h>24?'1h':'5m'):ui.cres;   // keep the chart to ≤2000 points
+  }
+  async function loadChart(m,force){
+    const res=chartRes(), key=m.sym+'|'+res+'|'+ui.h, c=chartCache[key];
+    if(c&&!force&&Date.now()-c.at<60e3) return c.pts;
+    const [A,B]=await Promise.all([candles(API.RH,m.rh,res,ui.h),candles(API.CORE,m.core,res,ui.h)]);
+    const pts=pair(A,B); chartCache[key]={at:Date.now(),pts}; return pts;
+  }
+  const TICKS=[5,10,15,30,60,120,180,360,720,1440,2880].map(x=>x*60e3);
+  const two=x=>String(x).padStart(2,'0');
+  const tl=(t,withDate)=>{const d=new Date(t);return (withDate?two(d.getDate())+'.'+two(d.getMonth()+1)+' ':'')+two(d.getHours())+':'+two(d.getMinutes())};
+  let chartState=null; // for hover lookups
+  function chart(s,m,pts){
+    if(!pts||!pts.length) return '<div class="sub">Загружаю график…</div>';
+    const short=ui.dir==='shortRH', res=chartRes(), compact=window.innerWidth<720;
+    const vals=pts.map(x=>x[1]); const sv=[...vals].sort((a,b)=>a-b), q=p=>sv[Math.floor(p*(sv.length-1))];
+    const med=q(.5), p20=q(.2), p80=q(.8);
+    const all=[...vals,s.now]; let mn=Math.min(...all), mx=Math.max(...all);
     const pad=Math.max((mx-mn)*0.12,0.01); mn-=pad; mx+=pad;
     const zeroIn=mn<=0&&mx>=0;
-    const W=900,H=230,L=70,R=150,T=14,B=30,pw=W-L-R,ph=H-T-B;
-    const t0=wt[0][0], t1=Date.now();
-    const X=t=>L+(t-t0)/(t1-t0)*pw, Y=v=>T+(mx-v)/(mx-mn)*ph;
-    const line=wt.map(x=>`${X(x[0]).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
-    const entryLo=short?s.p80:mn, entryHi=short?mx:s.p20, exitLo=short?mn:s.p80, exitHi=short?s.p20:mx;
+    const W=compact?440:900, Hh=compact?300:250, L=compact?58:70, R=compact?10:170, T=14, B=34, pw=W-L-R, ph=Hh-T-B;
+    const t0=pts[0][0], t1=Date.now(), span=t1-t0;
+    const X=t=>L+(t-t0)/span*pw, Y=v=>T+(mx-v)/(mx-mn)*ph;
+    const line=pts.map(x=>`${X(x[0]).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
+    const entryLo=short?p80:mn, entryHi=short?mx:p20, exitLo=short?mn:p80, exitHi=short?p20:mx;
     const band=(a,b,c)=>`<rect x="${L}" y="${Y(b).toFixed(1)}" width="${pw}" height="${Math.max(0,Y(a)-Y(b)).toFixed(1)}" class="${c}"/>`;
-    const ticks=[0,1,2,3,4].map(i=>mn+(mx-mn)*i/4);
-    const hh=d=>new Date(d).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
-    const xt=[t0,t0+(t1-t0)/2,t1];
+    const yt=[0,1,2,3,4].map(i=>mn+(mx-mn)*i/4);
+    // vertical time grid: pick a step giving ~6–10 lines (≈5 on a phone), aligned to local clock
+    const maxLines=compact?5:10;
+    const step=TICKS.find(x=>span/x<=maxLines)||TICKS[TICKS.length-1];
+    const off=new Date().getTimezoneOffset()*60e3, xs=[];
+    for(let t=Math.ceil((t0-off)/step)*step+off;t<t1;t+=step) xs.push(t);
+    const withDate=span>26*H;
+    const tickTxt=t=>!withDate&&new Date(t).getHours()===0&&new Date(t).getMinutes()===0?tl(t,true).slice(0,5):(compact&&withDate?tl(t,true).slice(0,5):tl(t,withDate));
     const cx=X(t1), cy=Y(s.now);
-    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Спред ${sym} за ${ui.h} ч">
+    // right-side labels (now / median / zero) pushed apart so they never overlap
+    const labs=[{y:cy,t:'сейчас '+pc(s.now),c:'now'},{y:Y(med),t:'медиана '+pc(med),c:'lab'}];
+    if(zeroIn) labs.push({y:Y(0),t:'0% — цены равны',c:'lab'});
+    labs.sort((a,b)=>a.y-b.y);
+    const gap=compact?13:15;
+    for(let i=1;i<labs.length;i++) if(labs[i].y-labs[i-1].y<gap) labs[i].y=labs[i-1].y+gap;
+    const over=labs[labs.length-1].y-(T+ph-2); if(over>0) labs.forEach(l=>l.y-=over);
+    const labX=compact?L+pw-6:L+pw+10, anchor=compact?'end':'start', dy=compact?-5:4;
+    chartState={sym:m.sym,pts,t0,span,L,pw,W,X,Y,withDate};
+    return `<div class="chartwrap" data-sym="${m.sym}">
+    <svg viewBox="0 0 ${W} ${Hh}" class="chart" role="img" aria-label="Спред ${m.sym} за ${WIN_TXT[ui.h]}">
       ${band(entryLo,entryHi,'z-entry')}${band(exitLo,exitHi,'z-exit')}
-      ${ticks.map(v=>`<line x1="${L}" x2="${L+pw}" y1="${Y(v)}" y2="${Y(v)}" class="grid"/><text x="${L-8}" y="${Y(v)+4}" class="ax" text-anchor="end">${pc(v)}</text>`).join('')}
-      ${zeroIn?`<line x1="${L}" x2="${L+pw}" y1="${Y(0)}" y2="${Y(0)}" class="zero"/><text x="${L+pw+6}" y="${Y(0)+4}" class="lab">0% — цены равны</text>`:''}
-      <line x1="${L}" x2="${L+pw}" y1="${Y(s.med)}" y2="${Y(s.med)}" class="med"/>
-      <text x="${L+pw+6}" y="${Y(s.med)+4}" class="lab">медиана ${pc(s.med)}</text>
+      ${yt.map(v=>`<line x1="${L}" x2="${L+pw}" y1="${Y(v)}" y2="${Y(v)}" class="grid"/><text x="${L-8}" y="${Y(v)+4}" class="ax" text-anchor="end">${pc(v)}</text>`).join('')}
+      ${xs.map(t=>`<line x1="${X(t)}" x2="${X(t)}" y1="${T}" y2="${T+ph}" class="vgrid"/><text x="${X(t)}" y="${Hh-12}" class="ax" text-anchor="middle">${tickTxt(t)}</text>`).join('')}
+      ${zeroIn?`<line x1="${L}" x2="${L+pw}" y1="${Y(0)}" y2="${Y(0)}" class="zero"/>`:''}
+      <line x1="${L}" x2="${L+pw}" y1="${Y(med)}" y2="${Y(med)}" class="med"/>
       <text x="${L+6}" y="${Y(entryHi)+14}" class="zl ze">зона входа</text>
       <text x="${L+6}" y="${Y(exitLo)-6}" class="zl zx">зона выхода</text>
       <polyline points="${line}" class="ln"/>
       <circle cx="${cx}" cy="${cy}" r="5" class="dot"/>
-      <text x="${cx+8}" y="${cy+4}" class="now">сейчас ${pc(s.now)}</text>
-      ${xt.map((t,i)=>`<text x="${X(t)}" y="${H-8}" class="ax" text-anchor="${i===0?'start':i===2?'end':'middle'}">${i===2?'сейчас':hh(t)}</text>`).join('')}
-      ${zeroIn?'':`<text x="${L+pw+6}" y="${(mx<0?T+10:H-B-4)}" class="lab">0% ${mx<0?'выше графика':'ниже графика'}</text>`}
+      ${labs.map(l=>`<text x="${labX}" y="${(l.y+dy).toFixed(1)}" class="${l.c}${compact?' halo':''}" text-anchor="${anchor}">${l.t}</text>`).join('')}
+      ${zeroIn?'':`<text x="${compact?L+pw-6:L+pw+10}" y="${(mx<0?T+12:T+ph-4)}" class="lab${compact?' halo':''}" text-anchor="${anchor}">0% ${mx<0?'выше графика':'ниже графика'}</text>`}
+      <line class="hx" x1="0" x2="0" y1="${T}" y2="${T+ph}" visibility="hidden"/>
+      <circle class="hdot" r="4" cx="0" cy="0" visibility="hidden"/>
+      <rect class="hover" x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent"/>
     </svg>
+    <div class="tip" hidden></div>
+    </div>
     <div class="legend">
+      <span>Окно ${WIN_TXT[ui.h]} · свечи ${res}${ui.cres!=='auto'&&res!==ui.cres?' (укрупнено, чтобы график не был слишком тяжёлым)':''} · наведите курсор или коснитесь графика, чтобы увидеть время и цены</span>
       <span><i class="sw ln-sw"></i>спред = (цена RH − цена Core) / Core. Выше нуля — RH дороже, ниже — RH дешевле</span>
       <span><i class="sw ze-sw"></i>зона входа: ${short?'RH дороже обычного — выгодно открывать шорт RH / лонг Core':'RH дешевле обычного — выгодно открывать лонг RH / шорт Core'}</span>
       <span><i class="sw zx-sw"></i>зона выхода: ${short?'RH дешевле обычного — выгодно закрывать связку':'RH дороже обычного — выгодно закрывать связку'}</span>
-      <span><i class="sw med-sw"></i>медиана — обычный уровень за ${ui.h} ч</span>
+      <span><i class="sw med-sw"></i>медиана — обычный уровень за окно</span>
     </div>`;
   }
+  function onHover(e){
+    const wrap=e.target.closest('.chartwrap'); if(!wrap||!chartState||chartState.sym!==wrap.dataset.sym) return;
+    const svg=wrap.querySelector('svg'), tip=wrap.querySelector('.tip'), r=svg.getBoundingClientRect();
+    const cs=chartState, xv=(e.clientX-r.left)/r.width*cs.W;
+    const t=cs.t0+(xv-cs.L)/cs.pw*cs.span;
+    let best=cs.pts[0]; for(const p of cs.pts) if(Math.abs(p[0]-t)<Math.abs(best[0]-t)) best=p;
+    const px=cs.X(best[0]), py=cs.Y(best[1]);
+    const hx=svg.querySelector('.hx'), hd=svg.querySelector('.hdot');
+    hx.setAttribute('x1',px);hx.setAttribute('x2',px);hx.setAttribute('visibility','visible');
+    hd.setAttribute('cx',px);hd.setAttribute('cy',py);hd.setAttribute('visibility','visible');
+    tip.innerHTML=`<b>${tl(best[0],true)}</b><span class="${cls(best[1])}">спред ${pc(best[1])}</span><span>RH ${+best[2].toFixed(4)} · Core ${+best[3].toFixed(4)}</span>`;
+    tip.hidden=false;
+    const left=px/cs.W*r.width, tw=tip.offsetWidth;
+    tip.style.left=Math.min(Math.max(left-tw/2,0),r.width-tw)+'px';
+    const top=py/svg.viewBox.baseVal.height*r.height-tip.offsetHeight-12;
+    tip.style.top=(top<0?py/svg.viewBox.baseVal.height*r.height+14:top)+'px';
+  }
+  function offHover(e){
+    const wrap=e.target.closest('.chartwrap'); if(!wrap) return;
+    wrap.querySelector('.tip').hidden=true;
+    wrap.querySelectorAll('.hx,.hdot').forEach(n=>n.setAttribute('visibility','hidden'));
+  }
   const sigTxt={open:'открывать',close:'закрывать',wait:'ждать'};
-  function render(){
+  let openPts=null, order=[];
+  function render(resort){
     const rows=markets.filter(m=>ui.crypto||m.kind!=='крипта').map(m=>({m,s:stats(m)}));
     const key=ui.sort, dir=ui.desc?-1:1, sigRank={open:2,wait:1,close:0};
     const val=r=>key==='sym'?r.m.sym:key==='oi'?r.m.oi:key==='vol'?r.m.vol:key==='sig'?(sigRank[r.s.sig]??-1)*1000+(r.s.score??-99):(r.s[key]??-1e9);
-    rows.sort((a,b)=>{const x=val(a),y=val(b);return (x>y?1:x<y?-1:0)*dir});
+    const syms=rows.map(r=>r.m.sym).join();
+    if(resort||!order.length||[...order].sort().join()!==[...rows.map(r=>r.m.sym)].sort().join()){
+      rows.sort((a,b)=>{const x=val(a),y=val(b);return (x>y?1:x<y?-1:0)*dir}); order=rows.map(r=>r.m.sym);
+    } else { const ix=new Map(order.map((s,i)=>[s,i])); rows.sort((a,b)=>ix.get(a.m.sym)-ix.get(b.m.sym)); }   // keep rows still between automatic updates
     document.querySelectorAll('#sthead th').forEach(th=>th.toggleAttribute('data-active',th.dataset.s===key));
     $('#tb').innerHTML=rows.map(({m,s})=>{
       const ok=s.n>=6;
@@ -593,43 +909,54 @@ const Scan=(()=>{
         <td>${ok?Math.round(s.pctl)+'%':'—'}</td>
         <td>${usdk(m.oi)}</td><td>${usdk(m.vol)}</td></tr>`;
       if(ui.open===m.sym) h+=`<tr class="detail"><td colspan="12">
-        <div class="sub">${m.sym}: сделка RH ${+m.lRH.toFixed(6)} / Core ${+m.lCore.toFixed(6)} · марк RH ${+m.mRH.toFixed(6)} / Core ${+m.mCore.toFixed(6)} · точек в окне ${s.n}</div>${chart(s,m.sym)}</td></tr>`;
+        <div class="sub">${m.sym}: сделка RH ${+m.lRH.toFixed(6)} / Core ${+m.lCore.toFixed(6)} · марк RH ${+m.mRH.toFixed(6)} / Core ${+m.mCore.toFixed(6)}</div>${chart(s,m,openPts)}</td></tr>`;
       return h;
     }).join('');
+    labelize('#tb');
   }
-  const doneMsg=()=>`Сканер · обновлено ${tstr()} · рынков на обоих инстансах: ${markets.length} · окно ${ui.h} ч · история от ${new Date(histAt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}`;
+  async function refreshOpen(force){
+    const m=markets.find(x=>x.sym===ui.open); if(!m){openPts=null;return}
+    try{openPts=await loadChart(m,force)}catch(e){openPts=null}
+  }
+  const doneMsg=()=>{const h=curHist();return `Сканер · обновлено ${tstr()} · рынков на обоих инстансах: ${markets.length} · окно ${WIN_TXT[ui.h]} (свечи ${AUTO_RES[ui.h]})${h?' · история от '+new Date(h.at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}`};
   async function refreshMarks(){
     if(busy) return; busy=true;
-    try{await loadMarkets(); render(); setStatus('scan',doneMsg())}catch(e){setStatus('scan','Сканер: не удалось получить цены. Проверьте интернет и нажмите ⟳.')}
+    try{await loadMarkets(); await refreshOpen(false); render(false); setStatus('scan',doneMsg())}catch(e){setStatus('scan','Сканер: не удалось получить цены. Проверьте интернет и нажмите ⟳.')}
     busy=false;
   }
-  async function full(){
-    if(busy) return; busy=true; if(activeTab==='scan') spinning(true);
-    try{await loadMarkets(); await loadHist(); render(); setStatus('scan',doneMsg())}catch(e){setStatus('scan','Сканер: ошибка загрузки истории. Нажмите ⟳.')}
+  let queued=null;
+  async function full(force,resort){
+    if(busy){ queued={force:force||queued?.force,resort:resort||queued?.resort}; return; } busy=true; if(activeTab==='scan') spinning(true);
+    try{await loadMarkets(); await loadHist(force); await refreshOpen(force); render(resort); setStatus('scan',doneMsg())}catch(e){setStatus('scan','Сканер: ошибка загрузки истории. Нажмите ⟳.')}
     busy=false; if(activeTab==='scan') spinning(false);
+    if(queued){const q=queued; queued=null; full(q.force,q.resort);}
   }
   function syncUI(){
     document.querySelectorAll('#win button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.h===ui.h)));
-    $('#dir').value=ui.dir; $('#crypto').checked=ui.crypto;
+    $('#cres').value=ui.cres; $('#dir').value=ui.dir; $('#crypto').checked=ui.crypto;
   }
   function bind(){
-    $('#win').onclick=e=>{const b=e.target.closest('button');if(!b)return;ui.h=+b.dataset.h;save();syncUI();render();setStatus('scan',doneMsg())};
-    $('#dir').onchange=e=>{ui.dir=e.target.value;save();render()};
-    $('#crypto').onchange=e=>{ui.crypto=e.target.checked;save();full()};
+    $('#win').onclick=e=>{const b=e.target.closest('button');if(!b)return;ui.h=+b.dataset.h;save();syncUI();openPts=null;render(false);full(false,true)};
+    $('#cres').onchange=e=>{ui.cres=e.target.value;save();openPts=null;render(false);(async()=>{await refreshOpen(false);render(false)})()};
+    $('#dir').onchange=e=>{ui.dir=e.target.value;save();render(true)};
+    $('#crypto').onchange=e=>{ui.crypto=e.target.checked;save();full(true,true)};
     $('#sthead').onclick=e=>{const th=e.target.closest('th');if(!th)return;
-      if(ui.sort===th.dataset.s) ui.desc=!ui.desc; else {ui.sort=th.dataset.s; ui.desc=th.dataset.s!=='sym'}; save(); render()};
-    $('#tb').onclick=e=>{const tr=e.target.closest('tr.row');if(!tr)return;ui.open=ui.open===tr.dataset.sym?null:tr.dataset.sym;render()};
+      if(ui.sort===th.dataset.s) ui.desc=!ui.desc; else {ui.sort=th.dataset.s; ui.desc=th.dataset.s!=='sym'}; save(); render(true)};
+    $('#tb').onclick=async e=>{const tr=e.target.closest('tr.row');if(!tr)return;
+      ui.open=ui.open===tr.dataset.sym?null:tr.dataset.sym; openPts=null; render(false); if(ui.open){await refreshOpen(false); render(false)}};
+    $('#tb').addEventListener('pointermove',onHover);
+    $('#tb').addEventListener('pointerdown',onHover);
+    $('#tb').addEventListener('pointerleave',offHover,true);
   }
-  // runs only while its tab is visible
   function start(){
-    if(!started){started=true; syncUI(); bind(); full();}
-    else if(Date.now()-histAt>5*60e3) full(); else refreshMarks();
+    if(!started){started=true; syncUI(); bind(); full(false,true);}
+    else full(false,false);
     stop();
     timers.push(setInterval(refreshMarks,15000));
-    timers.push(setInterval(()=>{ if(!busy) full(); },5*60e3));
+    timers.push(setInterval(()=>{ if(!busy) full(true); },5*60e3));
   }
   function stop(){timers.forEach(clearInterval);timers=[]}
-  return {start,stop,refresh:full};
+  return {start,stop,refresh:()=>full(true,true)};
 })();
 
 /* ---------- tabs + refresh ---------- */
