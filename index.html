@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PerpHedge</title>
+<meta name="description" content="PerpHedge — бесплатный мониторинг хедж-связок между Lighter on Robinhood Chain и Lighter Core: позиции, спред, недельные затраты против поинтов. Только чтение, без ключей.">
+<meta property="og:title" content="PerpHedge — мониторинг хеджей Robinhood ↔ Core">
+<meta property="og:description" content="Связки, спред-сканер и учёт затрат против поинтов для фарма Lighter. Бесплатно, без ключей, данные только в вашем браузере.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1f7a5a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%228%22%20fill%3D%22%231f7a5a%22/%3E%3Cpath%20d%3D%22M7%2021%20L13%2011%20L19%2021%20L25%2011%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M7%2011%20L25%2011%22%20stroke%3D%22%23fff%22%20stroke-opacity%3D%22.45%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%222%203%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: app bar (title, tabs, refresh) → tab 1 «Мои связки» (wallet, accounts, pairs, weeks, trades) / tab 2 «Сканер спреда» (controls, ranked table, chart on click) */
+:root{
+  --bg:#f3f5f4; --panel:#fff; --fg:#14201b; --muted:#5d6b65; --line:#d9e0dc; --hover:#eef3f0;
+  --accent:#1f7a5a; --good:#1a8a4f; --bad:#c2412d; --warn:#b7791f; --chip:#e8eeeb;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1412; --panel:#151d1a; --fg:#e4ece8; --muted:#8a9a93; --line:#25312c; --hover:#1b2622;
+  --accent:#3fbf8c; --good:#3fcf7f; --bad:#ff6b57; --warn:#e3a740; --chip:#1d2723; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1412; --panel:#151d1a; --fg:#e4ece8; --muted:#8a9a93; --line:#25312c; --hover:#1b2622;
+  --accent:#3fbf8c; --good:#3fcf7f; --bad:#ff6b57; --warn:#e3a740; --chip:#1d2723; color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.wrap>*,section>*{min-width:0;max-width:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 var(--sans);
+  padding:16px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{margin:0;font-size:19px;font-weight:600}
+h2{margin:0 0 8px;font-size:15px;font-weight:600}
+.sub,.note{color:var(--muted);font-size:12.5px}
+.note{max-width:90ch}
+input,select,button{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:6px 9px}
+input{font-family:var(--mono)}
+button{cursor:pointer} button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+/* app bar */
+.appbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:6px;border-bottom:1px solid var(--line)}
+.tabs{display:inline-flex;gap:4px;background:var(--chip);border-radius:9px;padding:3px}
+.tabs button{border:0;background:transparent;border-radius:7px;padding:6px 14px;font-weight:500;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.theme{margin-left:auto;font-size:13px;padding:6px 12px;border-radius:999px}
+.refresh{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;padding:0;font-size:20px;line-height:1}
+.refresh.spin span{display:inline-block;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.refresh.spin span{animation:none}}
+.brand{display:flex;align-items:center;gap:10px;color:var(--fg);text-decoration:none}
+.brand svg{width:34px;height:34px;flex:none}
+.brand span{display:flex;flex-direction:column;line-height:1.15}
+.brand b{font-size:18px;letter-spacing:.01em}
+.brand small{font-size:11.5px;color:var(--muted)}
+.guide{max-width:78ch;display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.6}
+.guide h2{font-size:18px;margin:10px 0 0}
+.guide h3{font-size:15px;margin:6px 0 0}
+.guide p,.guide ul,.guide ol{margin:0}
+.guide li{margin:3px 0}
+.guide code{font-family:var(--mono);font-size:13px;background:var(--chip);padding:1px 5px;border-radius:4px}
+.callout{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.welcome{grid-column:1/-1;background:var(--panel);border:1px dashed var(--accent);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.welcome b{font-size:16px}
+footer{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:12px;line-height:1.55;max-width:100ch}
+.status{width:100%;color:var(--muted);font-size:12.5px}
+/* shared blocks */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.card .lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.card .val{font:600 22px var(--mono);font-variant-numeric:tabular-nums}
+.meter{height:6px;border-radius:3px;background:var(--chip);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent)}
+.meter i.warn{background:var(--warn)} .meter i.bad{background:var(--bad)}
+.tw{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px}
+th{font:500 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th.l,td.l{text-align:left}
+tbody tr:last-child td{border-bottom:0}
+.pos{color:var(--good)} .neg{color:var(--bad)} .dim{color:var(--muted)}
+.tag{font:500 11px var(--sans);border-radius:999px;padding:1px 8px;border:1px solid currentColor}
+.tag.ok{color:var(--good)} .tag.warn{color:var(--warn)} .tag.bad{color:var(--bad)}
+.tag.kind{border-color:transparent;background:var(--chip);color:var(--muted)}
+.tag.held{color:var(--accent)}
+td input{width:90px;padding:3px 6px;text-align:right}
+tfoot td{font-weight:600;border-top:1px solid var(--line)}
+section{display:flex;flex-direction:column;gap:8px}
+.walletbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+/* scanner */
+#scan table{min-width:1060px}
+#scan th{cursor:pointer;user-select:none}
+#scan th[data-active]{color:var(--fg)}
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:var(--panel);padding:6px 11px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+label.ck{display:inline-flex;gap:6px;align-items:center;color:var(--muted)}
+tbody tr.row{cursor:pointer} tbody tr.row:hover{background:var(--hover)}
+.sig{font:600 12px var(--sans);border-radius:999px;padding:2px 9px;border:1px solid currentColor}
+.sig.open{color:var(--good)} .sig.close{color:var(--warn)} .sig.wait{color:var(--muted);border-color:var(--line)}
+.bar-z{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;margin-left:6px}
+tr.detail td{background:var(--hover);padding:10px 12px;white-space:normal}
+svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--mono)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .zero{stroke:var(--fg);stroke-width:1.2;stroke-dasharray:6 4}
+.chart .med{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:2 4}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2}
+.chart .dot{fill:var(--fg)}
+.chart .ax,.chart .lab{fill:var(--muted);font-size:12px}
+.chart .now{fill:var(--fg);font-size:13px;font-weight:600}
+.chart .z-entry{fill:var(--good);opacity:.12}
+.chart .z-exit{fill:var(--warn);opacity:.14}
+.chart .zl{font:600 12px var(--sans)} .chart .ze{fill:var(--good)} .chart .zx{fill:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font:12px var(--sans);color:var(--muted);margin-top:6px}
+.legend .sw{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.ln-sw{background:var(--accent)} .ze-sw{background:var(--good);opacity:.4} .zx-sw{background:var(--warn);opacity:.45} .med-sw{border-top:2px dotted var(--muted);height:0!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="appbar">
+    <a class="brand" href="./" aria-label="PerpHedge"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><span><b>PerpHedge</b><small>хедж-мониторинг Robinhood ↔ Core</small></span></a>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-desk" data-tab="desk" aria-selected="true">Мои связки</button>
+      <button role="tab" id="tab-scan" data-tab="scan" aria-selected="false">Сканер спреда</button>
+      <button role="tab" id="tab-guide" data-tab="guide" aria-selected="false">Как пользоваться</button>
+    </div>
+    <button class="theme" id="theme" title="Тема оформления: по системе → светлая → тёмная">Тема: авто</button>
+    <button class="refresh" id="refresh" title="Обновить данные на этой вкладке" aria-label="Обновить"><span>⟳</span></button>
+    <div class="status" id="status">Загрузка…</div>
+  </div>
+
+  <!-- ================= TAB 1: МОИ СВЯЗКИ ================= -->
+  <div id="desk" class="wrap" role="tabpanel" aria-labelledby="tab-desk" style="gap:18px">
+    <div class="walletbar">
+      <select id="wsel" aria-label="Сохранённые кошельки" style="min-width:200px;max-width:100%"></select>
+      <button id="wdel" title="Убрать кошелёк из списка">Удалить из списка</button>
+      <input id="addr" aria-label="Адрес кошелька" placeholder="0x… адрес кошелька" style="width:360px;max-width:100%">
+      <input id="wname" aria-label="Название" placeholder="название, напр. Мой" style="width:150px">
+      <button class="primary" id="go">Загрузить и сохранить</button>
+    </div>
+
+    <div class="cards" id="acc"></div>
+
+    <section>
+      <h2>Открытые связки</h2>
+      <div class="tw"><table>
+        <thead><tr>
+          <th class="l">Рынок</th><th class="l">Статус</th>
+          <th>RH</th><th>Вход RH</th><th>Core</th><th>Вход Core</th>
+          <th>Перекос</th><th>Заложено на входе</th><th>PnL RH</th><th>PnL Core</th><th>Фандинг</th><th>Связка</th>
+          <th>Спред сейчас</th><th>Выход сейчас</th>
+        </tr></thead>
+        <tbody id="pairs"></tbody>
+      </table></div>
+      <div class="note">«Связка» = PnL обеих ног плюс фандинг. «Заложено на входе» — сколько вы выиграли или потеряли на разнице цен между инстансами в момент открытия. «Выход сейчас» — выгода закрытия обеих ног по лучшим ценам стакана прямо сейчас, в долларах на ваш размер.</div>
+    </section>
+
+    <section>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between">
+        <h2>Неделя за неделей: затраты против поинтов</h2>
+        <label class="sub">Неделя начинается
+          <select id="wday"><option value="5">в пятницу</option><option value="4">в четверг</option><option value="1">в понедельник</option></select>
+          (00:00 UTC)</label>
+      </div>
+      <div class="tw"><table>
+        <thead><tr>
+          <th class="l">Неделя</th><th>Объём RH</th><th>Объём Core</th><th>Итог RH</th><th>Итог Core</th><th>Итог за неделю</th>
+          <th>Поинты</th><th>$ за поинт (затраты)</th><th>Цена поинта OTC</th><th>Стоимость поинтов</th><th>Чистый результат</th>
+        </tr></thead>
+        <tbody id="weeks"></tbody>
+        <tfoot id="wtot"></tfoot>
+      </table></div>
+      <div class="note">«Итог» — изменение результата торговли за неделю по данным Lighter: закрытые и открытые позиции, фандинг и комиссии; пополнения и выводы не учитываются. Поинты и цену поинта на OTC вписываете сами — они сохраняются в этом браузере отдельно для каждого кошелька. Текущая неделя ещё идёт, её цифры меняются.</div>
+    </section>
+
+    <section>
+      <h2>Последние сделки</h2>
+      <div class="tw"><table>
+        <thead><tr><th class="l">Время</th><th class="l">Инстанс</th><th class="l">Рынок</th><th class="l">Сторона</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><th class="l">Тип</th></tr></thead>
+        <tbody id="trades"></tbody>
+      </table></div>
+    </section>
+  </div>
+
+  <!-- ================= TAB 2: СКАНЕР ================= -->
+  <div id="scan" class="wrap" role="tabpanel" aria-labelledby="tab-scan" hidden style="gap:14px">
+    <div class="bar">
+      <span class="dim">Окно:</span>
+      <div class="seg" id="win">
+        <button data-h="3">3 ч</button><button data-h="6">6 ч</button><button data-h="12">12 ч</button><button data-h="24">24 ч</button>
+      </div>
+      <select id="dir" aria-label="Направление">
+        <option value="shortRH">Шорт RH / лонг Core</option>
+        <option value="longRH">Лонг RH / шорт Core</option>
+      </select>
+      <label class="ck"><input type="checkbox" id="crypto"> показывать крипту</label>
+    </div>
+    <div class="tw"><table>
+      <thead id="sthead"><tr>
+        <th class="l" data-s="sym">Рынок</th>
+        <th data-s="sig">Сигнал</th>
+        <th data-s="score">Выгода входа</th>
+        <th data-s="now">Спред сейчас</th>
+        <th data-s="mark">По марку</th>
+        <th data-s="med">Медиана окна</th>
+        <th data-s="lo">Мин</th>
+        <th data-s="hi">Макс</th>
+        <th data-s="range">Размах</th>
+        <th data-s="pctl">Перцентиль</th>
+        <th data-s="oi">OI на RH</th>
+        <th data-s="vol">Объём 24ч RH</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+    <p class="note">
+      Спред = (цена RH − цена Core) / цена Core по последним сделкам, как и история (5-минутные свечи за выбранное окно). «По марку» — тот же спред по марк-ценам: на неликвидных рынках последняя сделка бывает старой, тогда марк точнее.
+      <b>Выгода входа</b> — насколько текущий спред лучше медианы окна для выбранного направления: чем выше, тем удачнее момент открыть связку.
+      <b>Перцентиль</b> — какая доля окна была хуже текущего момента для входа; «открывать» — от 80%, «закрывать» — до 20%.
+      <b>Размах</b> — как сильно ходил спред. Метка «в позиции» — рынки, где у выбранного кошелька сейчас открыта позиция.
+      Сканер обновляется только пока открыта эта вкладка: цены каждые 15 секунд, история раз в 5 минут. Клик по строке — график. Это статистика, а не торговая рекомендация.
+    </p>
+  </div>
+
+  <!-- ================= TAB 3: КАК ПОЛЬЗОВАТЬСЯ ================= -->
+  <div id="guide" class="guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
+    <h2>Что такое PerpHedge</h2>
+    <p>Бесплатный инструмент для тех, кто фармит поинты Lighter хеджем: держит противоположные позиции по одному рынку на <b>Lighter on Robinhood Chain</b> и на <b>Lighter Core</b>. Рыночный риск почти нулевой, а поинты начисляются на обеих площадках.</p>
+    <div class="callout">PerpHedge только читает публичные данные Lighter. Ему не нужны ключи, подключение кошелька или подписи — он не может открыть, закрыть или вывести что-либо. Адреса, поинты и настройки хранятся только в вашем браузере и никуда не отправляются.</div>
+
+    <h2>Как начать</h2>
+    <ol>
+      <li>Скопируйте адрес кошелька (<code>0x…</code>), которым вы входите в Lighter. Один адрес работает и для Robinhood Chain, и для Core.</li>
+      <li>На вкладке «Мои связки» вставьте адрес, дайте ему имя и нажмите «Загрузить и сохранить».</li>
+      <li>Готово: позиции с обеих площадок подтянутся сами и сложатся в связки по тикеру.</li>
+    </ol>
+
+    <h2>Вкладка «Мои связки»</h2>
+    <ul>
+      <li><b>Аккаунты</b> — баланс на каждой площадке и сколько маржи занято. Маржа считается отдельно: прибыль на одной площадке не спасёт от ликвидации на другой. Полоска желтеет после 50% и краснеет после 70%.</li>
+      <li><b>Открытые связки</b> — по каждому рынку: «хедж» (ноги равны и противоположны), «перекос» (размеры разошлись больше чем на 2%), «одна нога» или «не хедж». «Заложено на входе» — сколько вы выиграли или потеряли на разнице цен между площадками в момент открытия. «Выход сейчас» — сколько это даст, если закрыть обе ноги прямо сейчас по стакану.</li>
+      <li><b>Неделя за неделей</b> — объём и итог торговли по неделям (фандинг и комиссии включены, пополнения и выводы — нет). Впишите начисленные поинты и цену поинта — и увидите, во сколько обходится один поинт и чистый результат.</li>
+      <li><b>Последние сделки</b> — с обеих площадок, с пометкой лимитка или маркет.</li>
+    </ul>
+
+    <h2>Вкладка «Сканер спреда»</h2>
+    <p>Показывает все рынки, которые есть на обеих площадках, и разницу цен между ними: <code>(цена RH − цена Core) / цена Core</code>.</p>
+    <ul>
+      <li><b>Сигнал</b> сравнивает текущий спред с выбранным окном (3, 6, 12 или 24 часа): «открывать» — момент лучше 80% окна, «закрывать» — хуже 20%.</li>
+      <li><b>Направление</b> выбирается вверху: шорт RH / лонг Core или наоборот. Зоны и сигналы пересчитываются сами.</li>
+      <li><b>Клик по строке</b> открывает график: шкала в процентах, линия 0% (цены равны), медиана, зоны входа и выхода, текущая точка.</li>
+      <li>Если «Спред сейчас» и «По марку» сильно расходятся, рынок неликвидный и последняя сделка устарела — доверяйте марку.</li>
+      <li>Сканер работает только пока открыта его вкладка — так меньше нагрузка на API.</li>
+    </ul>
+
+    <h2>Пара правил хеджа</h2>
+    <ul>
+      <li>Открывайте ноги одну за другой, без пауз: пока вторая нога не открыта, позиция без хеджа.</li>
+      <li>Сравнивайте размеры в монетах, а не в долларах: цены на площадках различаются.</li>
+      <li>Не исполняйте свои же ордера и не крутите объём ради объёма: Lighter прямо пишет, что искусственная активность поинтов не получает.</li>
+      <li>Следите за маржой на обеих площадках и держите плечо умеренным.</li>
+    </ul>
+
+    <h2>Вопросы</h2>
+    <h3>Это официальный инструмент Lighter?</h3>
+    <p>Нет. PerpHedge — независимый проект, не связан с Lighter, Robinhood или их командами.</p>
+    <h3>Почему поинты нужно вписывать вручную?</h3>
+    <p>Lighter отдаёт поинты только авторизованным пользователям, а PerpHedge принципиально работает без ключей и входа.</p>
+    <h3>Можно посмотреть чужой кошелёк?</h3>
+    <p>Да: данные аккаунтов Lighter публичны, как в блокчейн-эксплорере. Сохраняйте сколько угодно адресов.</p>
+  </div>
+
+  <footer>
+    PerpHedge — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+  </footer>
+</div>
+
+<script>
+/* ---------- shared ---------- */
+const API={RH:'https://api.rh.lighter.xyz/api/v1',CORE:'https://mainnet.zklighter.elliot.ai/api/v1'};
+const $=s=>document.querySelector(s);
+const j=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
+const n=v=>v==null||!isFinite(v)?'—':(Math.abs(v)>=1000?v.toFixed(0):v.toFixed(2));
+const sgn=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+n(v);
+const cls=v=>v==null||!isFinite(v)?'':v>0.005?'pos':v<-0.005?'neg':'';
+const pc=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+v.toFixed(3)+'%';
+const usdk=v=>!isFinite(v)?'—':v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+v.toFixed(0);
+const tstr=()=>new Date().toLocaleTimeString('ru-RU');
+let held=new Set();          // symbols with an open position on the selected wallet (for the scanner)
+const statusText={desk:'Загрузка…',scan:'Открой вкладку, чтобы загрузить сканер'};
+let activeTab='desk';
+function setStatus(tab,txt){statusText[tab]=txt; if(tab===activeTab) $('#status').textContent=txt}
+function spinning(on){$('#refresh').classList.toggle('spin',on)}
+
+/* ---------- TAB 1: МОИ СВЯЗКИ ---------- */
+const Desk=(()=>{
+  const LS='perphedge.desk.v1';
+  let st={addr:'',wday:5,points:{},otc:{},wallets:[]};
+  try{Object.assign(st,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
+  if(!Array.isArray(st.wallets)) st.wallets=[];
+  if(st.addr&&!st.wallets.some(w=>w.addr.toLowerCase()===st.addr.toLowerCase())) st.addr=st.wallets[0]?.addr||'';
+  const pk=w=>st.addr.toLowerCase()+'|'+w;
+  const save=()=>{try{localStorage.setItem(LS,JSON.stringify(st))}catch(e){}};
+  let acc={RH:null,CORE:null};
+  async function resolve(){
+    const [r,c]=await Promise.all(['RH','CORE'].map(k=>j(`${API[k]}/accountsByL1Address?l1_address=${st.addr}`).catch(()=>null)));
+    const pick=x=>x?.sub_accounts?.find(a=>a.account_type===0)?.index??x?.sub_accounts?.[0]?.index??null;
+    acc={RH:pick(r),CORE:pick(c)};
+  }
+  const account=async k=>(await j(`${API[k]}/account?by=index&value=${acc[k]}`)).accounts[0];
+  async function book(k,id){const o=await j(`${API[k]}/orderBookOrders?market_id=${id}&limit=1`);return {bid:+o.bids?.[0]?.price,ask:+o.asks?.[0]?.price}}
+  function renderAcc(a){
+    const card=(k,x)=>{
+      if(!x) return `<div class="card"><span class="lbl">${k==='RH'?'Robinhood':'Core'}</span><span class="dim">аккаунт не найден</span></div>`;
+      const tav=+x.total_asset_value, imr=+x.cross_initial_margin_requirement;
+      const use=tav>0?imr/tav*100:0, c=use>70?'bad':use>50?'warn':'';
+      const upnl=(x.positions||[]).reduce((s,p)=>s+(+p.unrealized_pnl||0),0);
+      return `<div class="card"><span class="lbl">${k==='RH'?'Robinhood':'Core'} · аккаунт ${x.index}</span>
+        <span class="val">$${n(tav)}</span>
+        <span class="sub">Свободно $${n(+x.available_balance)} · нереализ. <span class="${cls(upnl)}">${sgn(upnl)}</span></span>
+        <span class="sub">Маржа занята ${use.toFixed(0)}%</span><div class="meter"><i class="${c}" style="width:${Math.min(100,use)}%"></i></div></div>`;
+    };
+    const tot=(+a.RH?.total_asset_value||0)+(+a.CORE?.total_asset_value||0);
+    $('#acc').innerHTML=card('RH',a.RH)+card('CORE',a.CORE)+
+      `<div class="card"><span class="lbl">Всего на обоих</span><span class="val">$${n(tot)}</span><span class="sub">Маржа считается отдельно на каждом аккаунте</span></div>`;
+  }
+  async function renderPairs(a){
+    const mk=x=>{const m={};(x?.positions||[]).filter(p=>+p.position!==0).forEach(p=>m[p.symbol]=p);return m};
+    const R=mk(a.RH), C=mk(a.CORE), syms=[...new Set([...Object.keys(R),...Object.keys(C)])].sort();
+    held=new Set(syms);
+    if(!syms.length){$('#pairs').innerHTML='<tr><td class="l dim" colspan="14">Открытых позиций нет</td></tr>';return}
+    const rows=await Promise.all(syms.map(async s=>{
+      const r=R[s], c=C[s];
+      const qr=r?(+r.position)*r.sign:0, qc=c?(+c.position)*c.sign:0;
+      const net=qr+qc, size=Math.max(Math.abs(qr),Math.abs(qc));
+      let status, tag;
+      if(!r||!c){status='одна нога';tag='bad'}
+      else if(Math.sign(qr)===Math.sign(qc)){status='не хедж';tag='bad'}
+      else if(Math.abs(net)/size>0.02){status='перекос';tag='warn'}
+      else {status='хедж';tag='ok'}
+      const pr=r?+r.unrealized_pnl:0, pcx=c?+c.unrealized_pnl:0;
+      const fund=-((r?+r.total_funding_paid_out||0:0)+(c?+c.total_funding_paid_out||0:0));
+      let entryGap=null, spread=null, exitUsd=null;
+      if(r&&c){
+        const q=Math.min(Math.abs(qr),Math.abs(qc));
+        entryGap = qr<0 ? (+r.avg_entry_price - +c.avg_entry_price)*q : (+c.avg_entry_price - +r.avg_entry_price)*q;
+        try{
+          const [br,bc]=await Promise.all([book('RH',r.market_id),book('CORE',c.market_id)]);
+          const mr=(br.bid+br.ask)/2, mc=(bc.bid+bc.ask)/2; spread=(mr-mc)/mc*100;
+          exitUsd = qr<0 ? (bc.bid-br.ask)*q : (br.bid-bc.ask)*q;
+        }catch(e){}
+      }
+      const side=q=>q===0?'—':(q<0?'шорт ':'лонг ')+Math.abs(q);
+      return `<tr><td class="l"><b>${s}</b></td><td class="l"><span class="tag ${tag}">${status}</span></td>
+        <td>${side(qr)}</td><td>${r?r.avg_entry_price:'—'}</td><td>${side(qc)}</td><td>${c?c.avg_entry_price:'—'}</td>
+        <td class="${Math.abs(net)>0?'dim':''}">${net?(+net.toFixed(5)):'0'}</td>
+        <td class="${cls(entryGap)}">${sgn(entryGap)}</td>
+        <td class="${cls(pr)}">${sgn(pr)}</td><td class="${cls(pcx)}">${sgn(pcx)}</td><td class="${cls(fund)}">${sgn(fund)}</td>
+        <td class="${cls(pr+pcx+fund)}"><b>${sgn(pr+pcx+fund)}</b></td>
+        <td class="${cls(spread)}">${spread==null?'—':pc(spread)}</td>
+        <td class="${cls(exitUsd)}">${sgn(exitUsd)}</td></tr>`;
+    }));
+    $('#pairs').innerHTML=rows.join('');
+  }
+  function weekStart(ts){const d=new Date(ts);d.setUTCHours(0,0,0,0);const back=(d.getUTCDay()-st.wday+7)%7;d.setUTCDate(d.getUTCDate()-back);return d.getTime()}
+  async function pnlSeries(k){
+    if(acc[k]==null) return [];
+    const now=Date.now(), H=3600e3, m=new Map();
+    for(let i=0;i<12;i++){
+      const end=now-i*168*H, start=end-168*H;
+      try{const r=await j(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1h&start_timestamp=${start}&end_timestamp=${end}&count_back=168`);
+        (r.pnl||[]).forEach(x=>m.set(x.timestamp,x));
+        if(!(r.pnl||[]).length&&i>0) break;
+      }catch(e){break}
+    }
+    return [...m.values()].sort((a,b)=>a.timestamp-b.timestamp);
+  }
+  function weekly(series){
+    const out={}; let prev=0;
+    for(const x of series){
+      const w=weekStart(x.timestamp*1000);
+      const o=out[w]||(out[w]={vol:0,start:prev,end:prev});
+      o.vol+=+x.volume||0; o.end=+x.trade_pnl; prev=+x.trade_pnl;
+    }
+    for(const w in out) out[w].pnl=out[w].end-out[w].start;
+    return out;
+  }
+  let cacheWeeks=null;
+  async function loadWeeks(){const [sr,sc]=await Promise.all([pnlSeries('RH').catch(()=>[]),pnlSeries('CORE').catch(()=>[])]);cacheWeeks={wr:weekly(sr),wc:weekly(sc)}}
+  function renderWeeks(){
+    if(!cacheWeeks) return;
+    const {wr,wc}=cacheWeeks;
+    const keys=[...new Set([...Object.keys(wr),...Object.keys(wc)])].map(Number).sort((a,b)=>b-a);
+    const fmtW=w=>{const f=d=>new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',timeZone:'UTC'});return f(w)+'–'+f(w+6*864e5)};
+    let T={vr:0,vc:0,pr:0,pc:0,pts:0,val:0};
+    $('#weeks').innerHTML=keys.map(w=>{
+      const r=wr[w]||{vol:0,pnl:0}, c=wc[w]||{vol:0,pnl:0}, tot=r.pnl+c.pnl;
+      const pts=st.points[pk(w)], otc=st.otc[pk(w)];
+      const per=pts>0?-tot/pts:null, val=pts>0&&otc>0?pts*otc:null, net=val!=null?val+tot:null;
+      T.vr+=r.vol;T.vc+=c.vol;T.pr+=r.pnl;T.pc+=c.pnl;if(pts>0)T.pts+=pts;if(val!=null)T.val+=val;
+      const cur=w===weekStart(Date.now());
+      return `<tr><td class="l">${fmtW(w)}${cur?' <span class="tag ok">идёт</span>':''}</td>
+        <td>${usdk(r.vol)}</td><td>${usdk(c.vol)}</td>
+        <td class="${cls(r.pnl)}">${sgn(r.pnl)}</td><td class="${cls(c.pnl)}">${sgn(c.pnl)}</td><td class="${cls(tot)}"><b>${sgn(tot)}</b></td>
+        <td><input data-w="${w}" data-f="points" value="${pts??''}" aria-label="Поинты за неделю"></td>
+        <td>${per==null?'—':'$'+n(per)}</td>
+        <td><input data-w="${w}" data-f="otc" value="${otc??''}" aria-label="Цена поинта"></td>
+        <td>${val==null?'—':'$'+n(val)}</td><td class="${cls(net)}">${net==null?'—':sgn(net)}</td></tr>`;
+    }).join('')||'<tr><td class="l dim" colspan="11">Нет данных</td></tr>';
+    const tot=T.pr+T.pc;
+    $('#wtot').innerHTML=`<tr><td class="l">Всего</td><td>${usdk(T.vr)}</td><td>${usdk(T.vc)}</td><td class="${cls(T.pr)}">${sgn(T.pr)}</td><td class="${cls(T.pc)}">${sgn(T.pc)}</td>
+      <td class="${cls(tot)}">${sgn(tot)}</td><td>${T.pts||'—'}</td><td>${T.pts?'$'+n(-tot/T.pts):'—'}</td><td></td><td>${T.val?'$'+n(T.val):'—'}</td><td class="${cls(T.val+tot)}">${T.val?sgn(T.val+tot):'—'}</td></tr>`;
+    document.querySelectorAll('#weeks input').forEach(inp=>inp.onchange=()=>{
+      const v=parseFloat(inp.value.replace(',','.')), bag=inp.dataset.f==='points'?st.points:st.otc;
+      const key=pk(inp.dataset.w); if(isNaN(v)) delete bag[key]; else bag[key]=v; save(); renderWeeks();
+    });
+  }
+  async function renderTrades(){
+    const get=async k=>{if(acc[k]==null)return [];const r=await j(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=40`);return (r.trades||[]).map(t=>({...t,k}))};
+    const all=(await Promise.all(['RH','CORE'].map(k=>get(k).catch(()=>[])))).flat().sort((a,b)=>b.timestamp-a.timestamp).slice(0,40);
+    $('#trades').innerHTML=all.map(t=>{
+      const me=acc[t.k], sell=t.ask_account_id===me, maker=sell?t.is_maker_ask:!t.is_maker_ask;
+      return `<tr><td class="l">${new Date(t.timestamp).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+        <td class="l">${t.k==='RH'?'Robinhood':'Core'}</td><td class="l">${t.market_symbol}</td>
+        <td class="l ${sell?'neg':'pos'}">${sell?'продажа':'покупка'}</td><td>${t.size}</td><td>${t.price}</td><td>$${n(+t.usd_amount)}</td>
+        <td class="l dim">${maker?'мейкер (лимитка)':'тейкер (маркет)'}</td></tr>`;
+    }).join('')||'<tr><td class="l dim" colspan="8">Сделок нет</td></tr>';
+  }
+  let busy=false, lastSlow=0, pending=false;
+  async function tick(force){
+    if(busy){ if(force) pending=true; return; } busy=true;
+    const forAddr=st.addr;
+    if(!st.addr){ welcome(); busy=false; return; }
+    if(force&&activeTab==='desk') spinning(true);
+    try{
+      if(acc.RH==null&&acc.CORE==null) await resolve();
+      if(acc.RH==null&&acc.CORE==null){setStatus('desk','По этому адресу аккаунтов Lighter не найдено.');throw 'none'}
+      const [r,c]=await Promise.all(['RH','CORE'].map(k=>acc[k]==null?null:account(k).catch(()=>null)));
+      if(forAddr!==st.addr) throw 'switched';
+      const a={RH:r,CORE:c}; renderAcc(a); await renderPairs(a);
+      if(force||Date.now()-lastSlow>5*60e3){lastSlow=Date.now(); await Promise.all([loadWeeks().then(renderWeeks),renderTrades()]);}
+      setStatus('desk',`Мои связки · обновлено ${tstr()} · Robinhood ${acc.RH??'—'} · Core ${acc.CORE??'—'} · позиции каждые 15 с, недели и сделки каждые 5 мин`);
+    }catch(e){ if(e!=='switched'&&e!=='none') setStatus('desk','Ошибка загрузки. Проверьте интернет и нажмите ⟳.')}
+    busy=false; if(activeTab==='desk') spinning(false);
+    if(pending||forAddr!==st.addr){pending=false; tick(true);}
+  }
+  function welcome(){
+    held=new Set();
+    ['#pairs','#weeks','#wtot','#trades'].forEach(s=>$(s).innerHTML='');
+    $('#acc').innerHTML=`<div class="welcome"><b>Добавьте адрес кошелька</b>
+      <span class="sub">Вставьте выше адрес (0x…), которым вы входите в Lighter, дайте ему название и нажмите «Загрузить и сохранить». Ключи и подключение кошелька не нужны — PerpHedge только читает публичные данные.</span></div>`;
+    setStatus('desk','Мои связки · добавьте адрес кошелька, чтобы начать');
+  }
+  const short=a=>a.slice(0,6)+'…'+a.slice(-4);
+  const same=(a,b)=>a.toLowerCase()===b.toLowerCase();
+  function fillWallets(){
+    $('#wsel').innerHTML=st.wallets.length?st.wallets.map((w,i)=>`<option value="${i}">${(w.name||'Без названия').replace(/</g,'&lt;')} · ${short(w.addr)}</option>`).join(''):'<option value="">Нет сохранённых кошельков</option>';
+    $('#wsel').disabled=!st.wallets.length; $('#wdel').disabled=!st.wallets.length;
+    const i=st.wallets.findIndex(w=>same(w.addr,st.addr)); if(i>=0) $('#wsel').value=String(i);
+    const cur=st.wallets[i]; $('#addr').value=st.addr||''; $('#wname').value=cur?cur.name:'';
+  }
+  function load(addr){
+    st.addr=addr; save(); acc={RH:null,CORE:null}; lastSlow=0; cacheWeeks=null; held=new Set();
+    ['#pairs','#weeks','#wtot','#trades','#acc'].forEach(s=>$(s).innerHTML='');
+    setStatus('desk','Загружаю '+short(addr)+'…'); fillWallets(); tick(true);
+  }
+  function init(){
+    $('#wday').value=String(st.wday); fillWallets();
+    $('#wsel').onchange=e=>{const w=st.wallets[+e.target.value]; if(w) load(w.addr)};
+    $('#go').onclick=()=>{
+      const a=$('#addr').value.trim(), name=$('#wname').value.trim();
+      if(!/^0x[0-9a-fA-F]{40}$/.test(a)){setStatus('desk','Адрес должен начинаться с 0x и содержать 40 символов после него.');return}
+      const ex=st.wallets.find(w=>same(w.addr,a));
+      if(ex){ if(name) ex.name=name; } else st.wallets.push({addr:a,name:name||'Кошелёк '+(st.wallets.length+1)});
+      load(a);
+    };
+    $('#wdel').onclick=()=>{
+      if(!st.wallets.length) return;
+      st.wallets.splice(+$('#wsel').value,1);
+      if(st.wallets.length) load(st.wallets[0].addr); else {st.addr='';save();acc={RH:null,CORE:null};fillWallets();welcome();}
+    };
+    $('#wday').onchange=e=>{st.wday=+e.target.value;save();loadWeeks().then(renderWeeks)};
+    tick(true); setInterval(()=>tick(false),15000);   // runs in the background on both tabs
+  }
+  return {init,refresh:()=>tick(true)};
+})();
+
+/* ---------- TAB 2: СКАНЕР СПРЕДА ---------- */
+const Scan=(()=>{
+  const CRYPTO=new Set('BTC ETH SOL XRP SUI NEAR ZEC HYPE LIT VVV USELESS ANSEM PONS CASHCAT DOGE BNB AVAX LINK'.split(' '));
+  const PREIPO=new Set('ANTHROPIC OPENAI SPCX SHEIN'.split(' '));
+  const ETF=new Set('SPY QQQ SOXL SGOV SLV USO'.split(' '));
+  const COMMOD=new Set('XAU XAG'.split(' '));
+  const kind=s=>PREIPO.has(s)?'pre-IPO':ETF.has(s)?'ETF':COMMOD.has(s)?'сырьё':CRYPTO.has(s)?'крипта':'акция';
+  const LS='perphedge.scan.v1';
+  let ui={h:6,dir:'shortRH',crypto:false,sort:'score',desc:true,open:null};
+  try{Object.assign(ui,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
+  const save=()=>{try{localStorage.setItem(LS,JSON.stringify(ui))}catch(e){}};
+  let markets=[], histAt=0, started=false, timers=[], busy=false;
+  async function pool(tasks,k){let i=0;await Promise.all(Array(k).fill(0).map(async()=>{while(i<tasks.length){const t=tasks[i++];try{await t()}catch(e){}}}))}
+  async function loadMarkets(){
+    const [a,b]=await Promise.all([j(API.RH+'/orderBookDetails'),j(API.CORE+'/orderBookDetails')]);
+    const bm={}; b.order_book_details.forEach(x=>bm[x.symbol]=x);
+    const prev={}; markets.forEach(m=>prev[m.sym]=m);
+    markets=a.order_book_details.filter(x=>x.status==='active'&&bm[x.symbol]&&bm[x.symbol].status==='active').map(x=>{
+      const y=bm[x.symbol];
+      return {sym:x.symbol,rh:x.market_id,core:y.market_id,kind:kind(x.symbol),mRH:+x.mark_price,mCore:+y.mark_price,lRH:+x.last_trade_price,lCore:+y.last_trade_price,
+        oi:(+x.open_interest)*(+x.mark_price),vol:+x.daily_quote_token_volume,hist:prev[x.symbol]?.hist||[]};
+    });
+  }
+  async function loadHist(){
+    const now=Date.now(), s=now-24*3600e3;
+    const g=(b,id)=>j(`${b}/candles?market_id=${id}&resolution=5m&start_timestamp=${s}&end_timestamp=${now}&count_back=300`).then(r=>{const m={};(r.c||[]).forEach(c=>m[c.t]=c.c);return m});
+    const list=markets.filter(m=>ui.crypto||m.kind!=='крипта');
+    let done=0;
+    await pool(list.map(m=>async()=>{
+      const [A,B]=await Promise.all([g(API.RH,m.rh),g(API.CORE,m.core)]);
+      m.hist=Object.keys(A).filter(t=>B[t]!=null&&B[t]>0).sort((x,y)=>x-y).map(t=>[+t,(A[t]-B[t])/B[t]*100]);
+      done++; setStatus('scan',`Сканер · загружаю историю… ${done}/${list.length}`);
+    }),4);
+    histAt=Date.now();
+  }
+  function stats(m){
+    const from=Date.now()-ui.h*3600e3, wt=m.hist.filter(x=>x[0]>=from), w=wt.map(x=>x[1]);
+    const now=(m.lRH-m.lCore)/m.lCore*100, mark=(m.mRH-m.mCore)/m.mCore*100;
+    if(w.length<6) return {now,mark,n:w.length};
+    const s=[...w].sort((a,b)=>a-b), q=p=>s[Math.floor(p*(s.length-1))];
+    const mean=w.reduce((a,b)=>a+b,0)/w.length, sd=Math.sqrt(w.reduce((a,b)=>a+(b-mean)**2,0)/w.length);
+    const med=q(.5), lo=s[0], hi=s[s.length-1], sign=ui.dir==='shortRH'?1:-1;
+    const score=sign*(now-med)/Math.max(sd,0.01);
+    const pctl=w.filter(v=>sign*v<sign*now).length/w.length*100;
+    const sig=pctl>=80?'open':pctl<=20?'close':'wait';
+    return {now,mark,med,lo,hi,range:hi-lo,score,pctl,sig,n:w.length,wt,p20:q(.2),p80:q(.8)};
+  }
+  function chart(s,sym){
+    const wt=s.wt; if(!wt||!wt.length) return '';
+    const short=ui.dir==='shortRH';
+    const vals=[...wt.map(x=>x[1]),s.now];
+    let mn=Math.min(...vals), mx=Math.max(...vals);
+    const pad=Math.max((mx-mn)*0.12,0.01); mn-=pad; mx+=pad;
+    const zeroIn=mn<=0&&mx>=0;
+    const W=900,H=230,L=70,R=150,T=14,B=30,pw=W-L-R,ph=H-T-B;
+    const t0=wt[0][0], t1=Date.now();
+    const X=t=>L+(t-t0)/(t1-t0)*pw, Y=v=>T+(mx-v)/(mx-mn)*ph;
+    const line=wt.map(x=>`${X(x[0]).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
+    const entryLo=short?s.p80:mn, entryHi=short?mx:s.p20, exitLo=short?mn:s.p80, exitHi=short?s.p20:mx;
+    const band=(a,b,c)=>`<rect x="${L}" y="${Y(b).toFixed(1)}" width="${pw}" height="${Math.max(0,Y(a)-Y(b)).toFixed(1)}" class="${c}"/>`;
+    const ticks=[0,1,2,3,4].map(i=>mn+(mx-mn)*i/4);
+    const hh=d=>new Date(d).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    const xt=[t0,t0+(t1-t0)/2,t1];
+    const cx=X(t1), cy=Y(s.now);
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="Спред ${sym} за ${ui.h} ч">
+      ${band(entryLo,entryHi,'z-entry')}${band(exitLo,exitHi,'z-exit')}
+      ${ticks.map(v=>`<line x1="${L}" x2="${L+pw}" y1="${Y(v)}" y2="${Y(v)}" class="grid"/><text x="${L-8}" y="${Y(v)+4}" class="ax" text-anchor="end">${pc(v)}</text>`).join('')}
+      ${zeroIn?`<line x1="${L}" x2="${L+pw}" y1="${Y(0)}" y2="${Y(0)}" class="zero"/><text x="${L+pw+6}" y="${Y(0)+4}" class="lab">0% — цены равны</text>`:''}
+      <line x1="${L}" x2="${L+pw}" y1="${Y(s.med)}" y2="${Y(s.med)}" class="med"/>
+      <text x="${L+pw+6}" y="${Y(s.med)+4}" class="lab">медиана ${pc(s.med)}</text>
+      <text x="${L+6}" y="${Y(entryHi)+14}" class="zl ze">зона входа</text>
+      <text x="${L+6}" y="${Y(exitLo)-6}" class="zl zx">зона выхода</text>
+      <polyline points="${line}" class="ln"/>
+      <circle cx="${cx}" cy="${cy}" r="5" class="dot"/>
+      <text x="${cx+8}" y="${cy+4}" class="now">сейчас ${pc(s.now)}</text>
+      ${xt.map((t,i)=>`<text x="${X(t)}" y="${H-8}" class="ax" text-anchor="${i===0?'start':i===2?'end':'middle'}">${i===2?'сейчас':hh(t)}</text>`).join('')}
+      ${zeroIn?'':`<text x="${L+pw+6}" y="${(mx<0?T+10:H-B-4)}" class="lab">0% ${mx<0?'выше графика':'ниже графика'}</text>`}
+    </svg>
+    <div class="legend">
+      <span><i class="sw ln-sw"></i>спред = (цена RH − цена Core) / Core. Выше нуля — RH дороже, ниже — RH дешевле</span>
+      <span><i class="sw ze-sw"></i>зона входа: ${short?'RH дороже обычного — выгодно открывать шорт RH / лонг Core':'RH дешевле обычного — выгодно открывать лонг RH / шорт Core'}</span>
+      <span><i class="sw zx-sw"></i>зона выхода: ${short?'RH дешевле обычного — выгодно закрывать связку':'RH дороже обычного — выгодно закрывать связку'}</span>
+      <span><i class="sw med-sw"></i>медиана — обычный уровень за ${ui.h} ч</span>
+    </div>`;
+  }
+  const sigTxt={open:'открывать',close:'закрывать',wait:'ждать'};
+  function render(){
+    const rows=markets.filter(m=>ui.crypto||m.kind!=='крипта').map(m=>({m,s:stats(m)}));
+    const key=ui.sort, dir=ui.desc?-1:1, sigRank={open:2,wait:1,close:0};
+    const val=r=>key==='sym'?r.m.sym:key==='oi'?r.m.oi:key==='vol'?r.m.vol:key==='sig'?(sigRank[r.s.sig]??-1)*1000+(r.s.score??-99):(r.s[key]??-1e9);
+    rows.sort((a,b)=>{const x=val(a),y=val(b);return (x>y?1:x<y?-1:0)*dir});
+    document.querySelectorAll('#sthead th').forEach(th=>th.toggleAttribute('data-active',th.dataset.s===key));
+    $('#tb').innerHTML=rows.map(({m,s})=>{
+      const ok=s.n>=6;
+      const zbar=ok?`<span class="bar-z" style="width:${Math.max(0,Math.min(60,s.score*15))}px"></span>`:'';
+      let h=`<tr class="row" data-sym="${m.sym}">
+        <td class="l"><b>${m.sym}</b> <span class="tag kind">${m.kind}</span>${held.has(m.sym)?' <span class="tag held">в позиции</span>':''}</td>
+        <td>${ok?`<span class="sig ${s.sig}">${sigTxt[s.sig]}</span>`:'<span class="dim">мало данных</span>'}</td>
+        <td class="${ok?cls(s.score):''}">${ok?s.score.toFixed(2):'—'}${zbar}</td>
+        <td class="${cls(s.now)}">${pc(s.now)}</td>
+        <td class="dim">${pc(s.mark)}</td>
+        <td>${ok?pc(s.med):'—'}</td><td>${ok?pc(s.lo):'—'}</td><td>${ok?pc(s.hi):'—'}</td>
+        <td>${ok?s.range.toFixed(3)+'%':'—'}</td>
+        <td>${ok?Math.round(s.pctl)+'%':'—'}</td>
+        <td>${usdk(m.oi)}</td><td>${usdk(m.vol)}</td></tr>`;
+      if(ui.open===m.sym) h+=`<tr class="detail"><td colspan="12">
+        <div class="sub">${m.sym}: сделка RH ${+m.lRH.toFixed(6)} / Core ${+m.lCore.toFixed(6)} · марк RH ${+m.mRH.toFixed(6)} / Core ${+m.mCore.toFixed(6)} · точек в окне ${s.n}</div>${chart(s,m.sym)}</td></tr>`;
+      return h;
+    }).join('');
+  }
+  const doneMsg=()=>`Сканер · обновлено ${tstr()} · рынков на обоих инстансах: ${markets.length} · окно ${ui.h} ч · история от ${new Date(histAt).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}`;
+  async function refreshMarks(){
+    if(busy) return; busy=true;
+    try{await loadMarkets(); render(); setStatus('scan',doneMsg())}catch(e){setStatus('scan','Сканер: не удалось получить цены. Проверьте интернет и нажмите ⟳.')}
+    busy=false;
+  }
+  async function full(){
+    if(busy) return; busy=true; if(activeTab==='scan') spinning(true);
+    try{await loadMarkets(); await loadHist(); render(); setStatus('scan',doneMsg())}catch(e){setStatus('scan','Сканер: ошибка загрузки истории. Нажмите ⟳.')}
+    busy=false; if(activeTab==='scan') spinning(false);
+  }
+  function syncUI(){
+    document.querySelectorAll('#win button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.h===ui.h)));
+    $('#dir').value=ui.dir; $('#crypto').checked=ui.crypto;
+  }
+  function bind(){
+    $('#win').onclick=e=>{const b=e.target.closest('button');if(!b)return;ui.h=+b.dataset.h;save();syncUI();render();setStatus('scan',doneMsg())};
+    $('#dir').onchange=e=>{ui.dir=e.target.value;save();render()};
+    $('#crypto').onchange=e=>{ui.crypto=e.target.checked;save();full()};
+    $('#sthead').onclick=e=>{const th=e.target.closest('th');if(!th)return;
+      if(ui.sort===th.dataset.s) ui.desc=!ui.desc; else {ui.sort=th.dataset.s; ui.desc=th.dataset.s!=='sym'}; save(); render()};
+    $('#tb').onclick=e=>{const tr=e.target.closest('tr.row');if(!tr)return;ui.open=ui.open===tr.dataset.sym?null:tr.dataset.sym;render()};
+  }
+  // runs only while its tab is visible
+  function start(){
+    if(!started){started=true; syncUI(); bind(); full();}
+    else if(Date.now()-histAt>5*60e3) full(); else refreshMarks();
+    stop();
+    timers.push(setInterval(refreshMarks,15000));
+    timers.push(setInterval(()=>{ if(!busy) full(); },5*60e3));
+  }
+  function stop(){timers.forEach(clearInterval);timers=[]}
+  return {start,stop,refresh:full};
+})();
+
+/* ---------- tabs + refresh ---------- */
+function showTab(t){
+  activeTab=t;
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t)));
+  $('#desk').hidden=t!=='desk'; $('#scan').hidden=t!=='scan'; $('#guide').hidden=t!=='guide';
+  $('#refresh').hidden=t==='guide';
+  $('#status').textContent=t==='guide'?'Как пользоваться PerpHedge':statusText[t];
+  spinning(false);
+  if(t==='scan') Scan.start(); else Scan.stop();
+  try{localStorage.setItem('perphedge.tab',t)}catch(e){}
+}
+document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(b) showTab(b.dataset.tab)};
+$('#refresh').onclick=()=>{ if(activeTab==='desk') Desk.refresh(); else Scan.refresh(); };
+// theme: auto (follows Windows) → light → dark
+const THEMES=['auto','light','dark'], THEME_TXT={auto:'Тема: авто',light:'Тема: светлая',dark:'Тема: тёмная'};
+function applyTheme(t){
+  if(t==='auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',t);
+  $('#theme').textContent=THEME_TXT[t];
+  try{localStorage.setItem('perphedge.theme',t)}catch(e){}
+}
+let theme='auto'; try{theme=localStorage.getItem('perphedge.theme')||'auto'}catch(e){}
+if(!THEMES.includes(theme)) theme='auto';
+applyTheme(theme);
+$('#theme').onclick=()=>{theme=THEMES[(THEMES.indexOf(theme)+1)%3]; applyTheme(theme)};
+Desk.init();
+let startTab='desk'; try{startTab=localStorage.getItem('perphedge.tab')||'desk'}catch(e){}
+const fromHash=location.hash.slice(1);
+if(['desk','scan','guide'].includes(fromHash)) startTab=fromHash;
+showTab(['desk','scan','guide'].includes(startTab)?startTab:'desk');
+</script>
+</body>
+</html>
