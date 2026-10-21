@@ -103,6 +103,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   .g-table tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}
 }
 .callout{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+button.ghost{background:transparent;border-style:dashed;color:var(--accent)}
 .exbanner{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;background:var(--chip);border:1px solid var(--warn);border-left-width:4px;border-radius:10px;padding:10px 14px;font-size:13.5px}
 .exbanner span{flex:1 1 320px}
 .welcome{grid-column:1/-1;background:var(--panel);border:1px dashed var(--accent);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
@@ -203,7 +204,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
 <body>
 <div class="wrap">
   <div class="appbar">
-    <a class="brand" href="./" aria-label="PerpHedge"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><span><b>PerpHedge</b><small>хедж-мониторинг Robinhood ↔ Core · v1.4</small></span></a>
+    <a class="brand" href="./" aria-label="PerpHedge"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><span><b>PerpHedge</b><small>хедж-мониторинг Robinhood ↔ Core · v1.5</small></span></a>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-desk" data-tab="desk" aria-selected="true">Мои связки</button>
       <button role="tab" id="tab-scan" data-tab="scan" aria-selected="false">Сканер спреда</button>
@@ -222,6 +223,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
       <input id="addr" aria-label="Адрес кошелька" placeholder="0x… адрес кошелька" style="width:360px;max-width:100%">
       <input id="wname" aria-label="Название" placeholder="название, напр. Мой" style="width:150px">
       <button class="primary" id="go">Загрузить и сохранить</button>
+      <button id="exbtn" class="ghost" title="Открыть публичный кошелёк активного фармера (только чтение)">Посмотреть пример</button>
     </div>
 
     <div class="exbanner" id="exbanner" hidden>
@@ -331,7 +333,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
       <ol class="g-steps">
         <li><b>Скопируйте адрес кошелька</b> (<code>0x…</code>), которым входите в Lighter. Один адрес подходит и для RH, и для Core.</li>
         <li>На вкладке <b>«Мои связки»</b> вставьте адрес, дайте ему название и нажмите <b>«Загрузить и сохранить»</b>.</li>
-        <li>Хотите сначала посмотреть, как это выглядит? На пустой вкладке нажмите <b>«Посмотреть пример»</b> — откроется публичный кошелёк активного фармера (только чтение).</li>
+        <li>Хотите сначала посмотреть, как это выглядит? Нажмите <b>«Посмотреть пример»</b> рядом с полем адреса — откроется публичный кошелёк активного фармера (только чтение).</li>
         <li>Позиции с обеих площадок подтянутся сами и сложатся в связки по тикеру. Кнопка <b>⟳</b> вверху обновляет данные текущей вкладки без перезагрузки страницы.</li>
       </ol>
     </section>
@@ -489,7 +491,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
   </div>
 
   <footer>
-    PerpHedge v1.4 — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    PerpHedge v1.5 — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -678,10 +680,12 @@ const Desk=(()=>{
     $('#acc').innerHTML=`<div class="welcome"><b>Добавьте адрес кошелька</b>
       <span class="sub">Вставьте выше адрес (0x…), которым вы входите в Lighter, дайте ему название и нажмите «Загрузить и сохранить». Ключи и подключение кошелька не нужны — PerpHedge только читает публичные данные.</span>
       <span><button class="primary" id="exshow">Посмотреть пример</button> <span class="sub">— откроет публичный кошелёк активного фармера, чтобы вы увидели, как всё выглядит</span></span></div>`;
-    $('#exshow').onclick=()=>load(EXAMPLE);
+    $('#exshow').onclick=showExample;
     setStatus('desk','Мои связки · добавьте адрес кошелька, чтобы начать');
   }
   const EXAMPLE='0x3d4891e4757F1892364Faa1E57DE69c20EB91AAc';
+  let prevAddr='';
+  function showExample(){ if(!isExample()) prevAddr=st.addr||''; load(EXAMPLE); }
   const isExample=()=>!!st.addr&&same(st.addr,EXAMPLE)&&!st.wallets.some(w=>same(w.addr,EXAMPLE));
   const short=a=>a.slice(0,6)+'…'+a.slice(-4);
   const same=(a,b)=>a.toLowerCase()===b.toLowerCase();
@@ -690,7 +694,7 @@ const Desk=(()=>{
     $('#wsel').disabled=!st.wallets.length; $('#wdel').disabled=!st.wallets.length;
     const i=st.wallets.findIndex(w=>same(w.addr,st.addr)); if(i>=0) $('#wsel').value=String(i);
     const cur=st.wallets[i]; $('#addr').value=st.addr||''; $('#wname').value=cur?cur.name:'';
-    const ex=isExample(); $('#exbanner').hidden=!ex;
+    const ex=isExample(); $('#exbanner').hidden=!ex; $('#exbtn').hidden=ex;
     if(ex){ $('#addr').value=''; $('#wname').value='';
       $('#wsel').insertAdjacentHTML('afterbegin','<option value="ex">Пример · кошелёк фармера</option>'); $('#wsel').value='ex'; $('#wsel').disabled=false; $('#wdel').disabled=true; }
   }
@@ -702,7 +706,9 @@ const Desk=(()=>{
   function init(){
     $('#wday').value=String(st.wday); fillWallets();
     $('#wsel').onchange=e=>{const w=st.wallets[+e.target.value]; if(w) load(w.addr)};
-    $('#exexit').onclick=()=>{ if(st.wallets.length) load(st.wallets[0].addr); else {st.addr='';save();acc={RH:null,CORE:null};fillWallets();welcome();} };
+    $('#exbtn').onclick=showExample;
+    $('#exexit').onclick=()=>{ const back=st.wallets.find(w=>same(w.addr,prevAddr))||st.wallets[0];
+      if(back) load(back.addr); else {st.addr='';save();acc={RH:null,CORE:null};fillWallets();welcome();} };
     $('#go').onclick=()=>{
       const a=$('#addr').value.trim(), name=$('#wname').value.trim();
       if(!/^0x[0-9a-fA-F]{40}$/.test(a)){setStatus('desk','Адрес должен начинаться с 0x и содержать 40 символов после него.');return}
