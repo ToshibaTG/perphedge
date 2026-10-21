@@ -10,6 +10,7 @@
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#1f7a5a">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%228%22%20fill%3D%22%231f7a5a%22/%3E%3Cpath%20d%3D%22M7%2021%20L13%2011%20L19%2021%20L25%2011%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M7%2011%20L25%2011%22%20stroke%3D%22%23fff%22%20stroke-opacity%3D%22.45%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%222%203%22/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem('perphedge.theme')||'dark';if(t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Layout: app bar (title, tabs, refresh) → tab 1 «Мои связки» (wallet, accounts, pairs, weeks, trades) / tab 2 «Сканер спреда» (controls, ranked table, chart on click) */
@@ -103,6 +104,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   .g-table tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}
 }
 .callout{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.tlinks{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 8px}
+.tl{display:inline-block;padding:7px 12px;border:1px solid var(--accent);border-radius:7px;color:var(--accent);text-decoration:none;font-weight:500}
+.tl:hover{background:var(--accent);color:#fff}
 button.ghost{background:transparent;border-style:dashed;color:var(--accent)}
 .exbanner{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;background:var(--chip);border:1px solid var(--warn);border-left-width:4px;border-radius:10px;padding:10px 14px;font-size:13.5px}
 .exbanner span{flex:1 1 320px}
@@ -171,6 +175,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
 /* ---------- phone layout ---------- */
 .chart .halo{paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round}
 @media (max-width:720px){
+  td.mempty{display:none!important}
   body{padding-top:8px}
   .appbar{gap:8px 10px}
   .brand small{display:none}
@@ -204,7 +209,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
 <body>
 <div class="wrap">
   <div class="appbar">
-    <a class="brand" href="./" aria-label="PerpHedge"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><span><b>PerpHedge</b><small>хедж-мониторинг Robinhood ↔ Core · v1.5</small></span></a>
+    <a class="brand" href="./" aria-label="PerpHedge"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><span><b>PerpHedge</b><small>хедж-мониторинг Robinhood ↔ Core · v1.6</small></span></a>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-desk" data-tab="desk" aria-selected="true">Мои связки</button>
       <button role="tab" id="tab-scan" data-tab="scan" aria-selected="false">Сканер спреда</button>
@@ -262,6 +267,16 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
         <tfoot id="wtot"></tfoot>
       </table></div>
       <div class="note">«Итог» — изменение результата торговли за неделю по данным Lighter: закрытые и открытые позиции, фандинг и комиссии; пополнения и выводы не учитываются. Поинты и цену поинта на OTC вписываете сами — они сохраняются в этом браузере отдельно для каждого кошелька. Текущая неделя ещё идёт, её цифры меняются.</div>
+    </section>
+
+    <section>
+      <h2>Закрытые связки</h2>
+      <div class="tw"><table>
+        <thead><tr><th class="l">Рынок</th><th class="l">Открыта</th><th class="l">Закрыта</th><th>Длилась</th><th>Размер</th><th>Объём</th><th>PnL RH</th><th>PnL Core</th><th>Итог связки</th></tr></thead>
+        <tbody id="closed"></tbody>
+        <tfoot id="ctot"></tfoot>
+      </table></div>
+      <div class="note">Связка считается закрытой, когда позиция по рынку на обоих инстансах вернулась в ноль. PnL — разница цен входа и выхода по вашим сделкам (средняя цена, частичные закрытия учтены). Фандинг и комиссии сюда не входят — их видно в недельной таблице. Берутся последние ~500 сделок на каждом инстансе.</div>
     </section>
 
     <section>
@@ -491,7 +506,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
   </div>
 
   <footer>
-    PerpHedge v1.5 — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    PerpHedge v1.6 — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -499,6 +514,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
 /* ---------- shared ---------- */
 const API={RH:'https://api.rh.lighter.xyz/api/v1',CORE:'https://mainnet.zklighter.elliot.ai/api/v1'};
 const $=s=>document.querySelector(s);
+const TRADE={RH:'https://robinhoodchain.lighter.xyz/trade/',CORE:'https://app.lighter.xyz/trade/'};
 const j=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
 const n=v=>v==null||!isFinite(v)?'—':(Math.abs(v)>=1000?v.toFixed(0):v.toFixed(2));
 const sgn=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+n(v);
@@ -644,9 +660,26 @@ const Desk=(()=>{
       const key=pk(inp.dataset.w); if(isNaN(v)) delete bag[key]; else bag[key]=v; save(); renderWeeks();
     });
   }
-  async function renderTrades(){
-    const get=async k=>{if(acc[k]==null)return [];const r=await j(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=40`);return (r.trades||[]).map(t=>({...t,k}))};
-    const all=(await Promise.all(['RH','CORE'].map(k=>get(k).catch(()=>[])))).flat().sort((a,b)=>b.timestamp-a.timestamp).slice(0,40);
+  let tradeCache={RH:[],CORE:[]};
+  async function fetchTrades(k){
+    if(acc[k]==null) return [];
+    let out=[], cursor='';
+    for(let i=0;i<5;i++){
+      let r;
+      try{ r=await j(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=100${cursor?'&cursor='+encodeURIComponent(cursor):''}`); }
+      catch(e){ if(i===0){ r=await j(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=40`); out=r.trades||[]; } break; }
+      const t=r.trades||[]; out=out.concat(t);
+      if(!r.next_cursor||t.length<100) break; cursor=r.next_cursor;
+    }
+    const seen=new Set();
+    return out.filter(t=>{const id=t.trade_id??(t.tx_hash+'|'+t.timestamp+'|'+t.size);if(seen.has(id))return false;seen.add(id);return true}).map(t=>({...t,k}));
+  }
+  async function loadTrades(){
+    const [r,c]=await Promise.all(['RH','CORE'].map(k=>fetchTrades(k).catch(()=>[])));
+    tradeCache={RH:r,CORE:c};
+  }
+  function renderTrades(){
+    const all=[...tradeCache.RH,...tradeCache.CORE].sort((a,b)=>b.timestamp-a.timestamp).slice(0,40);
     $('#trades').innerHTML=all.map(t=>{
       const me=acc[t.k], sell=t.ask_account_id===me, maker=sell?t.is_maker_ask:!t.is_maker_ask;
       return `<tr><td class="l">${new Date(t.timestamp).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
@@ -655,6 +688,73 @@ const Desk=(()=>{
         <td class="l dim">${maker?'мейкер (лимитка)':'тейкер (маркет)'}</td></tr>`;
     }).join('')||'<tr><td class="l dim" colspan="8">Сделок нет</td></tr>';
     labelize('#trades');
+  }
+  /* Закрытые циклы: позиция по рынку из 0 обратно в 0. Текущую позицию знаем из аккаунта,
+     поэтому идём по сделкам назад и находим моменты, где позиция была нулевой. */
+  function cycles(k,trades,acct){
+    const me=acc[k], byM={};
+    trades.forEach(t=>(byM[t.market_id]||(byM[t.market_id]=[])).push(t));
+    const out=[];
+    for(const mid in byM){
+      const ts=byM[mid].sort((a,b)=>a.timestamp-b.timestamp||(a.trade_id??0)-(b.trade_id??0));
+      const pos=(acct?.positions||[]).find(p=>String(p.market_id)===String(mid));
+      let q=pos?(+pos.position)*(pos.sign||1):0;
+      const d=ts.map(t=>(t.ask_account_id===me?-1:1)*(+t.size));
+      const scale=Math.max(1e-9,...d.map(Math.abs));
+      const eps=scale*1e-6;
+      // позиция ДО каждой сделки
+      const before=new Array(ts.length);
+      for(let i=ts.length-1;i>=0;i--){ q-=d[i]; before[i]=q; }
+      let i0=before.findIndex(x=>Math.abs(x)<eps);
+      if(i0<0) continue;
+      let cur=null, Q=0, avg=0;
+      for(let i=i0;i<ts.length;i++){
+        const t=ts[i], p=+t.price; let dd=d[i];
+        while(Math.abs(dd)>eps){
+          if(!cur){ cur={k,sym:t.market_symbol,mid,start:t.timestamp,end:null,pnl:0,vol:0,max:0,side:Math.sign(dd)}; Q=0; avg=0; }
+          if(Math.abs(Q)<eps||Math.sign(Q)===Math.sign(dd)){
+            avg=(avg*Math.abs(Q)+p*Math.abs(dd))/(Math.abs(Q)+Math.abs(dd)); Q+=dd; cur.vol+=Math.abs(dd)*p; dd=0;
+          }else{
+            const c=Math.min(Math.abs(dd),Math.abs(Q));
+            cur.pnl+=c*(p-avg)*Math.sign(Q); cur.vol+=c*p;
+            Q+=c*Math.sign(dd); dd-=c*Math.sign(dd);
+          }
+          cur.max=Math.max(cur.max,Math.abs(Q));
+          if(Math.abs(Q)<eps){ cur.end=t.timestamp; out.push(cur); cur=null; Q=0; }
+        }
+      }
+    }
+    return out;
+  }
+  function renderClosed(a){
+    const all=[...cycles('RH',tradeCache.RH,a.RH),...cycles('CORE',tradeCache.CORE,a.CORE)];
+    // объединяем циклы одного рынка, пересекающиеся по времени, в одну связку
+    const groups=[];
+    all.sort((x,y)=>x.start-y.start).forEach(c=>{
+      const g=groups.find(g=>g.sym===c.sym&&c.start<g.end&&g.start<c.end);
+      if(g){g.items.push(c);g.start=Math.min(g.start,c.start);g.end=Math.max(g.end,c.end);}
+      else groups.push({sym:c.sym,start:c.start,end:c.end,items:[c]});
+    });
+    groups.sort((x,y)=>y.end-x.end);
+    const dur=ms=>{const m=Math.round(ms/60e3);if(m<60)return m+' мин';const h=Math.floor(m/60);if(h<48)return h+' ч '+(m%60)+' мин';return Math.floor(h/24)+' д '+(h%24)+' ч'};
+    const dt=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    let T={r:0,c:0,v:0};
+    const rows=groups.slice(0,30).map(g=>{
+      const R=g.items.filter(x=>x.k==='RH'), C=g.items.filter(x=>x.k==='CORE');
+      const pr=R.reduce((s,x)=>s+x.pnl,0), pcx=C.reduce((s,x)=>s+x.pnl,0), vol=g.items.reduce((s,x)=>s+x.vol,0);
+      const size=Math.max(0,...g.items.map(x=>x.max));
+      const rs=R[0]?.side, tag=!R.length||!C.length?'<span class="tag bad">одна нога</span>':(rs===C[0].side?'<span class="tag bad">не хедж</span>':'');
+      const dir=R.length?(rs<0?'шорт RH':'лонг RH'):(C[0].side<0?'шорт Core':'лонг Core');
+      T.r+=pr;T.c+=pcx;T.v+=vol;
+      return `<tr><td class="l"><b>${g.sym}</b> <span class="dim">${dir}</span> ${tag}</td><td class="l">${dt(g.start)}</td><td class="l">${dt(g.end)}</td>
+        <td>${dur(g.end-g.start)}</td><td>${+size.toFixed(5)}</td><td>${usdk(vol)}</td>
+        <td class="${R.length?cls(pr):'dim'}">${R.length?sgn(pr):'—'}</td><td class="${C.length?cls(pcx):'dim'}">${C.length?sgn(pcx):'—'}</td>
+        <td class="${cls(pr+pcx)}"><b>${sgn(pr+pcx)}</b></td></tr>`;
+    });
+    $('#closed').innerHTML=rows.join('')||'<tr><td class="l dim" colspan="9">Закрытых связок в последних сделках не найдено</td></tr>';
+    $('#ctot').innerHTML=rows.length?`<tr><td class="l">Всего (${rows.length})</td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td>${usdk(T.v)}</td>
+      <td class="${cls(T.r)}">${sgn(T.r)}</td><td class="${cls(T.c)}">${sgn(T.c)}</td><td class="${cls(T.r+T.c)}"><b>${sgn(T.r+T.c)}</b></td></tr>`:'';
+    labelize('#closed'); labelize('#ctot');
   }
   let busy=false, lastSlow=0, pending=false;
   async function tick(force){
@@ -668,7 +768,7 @@ const Desk=(()=>{
       const [r,c]=await Promise.all(['RH','CORE'].map(k=>acc[k]==null?null:account(k).catch(()=>null)));
       if(forAddr!==st.addr) throw 'switched';
       const a={RH:r,CORE:c}; renderAcc(a); await renderPairs(a);
-      if(force||Date.now()-lastSlow>5*60e3){lastSlow=Date.now(); await Promise.all([loadWeeks().then(renderWeeks),renderTrades()]);}
+      if(force||Date.now()-lastSlow>5*60e3){lastSlow=Date.now(); await Promise.all([loadWeeks().then(renderWeeks),loadTrades().then(()=>{renderTrades();renderClosed(a);})]);}
       setStatus('desk',`${isExample()?'Пример':'Мои связки'} · обновлено ${tstr()} · Robinhood ${acc.RH??'—'} · Core ${acc.CORE??'—'} · позиции каждые 15 с, недели и сделки каждые 5 мин`);
     }catch(e){ if(e!=='switched'&&e!=='none') setStatus('desk','Ошибка загрузки. Проверьте интернет и нажмите ⟳.')}
     busy=false; if(activeTab==='desk') spinning(false);
@@ -676,7 +776,7 @@ const Desk=(()=>{
   }
   function welcome(){
     held=new Set();
-    ['#pairs','#weeks','#wtot','#trades'].forEach(s=>$(s).innerHTML='');
+    ['#pairs','#weeks','#wtot','#trades','#closed','#ctot'].forEach(s=>$(s).innerHTML='');
     $('#acc').innerHTML=`<div class="welcome"><b>Добавьте адрес кошелька</b>
       <span class="sub">Вставьте выше адрес (0x…), которым вы входите в Lighter, дайте ему название и нажмите «Загрузить и сохранить». Ключи и подключение кошелька не нужны — PerpHedge только читает публичные данные.</span>
       <span><button class="primary" id="exshow">Посмотреть пример</button> <span class="sub">— откроет публичный кошелёк активного фармера, чтобы вы увидели, как всё выглядит</span></span></div>`;
@@ -700,7 +800,7 @@ const Desk=(()=>{
   }
   function load(addr){
     st.addr=addr; save(); acc={RH:null,CORE:null}; lastSlow=0; cacheWeeks=null; held=new Set();
-    ['#pairs','#weeks','#wtot','#trades','#acc'].forEach(s=>$(s).innerHTML='');
+    ['#pairs','#weeks','#wtot','#trades','#closed','#ctot','#acc'].forEach(s=>$(s).innerHTML='');
     setStatus('desk','Загружаю '+short(addr)+'…'); fillWallets(); tick(true);
   }
   function init(){
@@ -915,6 +1015,7 @@ const Scan=(()=>{
         <td>${ok?Math.round(s.pctl)+'%':'—'}</td>
         <td>${usdk(m.oi)}</td><td>${usdk(m.vol)}</td></tr>`;
       if(ui.open===m.sym) h+=`<tr class="detail"><td colspan="12">
+        <div class="tlinks"><a class="tl rh" href="${TRADE.RH}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Robinhood ↗</a><a class="tl core" href="${TRADE.CORE}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Core ↗</a></div>
         <div class="sub">${m.sym}: сделка RH ${+m.lRH.toFixed(6)} / Core ${+m.lCore.toFixed(6)} · марк RH ${+m.mRH.toFixed(6)} / Core ${+m.mCore.toFixed(6)}</div>${chart(s,m,openPts)}</td></tr>`;
       return h;
     }).join('');
@@ -985,7 +1086,7 @@ function applyTheme(t){
   $('#theme').textContent=THEME_TXT[t];
   try{localStorage.setItem('perphedge.theme',t)}catch(e){}
 }
-let theme='auto'; try{theme=localStorage.getItem('perphedge.theme')||'auto'}catch(e){}
+let theme='dark'; try{theme=localStorage.getItem('perphedge.theme')||'dark'}catch(e){}
 if(!THEMES.includes(theme)) theme='auto';
 applyTheme(theme);
 $('#theme').onclick=()=>{theme=THEMES[(THEMES.indexOf(theme)+1)%3]; applyTheme(theme)};
