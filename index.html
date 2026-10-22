@@ -813,7 +813,13 @@ const Desk=(()=>{
     acc={RH:pick(r),CORE:pick(c)};
   }
   const account=async k=>(await j(`${API[k]}/account?by=index&value=${acc[k]}`)).accounts[0];
-  async function book(k,id){const o=await j(`${API[k]}/orderBookOrders?market_id=${id}&limit=1`);return {bid:+o.bids?.[0]?.price,ask:+o.asks?.[0]?.price}}
+  const bookCache={};
+  async function book(k,id,sym){
+    const key=k+'|'+id, c=bookCache[key], ttl=(sym&&Scan.openSym&&Scan.openSym()===sym)?10e3:30e3;   // монета в фокусе — 10 с, остальные — 30 с
+    if(c&&Date.now()-c.at<ttl) return c.v;
+    const o=await j(`${API[k]}/orderBookOrders?market_id=${id}&limit=1`); const v={bid:+o.bids?.[0]?.price,ask:+o.asks?.[0]?.price};
+    bookCache[key]={at:Date.now(),v}; return v;
+  }
   function renderAcc(a){
     const card=(k,x)=>{
       if(!x) return `<div class="card"><span class="lbl">${k==='RH'?'Robinhood':'Core'}</span><span class="dim">аккаунт не найден</span></div>`;
@@ -866,7 +872,7 @@ const Desk=(()=>{
         const q=Math.min(Math.abs(qr),Math.abs(qc));
         entryGap = qr<0 ? (+r.avg_entry_price - +c.avg_entry_price)*q : (+c.avg_entry_price - +r.avg_entry_price)*q;
         try{
-          [br,bc]=await Promise.all([book('RH',r.market_id),book('CORE',c.market_id)]);
+          [br,bc]=await Promise.all([book('RH',r.market_id,s),book('CORE',c.market_id,s)]);
           const mr=(br.bid+br.ask)/2, mc=(bc.bid+bc.ask)/2; spread=(mr-mc)/mc*100;
           exitUsd = qr<0 ? (bc.bid-br.ask)*q : (br.bid-bc.ask)*q;
         }catch(e){}
@@ -1063,8 +1069,10 @@ const Desk=(()=>{
     labelize('#closed'); labelize('#ctot');
   }
   let busy=false, lastSlow=0, pending=false;
+  let lastTick=0;
   async function tick(force){
-    if(busy){ if(force) pending=true; return; } busy=true;
+    if(!force&&document.hidden&&Date.now()-lastTick<60e3) return;   // вкладка в фоне — раз в минуту
+    if(busy){ if(force) pending=true; return; } busy=true; lastTick=Date.now();
     const forAddr=st.addr;
     if(!st.addr){ welcome(); busy=false; return; }
     if(force&&activeTab==='desk') spinning(true);
@@ -1137,7 +1145,7 @@ const Desk=(()=>{
     [['#pzone','zone'],['#pliq','liq'],['#pmargin','margin'],['#pleg','leg']].forEach(([id,k])=>$(id).onchange=e=>{st.al[k]=e.target.checked;save()});
     tick(true); setInterval(()=>tick(false),15000);   // runs in the background on both tabs
   }
-  return {init,refresh:()=>tick(true)};
+  return {init,refresh:()=>tick(true),poke:()=>tick(false)};
 })();
 
 /* ---------- TAB 2: СКАНЕР СПРЕДА ---------- */
@@ -1349,7 +1357,7 @@ const Scan=(()=>{
     slot.replaceWith(box); if(had){inp.focus(); try{inp.setSelectionRange(ss,se)}catch(e){}}
     if(booksSym!==ui.open){ books=null; booksSym=ui.open; box.querySelector('#cout').innerHTML='<span class="sub">Загружаю стаканы…</span>'; loadBooks(); }
     else drawCalc();
-    if(!calcTimer) calcTimer=setInterval(()=>{ if(activeTab==='scan'&&ui.open) loadBooks(); },5000);
+    if(!calcTimer) calcTimer=setInterval(()=>{ if(activeTab==='scan'&&ui.open&&!document.hidden) loadBooks(); },10000);
   }
   function stopCalc(){ if(calcTimer){clearInterval(calcTimer);calcTimer=null} booksSym=null; books=null; }
   const lvl=o=>({p:+o.price, q:+(o.remaining_base_amount??o.base_amount??o.size??o.amount??0)});
@@ -1411,7 +1419,7 @@ const Scan=(()=>{
         <div class="kv"><span>Макс. размер, проскальз. ≤ 0.05%</span><b>~$${n(maxUsd)}</b></div>
         <div class="kv"><span>Всего проскальзывание</span><b class="${cls(-(slipR+slipC))}">$${n(slipR+slipC)}</b></div>
       </div>`;
-    calcEl.querySelector('#cage').textContent='стаканы обновлены '+new Date(booksAt).toLocaleTimeString('ru-RU')+' · каждые 5 с';
+    calcEl.querySelector('#cage').textContent='стаканы обновлены '+new Date(booksAt).toLocaleTimeString('ru-RU')+' · каждые 10 с';
   }
   /* ---------- 🔔 Уведомления о входе ---------- */
   const MODES={pctl:'Перцентиль ≥',score:'Выгода входа ≥',spread:'Спред',lock:'Заложено на входе ≥ $'};
@@ -1544,8 +1552,10 @@ const Scan=(()=>{
     try{openPts=await loadChart(m,force)}catch(e){openPts=null}
   }
   const doneMsg=()=>{const h=curHist();return `Сканер · обновлено ${tstr()} · рынков на обоих инстансах: ${markets.length} · окно ${WIN_TXT[ui.h]} (свечи ${AUTO_RES[ui.h]})${h?' · история от '+new Date(h.at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}`};
+  let lastMarks=0;
   async function refreshMarks(){
-    if(busy) return; busy=true;
+    if(document.hidden&&Date.now()-lastMarks<60e3) return;   // вкладка в фоне — раз в минуту
+    if(busy) return; busy=true; lastMarks=Date.now();
     try{await loadMarkets(); await refreshOpen(false); render(false); setStatus('scan',doneMsg()); checkBells()}catch(e){setStatus('scan','Сканер: не удалось получить цены. Проверьте интернет и нажмите ⟳.')}
     busy=false;
   }
@@ -1597,7 +1607,7 @@ const Scan=(()=>{
       timers.push(setInterval(refreshMarks,15000)); timers.push(setInterval(()=>{ if(!busy) full(true); },5*60e3)); }
   }
   function zone(sym,dir){ const m=markets.find(x=>x.sym===sym); if(!m) return null; const st=stats(m,dir); return st.n>=6?{pctl:st.pctl,win:WIN_TXT[ui.h]}:null }
-  return {start,stop,bgCheck,zone,rerender:()=>render(false),refresh:()=>full(true,true)};
+  return {start,stop,bgCheck,zone,openSym:()=>ui.open,marks:()=>refreshMarks(),rerender:()=>render(false),refresh:()=>full(true,true)};
 })();
 
 /* ---------- tabs + refresh ---------- */
@@ -1641,6 +1651,7 @@ document.querySelectorAll('.note').forEach(n=>{
 });
 Alerts.init();
 Desk.init();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ Desk.poke(); if(activeTab==='scan') Scan.marks(); } });
 setInterval(()=>Scan.bgCheck(),60e3);
 let startTab='desk'; try{startTab=localStorage.getItem('perphedge.tab')||'desk'}catch(e){}
 const fromHash=location.hash.slice(1);
