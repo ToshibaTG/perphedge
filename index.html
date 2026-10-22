@@ -779,7 +779,15 @@ const Desk=(()=>{
   }
   async function renderPairs(a){
     const mk=x=>{const m={};(x?.positions||[]).filter(p=>+p.position!==0).forEach(p=>m[p.symbol]=p);return m};
-    const R=mk(a.RH), C=mk(a.CORE), syms=[...new Set([...Object.keys(R),...Object.keys(C)])].sort();
+    const R=mk(a.RH), C=mk(a.CORE);
+    // когда открыта текущая позиция: идём по сделкам назад от текущего размера до момента, когда позиция была нулевой
+    const openedAt=(k,p)=>{ if(!p) return null; const me=acc[k];
+      const ts=(tradeCache[k]||[]).filter(t=>t.market_symbol===p.symbol).sort((x,y)=>y.timestamp-x.timestamp);
+      let q=(+p.position)*p.sign; const eps=Math.abs(q)*1e-6+1e-12;
+      for(const t of ts){ const d=(t.ask_account_id===me?-1:1)*(+t.size); const before=q-d; if(Math.abs(before)<=eps) return t.timestamp; q=before; }
+      return null; };
+    const opened={}; [...new Set([...Object.keys(R),...Object.keys(C)])].forEach(s=>{const t=[openedAt('RH',R[s]),openedAt('CORE',C[s])].filter(Boolean); opened[s]=t.length?Math.min(...t):null;});
+    const syms=Object.keys(opened).sort((x,y)=>(opened[y]??-1)-(opened[x]??-1)||x.localeCompare(y));   // свежие сверху
     held=new Set(syms);
     if(alertsOn()&&st.al.leg){ const legs={}; syms.forEach(s=>legs[s]={r:!!R[s],c:!!C[s]});
       for(const s in prevLegs){ const was=prevLegs[s], now=legs[s]||{r:false,c:false};
@@ -827,7 +835,7 @@ const Desk=(()=>{
         });
       }
       const side=q=>q===0?'—':(q<0?'шорт ':'лонг ')+Math.abs(q);
-      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b></td><td class="l"><span class="tag ${tag}">${status}</span></td>
+      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span></td>
         <td>${side(qr)}</td><td>${r?r.avg_entry_price:'—'}</td><td>${side(qc)}</td><td>${c?c.avg_entry_price:'—'}</td>
         <td class="${Math.abs(net)>0?'dim':''}">${net?(+net.toFixed(5)):'0'}</td>
         <td class="${cls(entryGap)}">${sgn(entryGap)}</td>
@@ -1012,7 +1020,7 @@ const Desk=(()=>{
       const [r,c]=await Promise.all(['RH','CORE'].map(k=>acc[k]==null?null:account(k).catch(()=>null)));
       if(forAddr!==st.addr) throw 'switched';
       const a={RH:r,CORE:c}; renderAcc(a); await renderPairs(a);
-      if(force||Date.now()-lastSlow>5*60e3){lastSlow=Date.now(); await Promise.all([loadWeeks().then(renderWeeks),loadTrades().then(()=>{renderTrades();renderClosed(a);})]);}
+      if(force||Date.now()-lastSlow>5*60e3){lastSlow=Date.now(); await Promise.all([loadWeeks().then(renderWeeks),loadTrades().then(async()=>{renderTrades();renderClosed(a);await renderPairs(a);})]);}
       setStatus('desk',`${isExample()?'Пример':'Мои связки'} · обновлено ${tstr()} · Robinhood ${acc.RH??'—'} · Core ${acc.CORE??'—'} · позиции каждые 15 с, недели и сделки каждые 5 мин`);
     }catch(e){ if(e!=='switched'&&e!=='none') setStatus('desk','Ошибка загрузки. Проверьте интернет и нажмите ⟳.')}
     busy=false; if(activeTab==='desk') spinning(false);
