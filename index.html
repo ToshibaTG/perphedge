@@ -414,7 +414,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
     </div>
     <div class="vbar"><div class="seg" id="view">
       <button data-v="all">Все рынки</button><button data-v="fav">★ Избранное (<span id="nfav">0</span>)</button><button data-v="bell">🔔 С уведомлениями (<span id="nbell">0</span>)</button>
-    </div><button class="fbtn" id="fbtn">Фильтры</button><span class="sub" id="vnote"></span></div>
+    </div><button class="fbtn" id="fbtn">Фильтры</button><button id="freset3" hidden title="Вернуть все фильтры к исходным">✕ Сбросить фильтры</button><span class="sub" id="vnote"></span></div>
     <div class="fbar" id="fbar">
       <label class="fg">Тип
         <select id="fkind" aria-label="Тип рынков">
@@ -1263,7 +1263,7 @@ const Scan=(()=>{
     [['#fvmin','vmin'],['#fvmax','vmax'],['#fomin','omin'],['#fomax','omax']].forEach(([id,k])=>{
       let t; $(id).oninput=e=>{clearTimeout(t);t=setTimeout(()=>{ui[k]=e.target.value.trim();save();syncFilters();render(true)},350)}});
     $('#fsig').onchange=e=>{ui.sigOnly=e.target.checked;save();render(true)};
-    $('#freset').onclick=resetFilters;
+    $('#freset').onclick=resetFilters; $('#freset3').onclick=resetFilters;
   }
 
   /* ---------- Калькулятор входа: стаканы только для открытой монеты ---------- */
@@ -1429,6 +1429,9 @@ const Scan=(()=>{
     document.querySelectorAll('#view button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ui.view)));
     const listView=ui.view!=='all';
     $('#fbar').hidden=listView; $('#fbtn').hidden=listView;
+    const nAct=[ui.kind!=='nocrypto',!!(ui.vmin||ui.vmax),!!(ui.omin||ui.omax),ui.sigOnly].filter(Boolean).length;
+    $('#freset3').hidden=listView||!nAct;
+    if(!$('#fbar').classList.contains('show')) $('#fbtn').textContent=nAct?`Фильтры (${nAct})`:'Фильтры';
     $('#vnote').textContent=ui.view==='fav'?'Фильтры здесь не применяются. ★ — добавить или убрать монету.':ui.view==='bell'?'Монеты, за которыми следит сайт. 🔔 — включить или выключить, ⚙ — условие.':'';
     if(listView){
       const pick=ui.view==='fav'?(m=>ui.fav.includes(m.sym)):(m=>!!ui.bells[m.sym]);
@@ -1531,7 +1534,7 @@ const Scan=(()=>{
       timers.push(setInterval(refreshMarks,15000)); timers.push(setInterval(()=>{ if(!busy) full(true); },5*60e3)); }
   }
   function zone(sym,dir){ const m=markets.find(x=>x.sym===sym); if(!m) return null; const st=stats(m,dir); return st.n>=6?{pctl:st.pctl,win:WIN_TXT[ui.h]}:null }
-  return {start,stop,bgCheck,zone,refresh:()=>full(true,true)};
+  return {start,stop,bgCheck,zone,rerender:()=>render(false),refresh:()=>full(true,true)};
 })();
 
 /* ---------- tabs + refresh ---------- */
@@ -1563,7 +1566,7 @@ $('#theme').onclick=()=>{theme=THEMES[(THEMES.indexOf(theme)+1)%3]; applyTheme(t
   const b=$('#modebtn'), set=m=>{document.documentElement.classList.toggle('simple',m==='simple'); b.textContent=m==='simple'?'Режим: простой':'Режим: расширенный'; b.setAttribute('aria-pressed',String(m!=='simple')); try{localStorage.setItem('perphedge.mode',m)}catch(e){}};
   let m='simple'; try{m=localStorage.getItem('perphedge.mode')||'simple'}catch(e){}
   set(m); b.onclick=()=>{m=m==='simple'?'pro':'simple'; set(m)};
-  $('#fbtn').onclick=()=>{const f=$('#fbar'); f.classList.toggle('show'); $('#fbtn').textContent=f.classList.contains('show')?'Скрыть фильтры':'Фильтры'};
+  $('#fbtn').onclick=()=>{const f=$('#fbar'); f.classList.toggle('show'); $('#fbtn').textContent=f.classList.contains('show')?'Скрыть фильтры':'Фильтры'; Scan.rerender&&Scan.rerender()};
   $('#trbtn').onclick=()=>{const t=$('#trsec'); t.classList.toggle('show'); $('#trbtn').textContent=t.classList.contains('show')?'скрыть':'показать'};
 })();
 // подсказки под таблицами: одна строка, по галочке раскрываются
