@@ -695,7 +695,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
 const PROXY='https://api.perphedge.com';
 const API={RH:PROXY+'/rh',CORE:PROXY+'/core'};
 const DIRECT={[PROXY+'/rh']:'https://api.rh.lighter.xyz/api/v1',[PROXY+'/core']:'https://mainnet.zklighter.elliot.ai/api/v1'};
-let proxyDownUntil=0;
+const proxySkip={};   // база прокси → до какого времени ходить напрямую
 const $=s=>document.querySelector(s);
 const TRADE={RH:'https://robinhoodchain.lighter.xyz/trade/',CORE:'https://app.lighter.xyz/trade/'};
 const toDirect=u=>{for(const k in DIRECT) if(u.startsWith(k+'/')) return DIRECT[k]+u.slice(k.length); return null};
@@ -703,11 +703,18 @@ const getJ=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(r.status);return r.json
 async function j(u){
   const d=toDirect(u);
   if(!d) return getJ(u);
-  if(Date.now()<proxyDownUntil) return getJ(d);
+  const base=Object.keys(DIRECT).find(b=>u.startsWith(b+'/'));
+  if(Date.now()<(proxySkip[base]||0)) return getJ(d);
   try{ return await getJ(u); }
-  catch(e){ if(!/^4(29|04)|^5/.test(e.message)) proxyDownUntil=Date.now()+60e3;   // сервер не отвечает — минуту ходим напрямую
-            return getJ(d); }
+  catch(e){
+    // сервер не ответил вообще — 1 мин напрямую; Lighter режет адреса Cloudflare (429) — 10 мин напрямую для этого инстанса
+    if(e.message==='429') proxySkip[base]=Date.now()+10*60e3;
+    else if(!/^\d+$/.test(e.message)) proxySkip[base]=Date.now()+60e3;
+    else if(e.message==='400') throw e;   // 400 — ошибка самого запроса, напрямую будет то же самое
+    return getJ(d);
+  }
 }
+
 const n=v=>v==null||!isFinite(v)?'—':(Math.abs(v)>=1000?v.toFixed(0):v.toFixed(2));
 const sgn=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+n(v);
 const cls=v=>v==null||!isFinite(v)?'':v>0.005?'pos':v<-0.005?'neg':'';
