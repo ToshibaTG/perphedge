@@ -188,6 +188,15 @@ html:not(.simple) .modebtn{border-color:var(--accent);color:var(--accent)}
 .simple .calc .legs .leg h4{margin-bottom:0}
 
 .simple .adv{display:none!important}
+.calc .legs{grid-template-columns:1fr 1fr!important;gap:0}
+.calc .legs .leg:first-child{border-radius:8px 0 0 8px;border-right-width:0}
+.calc .legs .leg.mirror{border-radius:0 8px 8px 0}
+.calc .leg.mirror h4{text-align:right}
+.calc .leg.mirror .kv{flex-direction:row-reverse}
+.calc .leg .kv b{min-width:0}
+.calc .leg:first-child .kv b{text-align:right}
+.calc .leg.mirror .kv b{text-align:left}
+.calc .legs .leg:first-child{box-shadow:inset -1px 0 0 var(--accent)}
 .calc table.cmp{width:auto;border-collapse:collapse;font-size:13px}
 .calc table.cmp th,.calc table.cmp td{padding:4px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
 .calc table.cmp th{text-align:left;font-weight:400;color:var(--muted);font-family:var(--sans);text-transform:none;letter-spacing:0;font-size:13px;background:none}
@@ -279,6 +288,11 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   .cfgbox input{width:100%;flex:1}
   .fbar .fg{flex-wrap:wrap;width:100%} .fbar .fg select{flex:1 1 100%} .fbar input[type=text]{flex:1;width:auto;min-width:0} .fbar .cnt{margin-left:0;width:100%}
   .calc .ch input{width:100%;flex:1 1 100%}
+  .calc .leg{padding:8px}
+  .calc .leg .kv{flex-direction:column!important;gap:0;font-size:12px;margin-bottom:4px}
+  .calc .leg:first-child .kv{align-items:flex-end;text-align:right}
+  .calc .leg.mirror .kv{align-items:flex-start;text-align:left}
+  .calc .leg h4{font-size:12px}
   .tw .calc table.cmp{display:table;width:100%} .tw .calc table.cmp thead{display:table-header-group} .tw .calc table.cmp tbody{display:table-row-group}
   .tw .calc table.cmp tr{display:table-row;background:none;border:0;padding:0;margin:0;border-radius:0}
   .tw .calc table.cmp :is(td,th){display:table-cell;padding:4px 6px;border-bottom:1px solid var(--line)!important;min-width:0;white-space:normal;font-size:12px}
@@ -1358,16 +1372,13 @@ const Scan=(()=>{
     const lim=0.0005, maxQ=Math.min(depthWithin(rLv,lim,!short),depthWithin(cLv,lim,short)), maxUsd=maxQ*ref;
     const thin=!r.full||!c.full;
     const sR=short?'шорт':'лонг', sC=short?'лонг':'шорт';
-    const row=(lab,a,b,key,clsA='',clsB='')=>`<tr class="${key?'key':''}"><th>${lab}</th><td class="${clsA}">${a}</td><td class="${clsB}">${b}</td></tr>`;
-    const legsTbl=`<table class="cmp"><thead><tr><th></th><td><b>Robinhood</b> · <span class="${sR==='шорт'?'neg':'pos'}">${sR}</span></td><td><b>Core</b> · <span class="${sC==='шорт'?'neg':'pos'}">${sC}</span></td></tr></thead><tbody>
-      ${row('Кол-во',fq(r.got)+' '+m.sym,fq(c.got)+' '+m.sym,1)}
-      ${row('Лучшая цена',fp(r.best),fp(c.best))}
-      ${row('Средняя цена на сумму',fp(r.avg),fp(c.avg),1)}
-      ${row('Проскальзывание',pctS(r.avg,r.best)+' · $'+n(slipR),pctS(c.avg,c.best)+' · $'+n(slipC),0,slipR>0.005?'neg':'',slipC>0.005?'neg':'')}
-      ${row('Уровней стакана',r.n+(r.full?'':' (не хватило)'),c.n+(c.full?'':' (не хватило)'))}
-      ${cLim?row('Лимитка на Core (мейкер)','—',(short?'покупка':'продажа')+' по '+fp(cLim)):''}
-      ${cLim?row('Напротив на Core','—',(short?'аск ':'бид ')+fp(short?C.asks[0]?.p:C.bids[0]?.p)):''}
-    </tbody></table>`;
+    const kv=(lab,val,key,c='')=>`<div class="kv${key?' key':''}"><span>${lab}</span><b class="${c}">${val}</b></div>`;
+    const card=(title,side,w,slip,extra,mirror)=>`<div class="leg${mirror?' mirror':''}"><h4>${mirror?`<span class="${side==='шорт'?'neg':'pos'}">${side}</span> · ${title}`:`${title} · <span class="${side==='шорт'?'neg':'pos'}">${side}</span>`}</h4>
+      ${kv('Кол-во',fq(w.got)+' '+m.sym,1)}${kv('Лучшая цена',fp(w.best))}${kv('Средняя цена на сумму',fp(w.avg),1)}
+      ${kv('Проскальзывание',pctS(w.avg,w.best)+' · $'+n(slip),0,slip>0.005?'neg':'')}${kv('Уровней стакана',w.n+(w.full?'':' (не хватило)'))}${extra||''}</div>`;
+    const coreExtra=cLim?kv('Лимитка (мейкер)',(short?'покупка по ':'продажа по ')+fp(cLim))+kv('Напротив',(short?'аск ':'бид ')+fp(short?C.asks[0]?.p:C.bids[0]?.p)):'';
+    const rhExtra=cLim?kv('&nbsp;','&nbsp;')+kv('&nbsp;','&nbsp;'):'';   // пустые строки, чтобы ряды совпадали по высоте
+    const legsTbl=`<div class="legs">${card('Robinhood',sR,r,slipR,rhExtra,false)}${card('Core',sC,c,slipC,coreExtra,true)}</div>`;
     out.innerHTML=`${thin?`<div class="warnbox">⚠ Стакан не держит $${n(ui.size)}: на ${!r.full?'Robinhood':'Core'} набралось только ${fq(!r.full?r.got:c.got)} ${m.sym} (~$${n((!r.full?r.got:c.got)*ref)}) в первых 100 заявках. Цифры ниже — на то, что есть.</div>`:''}
       ${legsTbl}
       <div class="sum">
