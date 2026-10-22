@@ -177,7 +177,7 @@ html:not(.simple) .modebtn{border-color:var(--accent);color:var(--accent)}
 .simple #t-pairs :is(th,td):is(:nth-child(4),:nth-child(5),:nth-child(6),:nth-child(7),:nth-child(8),:nth-child(9),:nth-child(10),:nth-child(11),:nth-child(13),:nth-child(14)){display:none!important}
 .simple #t-weeks :is(th,td):is(:nth-child(2),:nth-child(3),:nth-child(4),:nth-child(5),:nth-child(9),:nth-child(10),:nth-child(11)){display:none!important}
 .simple #t-closed :is(th,td):is(:nth-child(2),:nth-child(5),:nth-child(6),:nth-child(7),:nth-child(8)){display:none!important}
-.simple #t-scan tr:not(.detail)>:is(th,td):is(:nth-child(3),:nth-child(5),:nth-child(7),:nth-child(8),:nth-child(9),:nth-child(10),:nth-child(11)){display:none!important}
+.simple #t-scan>:is(thead,tbody)>tr:not(.detail)>:is(th,td):is(:nth-child(3),:nth-child(5),:nth-child(7),:nth-child(8),:nth-child(9),:nth-child(10),:nth-child(11)){display:none!important}
 .simple #scan table{min-width:0}
 .simple .card .free{display:none}
 .simple #fbar:not(.show){display:none!important}
@@ -186,8 +186,23 @@ html:not(.simple) .modebtn{border-color:var(--accent);color:var(--accent)}
 .trbtn{display:none} .simple .trbtn{display:inline-flex}
 .simple .calc .kv:not(.key){display:none}
 .simple .calc .legs .leg h4{margin-bottom:0}
-.simple #scan .legend{display:none}
+
 .simple .adv{display:none!important}
+.calc table.cmp{width:auto;border-collapse:collapse;font-size:13px}
+.calc table.cmp th,.calc table.cmp td{padding:4px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.calc table.cmp th{text-align:left;font-weight:400;color:var(--muted);font-family:var(--sans);text-transform:none;letter-spacing:0;font-size:13px;background:none}
+.calc table.cmp td{background:none!important}
+.calc table.cmp{margin-bottom:6px}
+.calc table.cmp td{text-align:right;font-family:var(--mono);font-weight:600;min-width:150px}
+.calc table.cmp thead td{font-family:var(--sans);font-weight:400;text-align:right}
+.calc table.cmp tr:last-child>*{border-bottom:0}
+.simple .calc table.cmp tbody tr:not(.key){display:none}
+.legend.cl{flex-wrap:nowrap;align-items:flex-start;gap:6px}
+.legend.cl .lgi{flex:1 1 0;width:0;min-width:0;display:flex;flex-wrap:wrap;gap:4px 18px}
+.legend.cl:not(.open) .lgi{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend.cl:not(.open) .lgi>span{margin-right:16px}
+.legend .lgbtn{flex:none;border:0;background:none;padding:0 4px;color:var(--accent);font-size:14px;line-height:1.2;cursor:pointer;transition:transform .15s}
+.legend.open .lgbtn{transform:rotate(180deg)}
 .tlinks{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 8px}
 .tl{display:inline-block;padding:7px 12px;border:1px solid var(--accent);border-radius:7px;color:var(--accent);text-decoration:none;font-weight:500}
 .tl:hover{background:var(--accent);color:#fff}
@@ -235,7 +250,7 @@ tbody tr.row{cursor:pointer} tbody tr.row:hover{background:var(--hover)}
 .sig.open{color:var(--good)} .sig.close{color:var(--warn)} .sig.wait{color:var(--muted);border-color:var(--line)}
 .bar-z{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;margin-left:6px}
 tr.detail td{background:var(--hover);padding:10px 12px;white-space:normal;text-align:left}
-svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--mono)}
+svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;font-family:var(--mono)}
 .chart .grid{stroke:var(--line);stroke-width:1}
 .chart .zero{stroke:var(--fg);stroke-width:1.2;stroke-dasharray:6 4}
 .chart .med{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:2 4}
@@ -263,7 +278,12 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;font-family:var(--
   .apanel{top:56px;right:8px;left:8px;width:auto}
   .cfgbox input{width:100%;flex:1}
   .fbar .fg{flex-wrap:wrap;width:100%} .fbar .fg select{flex:1 1 100%} .fbar input[type=text]{flex:1;width:auto;min-width:0} .fbar .cnt{margin-left:0;width:100%}
-  .calc .ch input{width:100%;flex:1 1 100%} .calc .ch label{flex:1 1 100%;flex-wrap:wrap}
+  .calc .ch input{width:100%;flex:1 1 100%}
+  .tw .calc table.cmp{display:table;width:100%} .tw .calc table.cmp thead{display:table-header-group} .tw .calc table.cmp tbody{display:table-row-group}
+  .tw .calc table.cmp tr{display:table-row;background:none;border:0;padding:0;margin:0;border-radius:0}
+  .tw .calc table.cmp :is(td,th){display:table-cell;padding:4px 6px;border-bottom:1px solid var(--line)!important;min-width:0;white-space:normal;font-size:12px}
+  .tw .calc table.cmp td::before{content:none}
+  .tw .calc table.cmp tr>:first-child{grid-column:auto} .calc .ch label{flex:1 1 100%;flex-wrap:wrap}
   body{padding-top:8px}
   .appbar{gap:8px 10px}
   .brand small{display:none}
@@ -1179,7 +1199,7 @@ const Scan=(()=>{
     const all=[...vals,s.now]; let mn=Math.min(...all), mx=Math.max(...all);
     const pad=Math.max((mx-mn)*0.12,0.01); mn-=pad; mx+=pad;
     const zeroIn=mn<=0&&mx>=0;
-    const W=compact?440:900, Hh=compact?300:250, L=compact?58:70, R=compact?10:170, T=14, B=34, pw=W-L-R, ph=Hh-T-B;
+    const W=compact?440:1500, Hh=compact?260:250, L=compact?58:70, R=compact?10:190, T=14, B=34, pw=W-L-R, ph=Hh-T-B;
     const t0=pts[0][0], t1=Date.now(), span=t1-t0;
     const X=t=>L+(t-t0)/span*pw, Y=v=>T+(mx-v)/(mx-mn)*ph;
     const line=pts.map(x=>`${X(x[0]).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' ');
@@ -1222,13 +1242,13 @@ const Scan=(()=>{
     </svg>
     <div class="tip" hidden></div>
     </div>
-    <div class="legend">
+    <div class="legend cl${legendOpen?' open':''}"><div class="lgi">
       <span>Окно ${WIN_TXT[ui.h]} · свечи ${res}${ui.cres!=='auto'&&res!==ui.cres?' (укрупнено, чтобы график не был слишком тяжёлым)':''} · наведите курсор или коснитесь графика, чтобы увидеть время и цены</span>
       <span><i class="sw ln-sw"></i>спред = (цена RH − цена Core) / Core. Выше нуля — RH дороже, ниже — RH дешевле</span>
       <span><i class="sw ze-sw"></i>зона входа: ${short?'RH дороже обычного — выгодно открывать шорт RH / лонг Core':'RH дешевле обычного — выгодно открывать лонг RH / шорт Core'}</span>
       <span><i class="sw zx-sw"></i>зона выхода: ${short?'RH дешевле обычного — выгодно закрывать связку':'RH дороже обычного — выгодно закрывать связку'}</span>
       <span><i class="sw med-sw"></i>медиана — обычный уровень за окно</span>
-    </div>`;
+</div><button class="lgbtn" title="Показать легенду полностью" aria-label="Показать легенду полностью">⌄</button>    </div>`;
   }
   function onHover(e){
     const wrap=e.target.closest('.chartwrap'); if(!wrap||!chartState||chartState.sym!==wrap.dataset.sym) return;
@@ -1337,16 +1357,19 @@ const Scan=(()=>{
     const medLock=med!=null?(short?1:-1)*med/100*c.avg*q:null, vsMed=medLock!=null?lock-medLock:null;
     const lim=0.0005, maxQ=Math.min(depthWithin(rLv,lim,!short),depthWithin(cLv,lim,short)), maxUsd=maxQ*ref;
     const thin=!r.full||!c.full;
-    const leg=(title,side,w,slip,extra)=>`<div class="leg"><h4>${title} · <span class="${side==='шорт'?'neg':'pos'}">${side}</span></h4>
-      <div class="kv key"><span>Кол-во</span><b>${fq(w.got)} ${m.sym}</b></div>
-      <div class="kv"><span>Лучшая цена</span><b>${fp(w.best)}</b></div>
-      <div class="kv key"><span>Средняя цена на сумму</span><b>${fp(w.avg)}</b></div>
-      <div class="kv"><span>Проскальзывание</span><b class="${slip>0.005?'neg':''}">${pctS(w.avg,w.best)} · $${n(slip)}</b></div>
-      <div class="kv"><span>Уровней стакана</span><b>${w.n}${w.full?'':' (не хватило)'}</b></div>${extra||''}</div>`;
-    const coreExtra=cLim?`<div class="kv"><span>Лимитка (мейкер)</span><b>${short?'покупка':'продажа'} по ${fp(cLim)}</b></div>
-      <div class="kv"><span>Напротив</span><b>${short?'аск':'бид'} ${fp(short?C.asks[0]?.p:C.bids[0]?.p)}</b></div>`:'';
+    const sR=short?'шорт':'лонг', sC=short?'лонг':'шорт';
+    const row=(lab,a,b,key,clsA='',clsB='')=>`<tr class="${key?'key':''}"><th>${lab}</th><td class="${clsA}">${a}</td><td class="${clsB}">${b}</td></tr>`;
+    const legsTbl=`<table class="cmp"><thead><tr><th></th><td><b>Robinhood</b> · <span class="${sR==='шорт'?'neg':'pos'}">${sR}</span></td><td><b>Core</b> · <span class="${sC==='шорт'?'neg':'pos'}">${sC}</span></td></tr></thead><tbody>
+      ${row('Кол-во',fq(r.got)+' '+m.sym,fq(c.got)+' '+m.sym,1)}
+      ${row('Лучшая цена',fp(r.best),fp(c.best))}
+      ${row('Средняя цена на сумму',fp(r.avg),fp(c.avg),1)}
+      ${row('Проскальзывание',pctS(r.avg,r.best)+' · $'+n(slipR),pctS(c.avg,c.best)+' · $'+n(slipC),0,slipR>0.005?'neg':'',slipC>0.005?'neg':'')}
+      ${row('Уровней стакана',r.n+(r.full?'':' (не хватило)'),c.n+(c.full?'':' (не хватило)'))}
+      ${cLim?row('Лимитка на Core (мейкер)','—',(short?'покупка':'продажа')+' по '+fp(cLim)):''}
+      ${cLim?row('Напротив на Core','—',(short?'аск ':'бид ')+fp(short?C.asks[0]?.p:C.bids[0]?.p)):''}
+    </tbody></table>`;
     out.innerHTML=`${thin?`<div class="warnbox">⚠ Стакан не держит $${n(ui.size)}: на ${!r.full?'Robinhood':'Core'} набралось только ${fq(!r.full?r.got:c.got)} ${m.sym} (~$${n((!r.full?r.got:c.got)*ref)}) в первых 100 заявках. Цифры ниже — на то, что есть.</div>`:''}
-      <div class="legs">${leg('Robinhood',short?'шорт':'лонг',r,slipR)}${leg('Core',short?'лонг':'шорт',c,slipC,coreExtra)}</div>
+      ${legsTbl}
       <div class="sum">
         <div class="kv key"><span>Спред на вашу сумму</span><b class="${cls(short?spread:-spread)}">${pc(spread)}</b></div>
         <div class="kv"><span>Спред по лучшим ценам</span><b>${pc((rLv[0].p-cLv[0].p)/cLv[0].p*100)}</b></div>
@@ -1361,7 +1384,7 @@ const Scan=(()=>{
   }
   /* ---------- 🔔 Уведомления о входе ---------- */
   const MODES={pctl:'Перцентиль ≥',score:'Выгода входа ≥',spread:'Спред',lock:'Заложено на входе ≥ $'};
-  let cfgEl=null, cfgSym=null;
+  let cfgEl=null, cfgSym=null, legendOpen=false;
   function placeCfg(){
     const slot=$('#cfgslot'); if(!slot) return;
     if(!cfgEl){ cfgEl=document.createElement('div'); cfgEl.className='cfgbox'; cfgEl.addEventListener('click',e=>e.stopPropagation()); }
@@ -1521,6 +1544,7 @@ const Scan=(()=>{
         if(act.dataset.act==='bell') return toggleBell(sym);
         if(act.dataset.act==='cfg'){ if(ui.open!==sym){ui.open=sym; openPts=null; render(false); await refreshOpen(false); render(false);} setTimeout(()=>cfgEl&&cfgEl.scrollIntoView({block:'center',behavior:'smooth'}),50); return; } }
       ui.open=ui.open===tr.dataset.sym?null:tr.dataset.sym; openPts=null; render(false); if(ui.open){await refreshOpen(false); render(false)}};
+    $('#tb').addEventListener('click',e=>{const b=e.target.closest('.lgbtn'); if(!b) return; e.stopPropagation(); legendOpen=!legendOpen; b.closest('.legend').classList.toggle('open',legendOpen);},true);
     $('#tb').addEventListener('pointermove',onHover);
     $('#tb').addEventListener('pointerdown',onHover);
     $('#tb').addEventListener('pointerleave',offHover,true);
