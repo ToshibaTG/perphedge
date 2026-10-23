@@ -260,6 +260,9 @@ tbody tr:last-child td{border-bottom:0}
 .tag.ok{color:var(--good)} .tag.warn{color:var(--warn)} .tag.bad{color:var(--bad)}
 .tag.kind{border-color:transparent;background:var(--chip);color:var(--muted)}
 .symw{display:inline-flex;flex-direction:column;vertical-align:middle;line-height:1.15;margin-right:4px}
+.tag.boostS{font-size:11px;white-space:nowrap} .tag.boostS.off{color:var(--muted);border-color:var(--line);background:transparent}
+.symrow{display:block;margin-top:3px}
+.tag.earn{white-space:nowrap;font-size:11px}
 .tag.boost{margin-top:4px;display:inline-block}
 .symw .kindsub{font:500 10px var(--sans);color:var(--muted);letter-spacing:.02em}
 .tag.held.warn{color:#d9a441} .tag.held.bad{color:#e5484d}
@@ -512,6 +515,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         от <input type="text" id="fvmin" placeholder="0" inputmode="decimal" aria-label="Объём от"> до <input type="text" id="fvmax" placeholder="∞" inputmode="decimal" aria-label="Объём до"></label>
       <label class="fg">OI на RH от <input type="text" id="fomin" placeholder="0" inputmode="decimal" aria-label="OI от"> до <input type="text" id="fomax" placeholder="∞" inputmode="decimal" aria-label="OI до"></label>
       <label class="ck"><input type="checkbox" id="fsig"> только с сигналом</label>
+      <label class="ck adv" title="Только рынки, где выбранное направление получает хедж-буст 2.5x"><input type="checkbox" id="fboost"> только с бустом 2.5x</label>
       <span class="cnt"><span id="fcnt"></span> <button class="link" id="freset">сбросить</button></span>
     </div>
     <div class="tw"><table id="t-scan">
@@ -605,6 +609,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <dl class="g-terms">
         <dt>Статус</dt><dd><span class="tag ok">хедж</span> ноги равны и противоположны · <span class="tag warn">перекос</span> размеры разошлись больше чем на 2% · <span class="tag bad">одна нога</span> позиция только на одной площадке · <span class="tag bad">не хедж</span> обе ноги в одну сторону.</dd>
         <dt>Буст 2.5x <span class="dim">(расширенный режим)</span></dt><dd>Хедж-буст Lighter к недельным поинтам действует только для одного направления: крипта, сырьё и ETF — <b>лонг на RH / шорт на Core</b>; pre-IPO и акции — <b>шорт на RH / лонг на Core</b>. <span class="tag ok">буст 2.5x</span> — связка в нужную сторону, <span class="tag bad">без буста 2.5x</span> — в обратную. Правило взято из документации Lighter (23.10.2026), Lighter может его менять каждую неделю.</dd>
+        <dt>📊 Отчёт <span class="dim">(расширенный режим)</span></dt><dd>Компания отчитывается внутри текущей недели подсчёта поинтов (пятница — четверг) — Lighter даёт такому рынку earnings-буст к недельным поинтам. Серая метка «след. нед.» — отчёт попадёт в следующую неделю. Даты берутся из календаря отчётности и обновляются вручную — сверяйте. В день отчёта цена может резко двигаться: держите плечо пониже.</dd>
         <dt>Вход RH / Вход Core</dt><dd>Средние цены открытия ног.</dd>
         <dt>RH, $ / Core, $</dt><dd>Размер ноги в долларах по цене входа, под ним — в монетах.</dd>
         <dt>Перекос, $</dt><dd>Разница размеров ног в долларах (в монетах — при наведении). Близко к нулю — хорошо.</dd>
@@ -622,12 +627,12 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <dt>Объём RH / Core</dt><dd>Оборот за неделю на каждой площадке.</dd>
         <dt>Итог</dt><dd>Изменение торгового результата за неделю: закрытые и открытые позиции, фандинг и комиссии. Пополнения и выводы не учитываются.</dd>
         <dt>Галочка у недели</dt><dd>Учитывать ли неделю во «Всего». Снимите галочки со старых недель, когда вы ещё не фармили, — итог, затраты и $ за поинт будут считаться только по нужному периоду. Выбор запоминается для каждого кошелька. Пустые недели без торговли не показываются.</dd>
-        <dt>Поинты</dt><dd>Впишите вручную после еженедельной раздачи Lighter — или укажите общий счёт при фиксации недели, и разница посчитается сама. Под числом — поинтов на $1 млн объёма RH.</dd>
-        <dt>Начать новую неделю сейчас</dt><dd>Нажмите сразу после начисления поинтов: с этого момента (с точностью до часа) пойдёт новая неделя. Можно вписать «Ваши общие очки» со страницы поинтов Lighter — тогда поинты закрытой недели заполнятся сами (со второй фиксации). Фиксации хранятся в этом браузере. Точно делить неделю посреди дня можно за последние ~7 дней — раньше Lighter отдаёт историю только по дням.</dd>
+        <dt>Поинты</dt><dd>Впишите вручную после еженедельной раздачи Lighter — или запишите общий счёт кнопкой «Записать поинты», и разница посчитается сама. Под числом — поинтов на $1 млн объёма RH.</dd>
+        <dt>Записать поинты после начисления</dt><dd>В пятницу после раздачи впишите «Ваши общие очки» со страницы поинтов Lighter. Со второй записи поинты прошлой недели заполнятся сами — как рост общего счёта с прошлой записи (в него входят и лайв-поинты за неделю). Записи хранятся в этом браузере.</dd>
         <dt>$ за поинт</dt><dd>Сколько стоил один поинт: минус итога недели / поинты.</dd>
         <dt>Цена поинта OTC</dt><dd>Впишите текущую рыночную оценку поинта — получите стоимость поинтов и чистый результат.</dd>
       </dl>
-      <p>Если фиксаций нет, неделя начинается автоматически — по умолчанию в пятницу в 03:00 МСК (00:00 UTC): Lighter считает недельные поинты за активность с пятницы по четверг включительно, а раздаёт в пятницу днём. День и час можно поменять. Ручная фиксация важнее автоматической.</p>
+      <p>Неделя по умолчанию начинается в пятницу в 03:00 МСК (00:00 UTC): Lighter считает недельные поинты за активность с пятницы по четверг включительно, а раздаёт в пятницу днём. День и час можно поменять.</p>
     </section>
 
     <section class="g-sec" id="g-example">
@@ -701,7 +706,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <h3>Простой и расширенный режим</h3>
       <p>По умолчанию сайт открывается в <b>простом режиме</b>: в таблицах только главное — рынок, статус, итог связки, итог при закрытии, сигнал и спред, а фильтры, детали калькулятора и последние сделки спрятаны за кнопками. Кнопка «Режим» вверху включает <b>расширенный режим</b> со всеми колонками и индикаторами. Выбор запоминается в браузере, уведомления работают в обоих режимах.</p>
       <h3>Фильтры и избранное</h3>
-      <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом». ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают.</p>
+      <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом», в расширенном режиме — «только с бустом 2.5x». Рядом с монетой (расширенный режим): <span class="tag ok">2.5x</span> — выбранное направление получает хедж-буст Lighter, <span class="tag">2.5x ⇄</span> — буст только в обратном направлении; «📊 отчёт» — отчёт компании внутри недели подсчёта поинтов. ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают.</p>
       <h3>Калькулятор входа</h3>
       <p>Кликните монету и впишите сумму на одну ногу. Сайт пройдёт по стаканам обоих инстансов и покажет количество монет, средние цены, проскальзывание, реальный спред на вашу сумму и сколько вы закладываете на входе — маркетом на обеих ногах и если Core поставить лимиткой. «Макс. размер» — сколько можно зайти, чтобы цена ушла не дальше 0.05%. Комиссии не учитываются.</p>
       <h3>Колонка «Premium RH»</h3>
@@ -740,7 +745,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.17 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.18 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -828,7 +833,24 @@ const MKT=(()=>{
   // Хедж-буст 2.5x недельных поинтов (docs.lighter.xyz, версия от 23.10.2026; Lighter может менять еженедельно):
   // крипта, сырьё, ETF — RH лонг / Core шорт; pre-IPO и акции — RH шорт / Core лонг
   const boostRH=s=>{const k=kind(s); return k==='pre-IPO'||k==='акция'?'short':'long'};
-  return {kind,boostRH};
+  // Даты отчётов (по календарю отчётности; обновляются вручную, версия от 23.10.2026). Дата — день отчёта по США.
+  const EARN={GOOGL:'2026-10-27',HOOD:'2026-10-27',MSFT:'2026-10-28',META:'2026-10-28',AMZN:'2026-10-29',INTC:'2026-10-29',COIN:'2026-10-29',
+    SNDK:'2026-10-29',MSTR:'2026-10-29',AAPL:'2026-11-02',AMD:'2026-11-03',CRCL:'2026-11-04'};
+  // неделя подсчёта недельных поинтов Lighter: пятница 00:00 UTC — четверг включительно
+  const lwStart=ts=>{const d=new Date(ts);d.setUTCHours(0,0,0,0);d.setUTCDate(d.getUTCDate()-((d.getUTCDay()-5+7)%7));return d.getTime()};
+  function earn(s){ const v=EARN[s]; if(!v) return null; const t=Date.parse(v+'T12:00:00Z'), w0=lwStart(Date.now()), W=7*864e5;
+    const dd=new Date(t).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',timeZone:'UTC'});
+    if(t>=w0&&t<w0+W) return {now:true,dd}; if(t>=w0+W&&t<w0+2*W) return {now:false,dd}; return null; }
+  function earnTag(s){ const e=earn(s); if(!e) return '';
+    return e.now?`<span class="adv"> <span class="tag warn earn" title="Компания отчитывается ${e.dd} — внутри текущей недели подсчёта поинтов (пт–чт). Lighter даёт таким рынкам earnings-буст к недельным поинтам (размер не раскрыт). В день отчёта цена может резко прыгнуть — осторожнее с плечом.">📊 отчёт ${e.dd}</span></span>`
+      :`<span class="adv"> <span class="tag earn dim" title="Отчёт ${e.dd} — попадёт в следующую неделю подсчёта поинтов.">📊 ${e.dd}, след. нед.</span></span>`; }
+  // метка буста для сканера: dir — 'shortRH' | 'longRH'
+  function boostTag(s,dir){ const need=boostRH(s), have=dir==='shortRH'?'short':'long', k=kind(s);
+    const want=need==='short'?'шорт RH / лонг Core':'лонг RH / шорт Core';
+    return have===need?`<span class="adv"> <span class="tag ok boostS" title="Хедж-буст 2.5x к недельным поинтам: для «${k}» засчитывается ${want} — как выбрано сейчас. Правило Lighter, может меняться еженедельно">2.5x</span></span>`
+      :`<span class="adv"> <span class="tag boostS off" title="В выбранном направлении буста нет. Для «${k}» хедж-буст 2.5x даёт ${want} — переключите направление над таблицей">2.5x ⇄</span></span>`; }
+  const hasBoost=(s,dir)=>boostRH(s)===(dir==='shortRH'?'short':'long');
+  return {kind,boostRH,earnTag,boostTag,hasBoost};
 })();
 let held=new Set();          // symbols with an open position on the selected wallet (for the scanner)
 let heldInfo={};             // sym -> {r:$ RH, c:$ Core, qr, qc} — размеры ног для сканера
@@ -898,7 +920,7 @@ const Alerts=(()=>{
 /* ---------- TAB 1: МОИ СВЯЗКИ ---------- */
 const Desk=(()=>{
   const LS='perphedge.desk.v1';
-  let st={addr:'',wday:5,whr:3,cuts:{},points:{},otc:{},wex:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
+  let st={addr:'',wday:5,whr:3,snaps:{},points:{},otc:{},wex:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
   try{Object.assign(st,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
   if(!Array.isArray(st.wallets)) st.wallets=[];
   st.al=Object.assign({on:false,exit:0,zone:true,liq:true,margin:true,leg:true},st.al||{}); st.tgt=st.tgt||{};
@@ -907,7 +929,10 @@ const Desk=(()=>{
   const pk=w=>st.addr.toLowerCase()+'|'+w;
   if(![5,6,1].includes(+st.wday)) st.wday=5;
   if(!(st.whr>=0&&st.whr<24)) st.whr=3;
-  if(!st.cuts||typeof st.cuts!=='object') st.cuts={};
+  if(!st.snaps||typeof st.snaps!=='object') st.snaps={};
+  // v1.18: фиксации v1.17 → записи поинтов (только с числом); граница недели снова только по правилу Lighter
+  if(st.cuts){ for(const a in st.cuts) (st.cuts[a]||[]).forEach(c=>{ if(c&&c.total!=null)(st.snaps[a]=st.snaps[a]||[]).push({t:c.t,total:c.total}); }); delete st.cuts; }
+  if(st.wv!==18){ if(st.whr===17) st.whr=3; st.wv=18; }
   const alertsOn=()=>st.al.on&&!isExample();
   const fpx=v=>v>=1000?v.toFixed(2):v>=1?(+v.toFixed(4)).toString():v.toPrecision(5);
   const save=()=>{try{localStorage.setItem(LS,JSON.stringify(st))}catch(e){}};
@@ -1023,7 +1048,7 @@ const Desk=(()=>{
         const want=need==='short'?'RH шорт / Core лонг':'RH лонг / Core шорт';
         boost=have===need?`<span class="adv"><br><span class="tag ok boost" title="Хедж-буст 2.5x к недельным поинтам: для «${k}» засчитывается направление ${want}. Правило Lighter, может меняться еженедельно">буст 2.5x</span></span>`
           :`<span class="adv"><br><span class="tag bad boost" title="Это направление не получает хедж-буст 2.5x к недельным поинтам. Для «${k}» буст даёт ${want}. Правило Lighter, может меняться еженедельно">без буста 2.5x</span></span>`; }
-      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span>${boost}${fix?'<br>'+fix:''}</td>
+      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span>${boost}${MKT.earnTag(s)}${fix?'<br>'+fix:''}</td>
         <td class="${lack==='RH'?'lack':''}">${side(qr,r?+r.avg_entry_price:0)}</td><td>${r?r.avg_entry_price:'—'}</td><td class="${lack==='CORE'?'lack':''}">${side(qc,c?+c.avg_entry_price:0)}</td><td>${c?c.avg_entry_price:'—'}</td>
         <td class="${Math.abs(netUsd)>=0.01?'dim':''}" title="${net?(+net.toFixed(6))+' шт':'0'}">${net?(netUsd>0?'+':'−')+usd0(Math.abs(netUsd)):'0'}</td>
         <td class="${cls(entryGap)}">${sgn(entryGap)}</td>
@@ -1042,27 +1067,12 @@ const Desk=(()=>{
     document.querySelectorAll('#pairs input.tgt').forEach(inp=>inp.onchange=()=>{const v=parseFloat(inp.value.replace(',','.').replace('−','-'));
       if(isNaN(v)) delete st.tgt[inp.dataset.k]; else st.tgt[inp.dataset.k]=v; save(); Alerts.reset('x|'); tick(true)});
   }
-  // Граница недели: ручные фиксации («начать новую неделю сейчас») + авто (день и час МСК).
-  // Авто-граница не действует, если рядом (±3.5 дня) есть ручная фиксация.
+  // Граница недели: день и час МСК (по умолчанию пятница 03:00 МСК = 00:00 UTC — как считает Lighter)
   const WK=7*864e5, MSK=3*3600e3;
-  const myCuts=()=>((st.cuts||{})[(st.addr||'').toLowerCase()]||[]).slice().sort((a,b)=>a.t-b.t);
-  function autoB(ts){const d=new Date(ts+MSK);d.setUTCHours(st.whr,0,0,0);let b=d.getTime()-MSK;
+  function weekStart(ts){const d=new Date(ts+MSK);d.setUTCHours(st.whr,0,0,0);let b=d.getTime()-MSK;
     const back=(new Date(b+MSK).getUTCDay()-st.wday+7)%7; b-=back*864e5; if(b>ts) b-=WK; return b}
-  function bounds(){ return myCuts().map(c=>c.t) }
-  function weekStart(ts){
-    const cs=bounds(), near=b=>cs.some(c=>Math.abs(c-b)<3.5*864e5);
-    let best=-Infinity;
-    for(let k=0,b=autoB(ts);k<4;k++,b-=WK) if(!near(b)){best=b;break}
-    for(const c of cs) if(c<=ts&&c>best) best=c;
-    return best;
-  }
-  function weekEnd(w){ // следующая граница после начала недели
-    const cs=bounds(), near=b=>cs.some(c=>Math.abs(c-b)<3.5*864e5);
-    let e=Infinity;
-    for(let k=0,b=autoB(w)+WK;k<4;k++,b+=WK) if(b>w&&!near(b)){e=b;break}
-    for(const c of cs) if(c>w&&c<e) e=c;
-    return e;
-  }
+  const weekEnd=w=>weekStart(w+WK+3600e3);
+  const mySnaps=()=>((st.snaps||{})[(st.addr||'').toLowerCase()]||[]).slice().sort((a,b)=>a.t-b.t);
   // История PnL: дневные точки (до года назад) + часовые (последние ~7 дней, Lighter дольше не хранит).
   // Точка = значение на конец периода; объём — за этот период.
   async function pnlSeries(k){
@@ -1110,40 +1120,39 @@ const Desk=(()=>{
   function recalcWeeks(){ if(rawWeeks) cacheWeeks={wr:weekly(rawWeeks.sr),wc:weekly(rawWeeks.sc)} }
   // значения, вписанные до v1.17, лежат под ключом начала недели в 00:00 UTC — подхватываем их
   const legacyKey=w=>{const d=new Date(w);d.setUTCHours(0,0,0,0);return d.getTime()};
-  function bagGet(bag,w){ const a=bag[pk(w)]; if(a!=null) return a; const L=legacyKey(w); return L!==w?bag[pk(L)]:undefined }
-  function bagSet(bag,w,v){ const L=legacyKey(w); if(L!==w) delete bag[pk(L)]; if(v==null) delete bag[pk(w)]; else bag[pk(w)]=v }
+  // и под ключами со сдвинутым часом (v1.17 позволял неделю с 17:00) — ищем в пределах суток от начала недели
+  function oldKeys(bag,w){ const pre=st.addr.toLowerCase()+'|', L=legacyKey(w), out=[];
+    for(const k in bag){ if(!k.startsWith(pre)) continue; const t=+k.slice(pre.length); if(t!==w&&t>=Math.min(L,w)&&t<w+864e5) out.push(k); } return out }
+  function bagGet(bag,w){ const a=bag[pk(w)]; if(a!=null) return a; const o=oldKeys(bag,w); return o.length?bag[o[0]]:undefined }
+  function bagSet(bag,w,v){ oldKeys(bag,w).forEach(k=>delete bag[k]); if(v==null) delete bag[pk(w)]; else bag[pk(w)]=v }
   const fmtCut=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Moscow'});
   let cutOpen=false;
   function renderCut(){
     const el=$('#wcut'); if(!el) return;
     if(!st.addr){ el.innerHTML=''; return; }
-    const cs=myCuts(), last=cs[cs.length-1];
-    const info=last?`<span class="sub">Последняя фиксация: <b>${fmtCut(last.t)} МСК</b>${last.total!=null?`, всего очков ${last.total}`:''} · <button class="link" id="wcutundo">отменить</button></span>`:
-      `<span class="sub">Пришло начисление поинтов? Зафиксируйте — с этой минуты пойдёт новая неделя.</span>`;
-    el.innerHTML=cutOpen?`<label class="sub">Ваши общие очки сейчас (необязательно) <input id="wcutpts" inputmode="decimal" placeholder="например 7.331372"></label>
-      <button class="primary btn-cut" id="wcutok">Зафиксировать</button> <button class="link" id="wcutno">отмена</button>`:
-      `<button class="primary btn-cut" id="wcutbtn">⏱ Начать новую неделю сейчас</button> ${info}`;
+    const cs=mySnaps(), last=cs[cs.length-1];
+    const info=last?`<span class="sub">Последняя запись: <b>${fmtCut(last.t)} МСК — ${last.total}</b>${last.auto?` (неделе ${fmtWk(last.auto.w)} вписано +${last.auto.v})`:''} · <button class="link" id="wcutundo">отменить</button></span>`:
+      `<span class="sub">После пятничного начисления впишите «Ваши общие очки» со страницы поинтов Lighter — со второй записи поинты недели посчитаются сами.</span>`;
+    el.innerHTML=cutOpen?`<label class="sub">Ваши общие очки сейчас <input id="wcutpts" inputmode="decimal" placeholder="например 7.335338"></label>
+      <button class="primary btn-cut" id="wcutok">Записать</button> <button class="link" id="wcutno">отмена</button> <span class="sub" id="wcuterr"></span>`:
+      `<button class="primary btn-cut" id="wcutbtn">＋ Записать поинты после начисления</button> ${info}`;
     const b=$('#wcutbtn'); if(b) b.onclick=()=>{cutOpen=true;renderCut();$('#wcutpts').focus()};
     const no=$('#wcutno'); if(no) no.onclick=()=>{cutOpen=false;renderCut()};
     const ok=$('#wcutok'); if(ok) ok.onclick=doCut;
     const inp=$('#wcutpts'); if(inp) inp.onkeydown=e=>{if(e.key==='Enter')doCut(); if(e.key==='Escape'){cutOpen=false;renderCut()}};
-    const u=$('#wcutundo'); if(u) u.onclick=()=>{ const a=st.addr.toLowerCase(), arr=myCuts(); const c=arr.pop(); st.cuts[a]=arr;
-      if(c&&c.auto&&bagGet(st.points,c.auto.w)===c.auto.v) bagSet(st.points,c.auto.w,null); save(); recalcWeeks(); renderWeeks(); };
+    const u=$('#wcutundo'); if(u) u.onclick=()=>{ const a=st.addr.toLowerCase(), arr=mySnaps(); const c=arr.pop(); st.snaps[a]=arr;
+      if(c&&c.auto&&bagGet(st.points,c.auto.w)===c.auto.v) bagSet(st.points,c.auto.w,null); save(); renderWeeks(); };
   }
+  const fmtWk=w=>new Date(w).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',timeZone:'Europe/Moscow'});
   function doCut(){
-    const a=st.addr.toLowerCase(), raw=($('#wcutpts').value||'').replace(',','.').trim(), total=raw?parseFloat(raw):null;
-    const t=Math.round(Date.now()/3600e3)*3600e3;   // по часу: точнее данные Lighter не делятся
-    const arr=myCuts().filter(c=>Math.abs(c.t-t)>=3600e3);
-    const prevTot=[...arr].reverse().find(c=>c.t<t&&c.total!=null);
-    const cut={t,total:(total!=null&&!isNaN(total))?total:null}; arr.push(cut); st.cuts[a]=arr;
-    cutOpen=false;
-    if(total!=null&&!isNaN(total)){
-      // поинты закрытой недели = рост общего счёта с прошлой фиксации (если она была с числом)
-      const got=prevTot?+(total-prevTot.total).toFixed(6):null;
-      const wNew=weekStart(t-1);   // начало закрытой недели при новых границах
-      if(got!=null&&got>=0&&bagGet(st.points,wNew)==null){ bagSet(st.points,wNew,got); cut.auto={w:wNew,v:got}; }
-    }
-    save(); wPage=0; recalcWeeks(); renderWeeks();
+    const a=st.addr.toLowerCase(), total=parseFloat(($('#wcutpts').value||'').replace(',','.').trim());
+    if(isNaN(total)||total<0){ $('#wcuterr').textContent='впишите число'; return; }
+    const t=Date.now(), arr=mySnaps(), prev=arr[arr.length-1];
+    const snap={t,total}; 
+    // начисление в пятницу — за прошлую неделю: поинты = рост общего счёта с прошлой записи
+    if(prev&&total>=prev.total){ const got=+(total-prev.total).toFixed(6), w=weekStart(weekStart(t)-1);
+      if(bagGet(st.points,w)==null){ bagSet(st.points,w,got); snap.auto={w,v:got}; } }
+    arr.push(snap); st.snaps[a]=arr; cutOpen=false; save(); renderWeeks();
   }
   let wPage=0, cPage=0;
   function renderWeeks(){
@@ -1386,7 +1395,7 @@ const Scan=(()=>{
   // table statistics use one candle size per window (≤500 candles = one request per market)
   const AUTO_RES={1:'1m',3:'1m',6:'1m',12:'5m',24:'5m',168:'1h'};
   const WIN_TXT={1:'1 ч',3:'3 ч',6:'6 ч',12:'12 ч',24:'24 ч',168:'1 нед'};
-  let ui={h:6,dir:'shortRH',crypto:false,sort:'score',desc:true,open:null,cres:'auto',kind:'nocrypto',vmin:'',vmax:'',omin:'',omax:'',sigOnly:false,size:1000,fav:[],bells:{},view:'all'};
+  let ui={h:6,dir:'shortRH',crypto:false,sort:'score',desc:true,open:null,cres:'auto',kind:'nocrypto',vmin:'',vmax:'',omin:'',omax:'',sigOnly:false,boostOnly:false,size:1000,fav:[],bells:{},view:'all'};
   try{Object.assign(ui,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
   if(ui.crypto&&ui.kind==='nocrypto') ui.kind='all';
   if(!Array.isArray(ui.fav)) ui.fav=[]; if(!ui.bells||typeof ui.bells!=='object') ui.bells={};
@@ -1545,10 +1554,12 @@ const Scan=(()=>{
   const kindOk=m=>{const k=ui.kind; if(k==='all')return true; if(k==='nocrypto')return m.kind!=='крипта'; if(k==='etf')return m.kind==='ETF'||m.kind==='сырьё'; return m.kind===k};
   const amt=v=>{if(v==null)return null; v=String(v).trim().toLowerCase().replace(/\s/g,'').replace(',','.').replace('$',''); if(!v)return null;
     const mm=v.match(/^(\d*\.?\d+)([kкmмbб]?)/); if(!mm)return null; const mul={'':1,k:1e3,'к':1e3,m:1e6,'м':1e6,b:1e9,'б':1e9}[mm[2]]; return +mm[1]*mul};
-  const filtersOn=()=>!!(ui.vmin||ui.vmax||ui.omin||ui.omax||ui.sigOnly||ui.kind!=='nocrypto');
-  function resetFilters(){Object.assign(ui,{vmin:'',vmax:'',omin:'',omax:'',sigOnly:false,kind:'nocrypto'});const was=ui.crypto;ui.crypto=false;save();syncUI();if(was)full(true,true);else render(true)}
+  const isAdv=()=>!document.documentElement.classList.contains('simple');
+  const boostF=()=>ui.boostOnly&&isAdv();
+  const filtersOn=()=>!!(ui.vmin||ui.vmax||ui.omin||ui.omax||ui.sigOnly||boostF()||ui.kind!=='nocrypto');
+  function resetFilters(){Object.assign(ui,{vmin:'',vmax:'',omin:'',omax:'',sigOnly:false,boostOnly:false,kind:'nocrypto'});const was=ui.crypto;ui.crypto=false;save();syncUI();if(was)full(true,true);else render(true)}
   function syncFilters(){
-    $('#fkind').value=ui.kind; $('#fvmin').value=ui.vmin; $('#fvmax').value=ui.vmax; $('#fomin').value=ui.omin; $('#fomax').value=ui.omax; $('#fsig').checked=ui.sigOnly;
+    $('#fkind').value=ui.kind; $('#fvmin').value=ui.vmin; $('#fvmax').value=ui.vmax; $('#fomin').value=ui.omin; $('#fomax').value=ui.omax; $('#fsig').checked=ui.sigOnly; $('#fboost').checked=!!ui.boostOnly;
     const pre={'0-1m':['','1m'],'1m-10m':['1m','10m'],'10m-100m':['10m','100m'],'100m-':['100m','']};
     $('#fvolp').value=Object.keys(pre).find(k=>pre[k][0]===ui.vmin&&pre[k][1]===ui.vmax)||(ui.vmin||ui.vmax?'custom':'');
   }
@@ -1559,6 +1570,7 @@ const Scan=(()=>{
     [['#fvmin','vmin'],['#fvmax','vmax'],['#fomin','omin'],['#fomax','omax']].forEach(([id,k])=>{
       let t; $(id).oninput=e=>{clearTimeout(t);t=setTimeout(()=>{ui[k]=e.target.value.trim();save();syncFilters();render(true)},350)}});
     $('#fsig').onchange=e=>{ui.sigOnly=e.target.checked;save();render(true)};
+    $('#fboost').onchange=e=>{ui.boostOnly=e.target.checked;save();render(true)};
     $('#freset').onclick=resetFilters; $('#freset3').onclick=resetFilters;
   }
 
@@ -1821,7 +1833,7 @@ const Scan=(()=>{
     document.querySelectorAll('#view button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ui.view)));
     const listView=ui.view!=='all';
     $('#fbar').hidden=listView; $('#fbtn').hidden=listView;
-    const nAct=[ui.kind!=='nocrypto',!!(ui.vmin||ui.vmax),!!(ui.omin||ui.omax),ui.sigOnly].filter(Boolean).length;
+    const nAct=[ui.kind!=='nocrypto',!!(ui.vmin||ui.vmax),!!(ui.omin||ui.omax),ui.sigOnly,boostF()].filter(Boolean).length;
     $('#freset3').hidden=listView||!nAct;
     if(!$('#fbar').classList.contains('show')) $('#fbtn').textContent=nAct?`Фильтры (${nAct})`:'Фильтры';
     $('#vnote').textContent=ui.view==='fav'?'Фильтры здесь не применяются. ★ — добавить или убрать монету.':ui.view==='bell'?'Монеты, за которыми следит сайт. 🔔 — включить или выключить, ⚙ — условие.':'';
@@ -1833,7 +1845,7 @@ const Scan=(()=>{
     const typed=markets.filter(kindOk), all=typed.length;
     const vmin=amt(ui.vmin), vmax=amt(ui.vmax), omin=amt(ui.omin), omax=amt(ui.omax);
     const rows=typed.filter(m=>(vmin==null||m.vol>=vmin)&&(vmax==null||m.vol<=vmax)&&(omin==null||m.oi>=omin)&&(omax==null||m.oi<=omax))
-      .map(m=>({m,s:stats(m)})).filter(r=>!ui.sigOnly||(r.s.n>=6&&(r.s.sig==='open'||r.s.sig==='close')));
+      .map(m=>({m,s:stats(m)})).filter(r=>!ui.sigOnly||(r.s.n>=6&&(r.s.sig==='open'||r.s.sig==='close'))).filter(r=>!boostF()||MKT.hasBoost(r.m.sym,ui.dir));
     const active=filtersOn();
     $('#fcnt').innerHTML=`показано <b>${rows.length}</b> из ${all}`; $('#freset').hidden=!active;
     return drawRows(rows,resort,null);
@@ -1850,7 +1862,7 @@ const Scan=(()=>{
       const ok=s.n>=6;
       const zbar=ok?`<span class="bar-z" style="width:${Math.max(0,Math.min(60,s.score*15))}px"></span>`:'';
       let h=`<tr class="row" data-sym="${m.sym}">
-        <td class="l"><button class="ico star${ui.fav.includes(m.sym)?' on':''}" data-act="fav" title="${ui.fav.includes(m.sym)?'Убрать из избранного':'В избранное'}" aria-label="Избранное ${m.sym}">${STAR_SVG}</button><button class="ico bell${ui.bells[m.sym]?' on':''}" data-act="bell" title="${ui.bells[m.sym]?'Выключить уведомление':'Уведомлять о входе и выходе'}" aria-label="Уведомление ${m.sym}">${BELL_SVG}</button>${ui.bells[m.sym]?'<button class="ico cfg" data-act="cfg" title="Условие уведомления" aria-label="Условие уведомления">⚙</button>':''} <span class="symw"><b>${m.sym}</b><span class="kindsub">${m.kind}</span></span>${heldTag(m.sym)}${goalBtn(m.sym)}</td>
+        <td class="l"><button class="ico star${ui.fav.includes(m.sym)?' on':''}" data-act="fav" title="${ui.fav.includes(m.sym)?'Убрать из избранного':'В избранное'}" aria-label="Избранное ${m.sym}">${STAR_SVG}</button><button class="ico bell${ui.bells[m.sym]?' on':''}" data-act="bell" title="${ui.bells[m.sym]?'Выключить уведомление':'Уведомлять о входе и выходе'}" aria-label="Уведомление ${m.sym}">${BELL_SVG}</button>${ui.bells[m.sym]?'<button class="ico cfg" data-act="cfg" title="Условие уведомления" aria-label="Условие уведомления">⚙</button>':''} <span class="symw"><b>${m.sym}</b><span class="kindsub">${m.kind}</span></span>${MKT.boostTag(m.sym,ui.dir)}${MKT.earnTag(m.sym)}${held.has(m.sym)?`<span class="symrow">${heldTag(m.sym)}</span>`:''}${goalBtn(m.sym)}</td>
         <td>${ok?`<span class="sig ${s.sig}">${sigTxt[s.sig]}</span>`:'<span class="dim">мало данных</span>'}</td>
         <td class="${ok?cls(s.score):''}">${ok?s.score.toFixed(2):'—'}${zbar}</td>
         <td class="${cls(s.now)}">${pc(s.now)}</td>
