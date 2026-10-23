@@ -625,7 +625,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <dt>$ за поинт</dt><dd>Сколько стоил один поинт: минус итога недели / поинты.</dd>
         <dt>Цена поинта OTC</dt><dd>Впишите текущую рыночную оценку поинта — получите стоимость поинтов и чистый результат.</dd>
       </dl>
-      <p>Если фиксаций нет, неделя начинается автоматически — по умолчанию в пятницу в 17:00 МСК, примерно когда Lighter начисляет поинты. День и час можно поменять. Ручная фиксация важнее автоматической.</p>
+      <p>Если фиксаций нет, неделя начинается автоматически — по умолчанию в пятницу в 03:00 МСК (00:00 UTC): Lighter считает недельные поинты за активность с пятницы по четверг включительно, а раздаёт в пятницу днём. День и час можно поменять. Ручная фиксация важнее автоматической.</p>
     </section>
 
     <section class="g-sec" id="g-example">
@@ -884,7 +884,7 @@ const Alerts=(()=>{
 /* ---------- TAB 1: МОИ СВЯЗКИ ---------- */
 const Desk=(()=>{
   const LS='perphedge.desk.v1';
-  let st={addr:'',wday:5,whr:17,cuts:{},points:{},otc:{},wex:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
+  let st={addr:'',wday:5,whr:3,cuts:{},points:{},otc:{},wex:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
   try{Object.assign(st,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
   if(!Array.isArray(st.wallets)) st.wallets=[];
   st.al=Object.assign({on:false,exit:0,zone:true,liq:true,margin:true,leg:true},st.al||{}); st.tgt=st.tgt||{};
@@ -892,7 +892,7 @@ const Desk=(()=>{
   if(st.addr&&!st.wallets.some(w=>w.addr.toLowerCase()===st.addr.toLowerCase())) st.addr=st.wallets[0]?.addr||'';
   const pk=w=>st.addr.toLowerCase()+'|'+w;
   if(![5,6,1].includes(+st.wday)) st.wday=5;
-  if(!(st.whr>=0&&st.whr<24)) st.whr=17;
+  if(!(st.whr>=0&&st.whr<24)) st.whr=3;
   if(!st.cuts||typeof st.cuts!=='object') st.cuts={};
   const alertsOn=()=>st.al.on&&!isExample();
   const fpx=v=>v>=1000?v.toFixed(2):v>=1?(+v.toFixed(4)).toString():v.toPrecision(5);
