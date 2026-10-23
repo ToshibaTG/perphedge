@@ -262,8 +262,13 @@ tbody tr:last-child td{border-bottom:0}
 .symw{display:inline-flex;flex-direction:column;vertical-align:middle;line-height:1.15;margin-right:4px}
 .tag.boostS{font-size:11px;white-space:nowrap} .tag.boostS.off{color:var(--muted);border-color:var(--line);background:transparent}
 .symrow{display:block;margin-top:3px}
-.tag.earn{white-space:nowrap;font-size:11px}
-.tag.boost{margin-top:4px;display:inline-block}
+.tag.earn{font-size:11px;padding:1px 4px;border:1px solid #d9a441;background:#d9a44118;cursor:help;line-height:1.3}
+.tag.earn.next{border-color:var(--line);background:transparent;opacity:.7}
+.tag.boost{font-size:11px;cursor:help} .tag.boost.no{text-decoration:line-through;text-decoration-thickness:1.5px}
+b.sS{color:#e5484d} b.sL{color:#30a46c}
+#t-pairs :is(th,td)+:is(th,td){border-left:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+#tip{position:fixed;z-index:1000;max-width:280px;padding:7px 10px;border-radius:8px;background:var(--panel);color:var(--fg);border:1px solid var(--line);box-shadow:0 6px 24px #0006;font:12.5px/1.4 var(--sans);pointer-events:none;opacity:0;transition:opacity .12s}
+#tip.on{opacity:1}
 .symw .kindsub{font:500 10px var(--sans);color:var(--muted);letter-spacing:.02em}
 .tag.held.warn{color:#d9a441} .tag.held.bad{color:#e5484d}
 button.fix{display:inline-block;margin-top:4px;font:600 11.5px var(--sans);border-radius:6px;padding:3px 8px;cursor:pointer;border:1px solid currentColor;background:transparent;white-space:nowrap}
@@ -432,12 +437,12 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <thead><tr>
           <th class="l">Рынок</th><th class="l">Статус</th>
           <th>RH, $</th><th>Вход RH</th><th>Core, $</th><th>Вход Core</th>
-          <th>Перекос, $</th><th>Заложено на входе</th><th>PnL RH</th><th>PnL Core</th><th>Фандинг</th><th>Связка</th>
-          <th>Спред сейчас</th><th>Выход сейчас</th><th>Итог при закрытии</th><th>Цель, $</th>
+          <th>Перекос, $</th><th title="Заложено на входе: результат на спреде в момент открытия">На входе</th><th>PnL RH</th><th>PnL Core</th><th>Фандинг</th><th>Связка</th>
+          <th>Спред сейчас</th><th title="Выход сейчас: что добавит закрытие обеих ног по ценам стакана прямо сейчас">Выход</th><th title="Итог при закрытии: на входе + выход + фандинг">Итог закр.</th><th>Цель, $</th>
         </tr></thead>
         <tbody id="pairs"></tbody>
       </table></div>
-      <div class="note">«Связка» = PnL обеих ног плюс фандинг. «Заложено на входе» — сколько вы выиграли или потеряли на разнице цен между инстансами в момент открытия. «Выход сейчас» — выгода закрытия обеих ног по лучшим ценам стакана прямо сейчас, в долларах на ваш размер. <b>«Итог при закрытии»</b> = заложено на входе + выход сейчас + фандинг — сколько связка даст по спреду, если закрыть её прямо сейчас (без комиссий). «Цель, $» — порог уведомления «можно закрывать» для этой связки; пусто — общий порог.</div>
+      <div class="note">«Связка» = PnL обеих ног плюс фандинг. <b class="sS">S</b> — шорт, <b class="sL">L</b> — лонг. «На входе» (заложено на входе) — сколько вы выиграли или потеряли на разнице цен между инстансами в момент открытия. «Выход» (выход сейчас) — выгода закрытия обеих ног по лучшим ценам стакана прямо сейчас, в долларах на ваш размер. <b>«Итог закр.»</b> (итог при закрытии) = на входе + выход + фандинг — сколько связка даст по спреду, если закрыть её прямо сейчас (без комиссий). «Цель, $» — порог уведомления «можно закрывать» для этой связки; пусто — общий порог.</div>
     </section>
 
     <section>
@@ -608,17 +613,17 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <h3>Таблица «Открытые связки»</h3>
       <dl class="g-terms">
         <dt>Статус</dt><dd><span class="tag ok">хедж</span> ноги равны и противоположны · <span class="tag warn">перекос</span> размеры разошлись больше чем на 2% · <span class="tag bad">одна нога</span> позиция только на одной площадке · <span class="tag bad">не хедж</span> обе ноги в одну сторону.</dd>
-        <dt>Буст 2.5x <span class="dim">(расширенный режим)</span></dt><dd>Хедж-буст Lighter к недельным поинтам действует только для одного направления: крипта, сырьё и ETF — <b>лонг на RH / шорт на Core</b>; pre-IPO и акции — <b>шорт на RH / лонг на Core</b>. <span class="tag ok">буст 2.5x</span> — связка в нужную сторону, <span class="tag bad">без буста 2.5x</span> — в обратную. Правило взято из документации Lighter (23.10.2026), Lighter может его менять каждую неделю.</dd>
-        <dt>📊 Отчёт <span class="dim">(расширенный режим)</span></dt><dd>Компания отчитывается внутри текущей недели подсчёта поинтов (пятница — четверг) — Lighter даёт такому рынку earnings-буст к недельным поинтам. Серая метка «след. нед.» — отчёт попадёт в следующую неделю. Даты берутся из календаря отчётности и обновляются вручную — сверяйте. В день отчёта цена может резко двигаться: держите плечо пониже.</dd>
+        <dt>Буст 2.5x <span class="dim">(расширенный режим)</span></dt><dd>Хедж-буст Lighter к недельным поинтам действует только для одного направления: крипта, сырьё и ETF — <b>лонг на RH / шорт на Core</b>; pre-IPO и акции — <b>шорт на RH / лонг на Core</b>. <span class="tag ok boost">2.5x</span> — связка в нужную сторону, <span class="tag bad boost no">2.5x</span> (красный, зачёркнутый) — в обратную, буста нет. Правило взято из документации Lighter (23.10.2026), Lighter может его менять каждую неделю.</dd>
+        <dt>📊 Отчёт <span class="dim">(расширенный режим)</span></dt><dd><span class="tag earn">📊</span> в жёлтой рамке — компания отчитывается внутри текущей недели подсчёта поинтов (пятница — четверг), Lighter даёт такому рынку earnings-буст к недельным поинтам. Серый 📊 — отчёт попадёт в следующую неделю. Дату показывает подсказка (наведите или нажмите). Даты берутся из календаря отчётности и обновляются вручную — сверяйте. В день отчёта цена может резко двигаться: держите плечо пониже.</dd>
         <dt>Вход RH / Вход Core</dt><dd>Средние цены открытия ног.</dd>
         <dt>RH, $ / Core, $</dt><dd>Размер ноги в долларах по цене входа, под ним — в монетах.</dd>
         <dt>Перекос, $</dt><dd>Разница размеров ног в долларах (в монетах — при наведении). Близко к нулю — хорошо.</dd>
-        <dt>Заложено на входе</dt><dd>Результат на спреде в момент открытия: разница цен входа × размер. Зафиксирован, пока позиция открыта. Минус здесь — не ошибка сам по себе: его может компенсировать выход.</dd>
+        <dt>На входе (заложено на входе)</dt><dd>Результат на спреде в момент открытия: разница цен входа × размер. Зафиксирован, пока позиция открыта. Минус здесь — не ошибка сам по себе: его может компенсировать выход.</dd>
         <dt>PnL RH / PnL Core</dt><dd>Результат каждой ноги по данным Lighter. По отдельности смысла не имеют — одна нога всегда в плюсе, другая в минусе.</dd>
         <dt>Фандинг</dt><dd>Сумма полученных (+) и уплаченных (−) фандинговых платежей по обеим ногам.</dd>
         <dt>Связка</dt><dd>PnL RH + PnL Core + фандинг — итог по марк-цене Lighter.</dd>
         <dt>Спред сейчас</dt><dd>Разница цен между площадками в данный момент (по середине стакана).</dd>
-        <dt>Выход сейчас</dt><dd>Сколько добавит закрытие прямо сейчас по реальным ценам стакана: для шорта RH — покупка на RH по лучшему предложению и продажа на Core по лучшему спросу. Плюс — хороший момент для выхода.</dd>
+        <dt>Выход (выход сейчас)</dt><dd>Сколько добавит закрытие прямо сейчас по реальным ценам стакана: для шорта RH — покупка на RH по лучшему предложению и продажа на Core по лучшему спросу. Плюс — хороший момент для выхода.</dd>
       </dl>
       <p class="g-formula small">Итог, если закрыть сейчас ≈ <span>Заложено на входе</span> + <span>Выход сейчас</span> + <span>Фандинг</span></p>
 
@@ -706,7 +711,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <h3>Простой и расширенный режим</h3>
       <p>По умолчанию сайт открывается в <b>простом режиме</b>: в таблицах только главное — рынок, статус, итог связки, итог при закрытии, сигнал и спред, а фильтры, детали калькулятора и последние сделки спрятаны за кнопками. Кнопка «Режим» вверху включает <b>расширенный режим</b> со всеми колонками и индикаторами. Выбор запоминается в браузере, уведомления работают в обоих режимах.</p>
       <h3>Фильтры и избранное</h3>
-      <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом», в расширенном режиме — «только с бустом 2.5x». Рядом с монетой (расширенный режим): <span class="tag ok">2.5x</span> — выбранное направление получает хедж-буст Lighter, <span class="tag">2.5x ⇄</span> — буст только в обратном направлении; «📊 отчёт» — отчёт компании внутри недели подсчёта поинтов. ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают.</p>
+      <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом», в расширенном режиме — «только с бустом 2.5x». Рядом с монетой (расширенный режим): <span class="tag ok boost">2.5x</span> — выбранное направление получает хедж-буст Lighter, <span class="tag bad boost no">2.5x</span> — буст только в обратном направлении; <span class="tag earn">📊</span> — отчёт компании внутри недели подсчёта поинтов. ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают.</p>
       <h3>Калькулятор входа</h3>
       <p>Кликните монету и впишите сумму на одну ногу. Сайт пройдёт по стаканам обоих инстансов и покажет количество монет, средние цены, проскальзывание, реальный спред на вашу сумму и сколько вы закладываете на входе — маркетом на обеих ногах и если Core поставить лимиткой. «Макс. размер» — сколько можно зайти, чтобы цена ушла не дальше 0.05%. Комиссии не учитываются.</p>
       <h3>Колонка «Premium RH»</h3>
@@ -745,7 +750,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.18 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.19 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -842,15 +847,29 @@ const MKT=(()=>{
     const dd=new Date(t).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',timeZone:'UTC'});
     if(t>=w0&&t<w0+W) return {now:true,dd}; if(t>=w0+W&&t<w0+2*W) return {now:false,dd}; return null; }
   function earnTag(s){ const e=earn(s); if(!e) return '';
-    return e.now?`<span class="adv"> <span class="tag warn earn" title="Компания отчитывается ${e.dd} — внутри текущей недели подсчёта поинтов (пт–чт). Lighter даёт таким рынкам earnings-буст к недельным поинтам (размер не раскрыт). В день отчёта цена может резко прыгнуть — осторожнее с плечом.">📊 отчёт ${e.dd}</span></span>`
-      :`<span class="adv"> <span class="tag earn dim" title="Отчёт ${e.dd} — попадёт в следующую неделю подсчёта поинтов.">📊 ${e.dd}, след. нед.</span></span>`; }
+    return e.now?`<span class="adv"> <span class="tag earn" data-tip="📊 Отчёт ${e.dd} — внутри текущей недели подсчёта поинтов (пт–чт). Lighter даёт таким рынкам earnings-буст к недельным поинтам (размер не раскрыт). В день отчёта цена может резко прыгнуть — осторожнее с плечом.">📊</span></span>`
+      :`<span class="adv"> <span class="tag earn next" data-tip="📊 Отчёт ${e.dd} — попадёт в следующую неделю подсчёта поинтов.">📊</span></span>`; }
   // метка буста для сканера: dir — 'shortRH' | 'longRH'
   function boostTag(s,dir){ const need=boostRH(s), have=dir==='shortRH'?'short':'long', k=kind(s);
     const want=need==='short'?'шорт RH / лонг Core':'лонг RH / шорт Core';
-    return have===need?`<span class="adv"> <span class="tag ok boostS" title="Хедж-буст 2.5x к недельным поинтам: для «${k}» засчитывается ${want} — как выбрано сейчас. Правило Lighter, может меняться еженедельно">2.5x</span></span>`
-      :`<span class="adv"> <span class="tag boostS off" title="В выбранном направлении буста нет. Для «${k}» хедж-буст 2.5x даёт ${want} — переключите направление над таблицей">2.5x ⇄</span></span>`; }
+    return have===need?`<span class="adv"> <span class="tag ok boost" data-tip="Хедж-буст 2.5x к недельным поинтам есть: для «${k}» засчитывается ${want} — как выбрано сейчас. Правило Lighter, может меняться еженедельно">2.5x</span></span>`
+      :`<span class="adv"> <span class="tag bad boost no" data-tip="В выбранном направлении буста 2.5x нет. Для «${k}» хедж-буст даёт ${want} — переключите направление над таблицей">2.5x</span></span>`; }
   const hasBoost=(s,dir)=>boostRH(s)===(dir==='shortRH'?'short':'long');
   return {kind,boostRH,earnTag,boostTag,hasBoost};
+})();
+// всплывающие подсказки для меток (наведение и нажатие — для телефона)
+(()=>{ let tip=null, timer=null;
+  const show=el=>{ if(!tip){tip=document.createElement('div');tip.id='tip';document.body.appendChild(tip);}
+    tip.textContent=el.dataset.tip; tip.classList.add('on');
+    const r=el.getBoundingClientRect(), w=Math.min(280,window.innerWidth-16);
+    tip.style.maxWidth=w+'px'; const tw=tip.offsetWidth, th=tip.offsetHeight;
+    let x=Math.min(Math.max(8,r.left+r.width/2-tw/2),window.innerWidth-tw-8), y=r.bottom+6; if(y+th>window.innerHeight-8) y=r.top-th-6;
+    tip.style.left=x+'px'; tip.style.top=y+'px'; };
+  const hide=()=>{ if(tip) tip.classList.remove('on'); };
+  document.addEventListener('mouseover',e=>{ const el=e.target.closest&&e.target.closest('[data-tip]'); if(el) show(el); });
+  document.addEventListener('mouseout',e=>{ const el=e.target.closest&&e.target.closest('[data-tip]'); if(el&&!el.contains(e.relatedTarget)) hide(); });
+  document.addEventListener('click',e=>{ const el=e.target.closest&&e.target.closest('[data-tip]'); if(el){ e.stopPropagation(); show(el); clearTimeout(timer); timer=setTimeout(hide,4000); } else hide(); },true);
+  window.addEventListener('scroll',hide,true);
 })();
 let held=new Set();          // symbols with an open position on the selected wallet (for the scanner)
 let heldInfo={};             // sym -> {r:$ RH, c:$ Core, qr, qc} — размеры ног для сканера
@@ -1030,7 +1049,7 @@ const Desk=(()=>{
         });
       }
       const usd0=v=>'$'+(v>=100?Math.round(v).toLocaleString('ru-RU'):v.toFixed(2));
-      const side=(q,px)=>q===0?'—':`${q<0?'шорт':'лонг'} <b>${usd0(Math.abs(q)*px)}</b><br><span class="dim qty">${+Math.abs(q).toFixed(6)} шт</span>`;
+      const side=(q,px)=>q===0?'—':`${q<0?'<b class="sS" title="шорт">S</b>':'<b class="sL" title="лонг">L</b>'} <b>${usd0(Math.abs(q)*px)}</b><br><span class="dim qty">${+Math.abs(q).toFixed(6)} шт</span>`;
       const refPx=((r?+r.avg_entry_price:0)+(c?+c.avg_entry_price:0))/((r?1:0)+(c?1:0)||1);
       const netUsd=net*refPx;
       // подсказка: что добрать или открыть, чтобы ноги стали равными по монетам
@@ -1046,8 +1065,8 @@ const Desk=(()=>{
       let boost='';
       if(r&&c&&Math.sign(qr)!==Math.sign(qc)){ const need=MKT.boostRH(s), have=qr<0?'short':'long', k=MKT.kind(s);
         const want=need==='short'?'RH шорт / Core лонг':'RH лонг / Core шорт';
-        boost=have===need?`<span class="adv"><br><span class="tag ok boost" title="Хедж-буст 2.5x к недельным поинтам: для «${k}» засчитывается направление ${want}. Правило Lighter, может меняться еженедельно">буст 2.5x</span></span>`
-          :`<span class="adv"><br><span class="tag bad boost" title="Это направление не получает хедж-буст 2.5x к недельным поинтам. Для «${k}» буст даёт ${want}. Правило Lighter, может меняться еженедельно">без буста 2.5x</span></span>`; }
+        boost=have===need?`<span class="adv"> <span class="tag ok boost" data-tip="Хедж-буст 2.5x к недельным поинтам есть: для «${k}» засчитывается ${want}. Правило Lighter, может меняться еженедельно">2.5x</span></span>`
+          :`<span class="adv"> <span class="tag bad boost no" data-tip="Буста 2.5x нет: это направление не получает хедж-буст. Для «${k}» буст даёт ${want}. Правило Lighter, может меняться еженедельно">2.5x</span></span>`; }
       return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span>${boost}${MKT.earnTag(s)}${fix?'<br>'+fix:''}</td>
         <td class="${lack==='RH'?'lack':''}">${side(qr,r?+r.avg_entry_price:0)}</td><td>${r?r.avg_entry_price:'—'}</td><td class="${lack==='CORE'?'lack':''}">${side(qc,c?+c.avg_entry_price:0)}</td><td>${c?c.avg_entry_price:'—'}</td>
         <td class="${Math.abs(netUsd)>=0.01?'dim':''}" title="${net?(+net.toFixed(6))+' шт':'0'}">${net?(netUsd>0?'+':'−')+usd0(Math.abs(netUsd)):'0'}</td>
