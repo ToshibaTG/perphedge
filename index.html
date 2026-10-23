@@ -180,6 +180,10 @@ tr.danger td{background:color-mix(in srgb,#e5484d 14%,transparent)}
 .pager{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;margin-top:8px}
 .pager .pinfo{color:var(--muted);font-size:13px}
 .pager button[disabled]{opacity:.4;cursor:default}
+.wcut{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px;font-size:13px}
+.wcut .btn-cut{font-weight:700}
+.wcut input{width:120px}
+.ppm{display:block;font-size:11px;color:var(--muted,#888);margin-top:2px;white-space:nowrap}
 .wbar{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin:0 0 6px;font-size:13px}
 .qty{font-size:11px}
 .wck{display:inline-flex;align-items:center;margin-right:8px;cursor:pointer;vertical-align:middle}
@@ -255,6 +259,13 @@ tbody tr:last-child td{border-bottom:0}
 .tag{font:500 11px var(--sans);border-radius:999px;padding:1px 8px;border:1px solid currentColor}
 .tag.ok{color:var(--good)} .tag.warn{color:var(--warn)} .tag.bad{color:var(--bad)}
 .tag.kind{border-color:transparent;background:var(--chip);color:var(--muted)}
+.symw{display:inline-flex;flex-direction:column;vertical-align:middle;line-height:1.15;margin-right:4px}
+.symw .kindsub{font:500 10px var(--sans);color:var(--muted);letter-spacing:.02em}
+.tag.held.warn{color:#d9a441} .tag.held.bad{color:#e5484d}
+button.fix{display:inline-block;margin-top:4px;font:600 11.5px var(--sans);border-radius:6px;padding:3px 8px;cursor:pointer;border:1px solid currentColor;background:transparent;white-space:nowrap}
+button.fix.bad{color:#e5484d;background:#e5484d14} button.fix.warn{color:#d9a441;background:#d9a44114}
+#pairs td.lack{color:#e5484d} #pairs td.lack b{color:#e5484d;text-decoration:underline wavy #e5484d88}
+.live{color:var(--accent);font-weight:700;animation:lv 1.6s ease-in-out infinite} @keyframes lv{50%{opacity:.45}}
 .tag.held{color:var(--accent)}
 .goalbtn{display:inline-flex;padding:2px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-size:12.5px;line-height:1;cursor:pointer;vertical-align:middle;gap:0}
 .goalbtn span{padding:4px 10px;border-radius:999px;color:var(--muted,#8a9690)}
@@ -429,9 +440,10 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between">
         <h2>Неделя за неделей: затраты против поинтов</h2>
         <label class="sub">Неделя начинается
-          <select id="wday"><option value="5">в пятницу</option><option value="4">в четверг</option><option value="1">в понедельник</option></select>
-          (00:00 UTC)</label>
+          <select id="wday"><option value="5">в пятницу</option><option value="6">в субботу</option><option value="1">в понедельник</option></select>
+          в <select id="whr"></select> МСК</label>
       </div>
+      <div class="wcut" id="wcut"></div>
       <div class="wbar"><span class="sub">✓ — неделя учитывается во «Всего».</span> <button class="link" id="wall">отметить все</button> · <button class="link" id="wnone">снять все</button></div>
       <div class="tw"><table id="t-weeks">
         <thead><tr>
@@ -608,11 +620,12 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <dt>Объём RH / Core</dt><dd>Оборот за неделю на каждой площадке.</dd>
         <dt>Итог</dt><dd>Изменение торгового результата за неделю: закрытые и открытые позиции, фандинг и комиссии. Пополнения и выводы не учитываются.</dd>
         <dt>Галочка у недели</dt><dd>Учитывать ли неделю во «Всего». Снимите галочки со старых недель, когда вы ещё не фармили, — итог, затраты и $ за поинт будут считаться только по нужному периоду. Выбор запоминается для каждого кошелька. Пустые недели без торговли не показываются.</dd>
-        <dt>Поинты</dt><dd>Впишите вручную после еженедельной раздачи Lighter.</dd>
+        <dt>Поинты</dt><dd>Впишите вручную после еженедельной раздачи Lighter — или укажите общий счёт при фиксации недели, и разница посчитается сама. Под числом — поинтов на $1 млн объёма RH.</dd>
+        <dt>Начать новую неделю сейчас</dt><dd>Нажмите сразу после начисления поинтов: с этого момента (с точностью до часа) пойдёт новая неделя. Можно вписать «Ваши общие очки» со страницы поинтов Lighter — тогда поинты закрытой недели заполнятся сами (со второй фиксации). Фиксации хранятся в этом браузере. Точно делить неделю посреди дня можно за последние ~7 дней — раньше Lighter отдаёт историю только по дням.</dd>
         <dt>$ за поинт</dt><dd>Сколько стоил один поинт: минус итога недели / поинты.</dd>
         <dt>Цена поинта OTC</dt><dd>Впишите текущую рыночную оценку поинта — получите стоимость поинтов и чистый результат.</dd>
       </dl>
-      <p>Неделя по умолчанию начинается в пятницу 00:00 UTC — в день, когда Lighter публикует раздачу. Можно поменять.</p>
+      <p>Если фиксаций нет, неделя начинается автоматически — по умолчанию в пятницу в 17:00 МСК, примерно когда Lighter начисляет поинты. День и час можно поменять. Ручная фиксация важнее автоматической.</p>
     </section>
 
     <section class="g-sec" id="g-example">
@@ -653,7 +666,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <dt>Перцентиль</dt><dd>Какая доля окна была хуже текущего момента для входа.</dd>
         <dt>OI / Объём на RH</dt><dd>Открытый интерес и оборот за сутки — насколько рынок популярный.</dd>
       </dl>
-      <p>Метка <span class="tag held">в позиции</span> отмечает рынки, где у выбранного кошелька есть открытая позиция.</p>
+      <p>Метка <span class="tag held">в позиции $3 499</span> — у выбранного кошелька открыта связка на эту сумму (по ноге Robinhood). Если ноги разные — <span class="tag held bad">RH $3 499 / Core $3 000</span>, если нога одна — <span class="tag held bad">только RH $3 499</span>. Тип рынка (акция, ETF, pre-IPO) написан мелко под названием. Когда монета открыта, калькулятор входа получает стаканы в реальном времени — метка <span class="live">● live</span>.</p>
     </section>
 
     <section class="g-sec" id="g-chart">
@@ -725,7 +738,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.15 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.17 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -804,6 +817,7 @@ function labelize(sel){
     [...tr.children].forEach((td,i)=>{ if(ths[i]!=null) td.dataset.label=ths[i]; }); });
 }
 let held=new Set();          // symbols with an open position on the selected wallet (for the scanner)
+let heldInfo={};             // sym -> {r:$ RH, c:$ Core, qr, qc} — размеры ног для сканера
 const statusText={desk:'Загрузка…',scan:'Открой вкладку, чтобы загрузить сканер'};
 let activeTab='desk';
 function setStatus(tab,txt){statusText[tab]=txt; if(tab===activeTab) $('#status').textContent=txt}
@@ -870,13 +884,16 @@ const Alerts=(()=>{
 /* ---------- TAB 1: МОИ СВЯЗКИ ---------- */
 const Desk=(()=>{
   const LS='perphedge.desk.v1';
-  let st={addr:'',wday:5,points:{},otc:{},wex:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
+  let st={addr:'',wday:5,whr:17,cuts:{},points:{},otc:{},wex:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
   try{Object.assign(st,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
   if(!Array.isArray(st.wallets)) st.wallets=[];
   st.al=Object.assign({on:false,exit:0,zone:true,liq:true,margin:true,leg:true},st.al||{}); st.tgt=st.tgt||{};
   let prevLegs={};   // какие ноги были на прошлом обновлении — чтобы заметить пропавшую позицию
   if(st.addr&&!st.wallets.some(w=>w.addr.toLowerCase()===st.addr.toLowerCase())) st.addr=st.wallets[0]?.addr||'';
   const pk=w=>st.addr.toLowerCase()+'|'+w;
+  if(![5,6,1].includes(+st.wday)) st.wday=5;
+  if(!(st.whr>=0&&st.whr<24)) st.whr=17;
+  if(!st.cuts||typeof st.cuts!=='object') st.cuts={};
   const alertsOn=()=>st.al.on&&!isExample();
   const fpx=v=>v>=1000?v.toFixed(2):v>=1?(+v.toFixed(4)).toString():v.toPrecision(5);
   const save=()=>{try{localStorage.setItem(LS,JSON.stringify(st))}catch(e){}};
@@ -926,6 +943,8 @@ const Desk=(()=>{
     const opened={}; [...new Set([...Object.keys(R),...Object.keys(C)])].forEach(s=>{const t=[openedAt('RH',R[s]),openedAt('CORE',C[s])].filter(Boolean); opened[s]=t.length?Math.min(...t):null;});
     const syms=Object.keys(opened).sort((x,y)=>(opened[y]??-1)-(opened[x]??-1)||x.localeCompare(y));   // свежие сверху
     held=new Set(syms);
+    heldInfo={}; syms.forEach(s=>{ const r=R[s], c=C[s];
+      heldInfo[s]={qr:r?(+r.position)*r.sign:0, qc:c?(+c.position)*c.sign:0, r:r?Math.abs(+r.position)*(+r.avg_entry_price):0, c:c?Math.abs(+c.position)*(+c.avg_entry_price):0}; });
     if(alertsOn()&&st.al.leg){ const legs={}; syms.forEach(s=>legs[s]={r:!!R[s],c:!!C[s]});
       for(const s in prevLegs){ const was=prevLegs[s], now=legs[s]||{r:false,c:false};
         if(was.r&&was.c&&(now.r!==now.c)){ const gone=now.r?'Core':'Robinhood', left=now.r?'Robinhood':'Core';
@@ -975,8 +994,17 @@ const Desk=(()=>{
       const side=(q,px)=>q===0?'—':`${q<0?'шорт':'лонг'} <b>${usd0(Math.abs(q)*px)}</b><br><span class="dim qty">${+Math.abs(q).toFixed(6)} шт</span>`;
       const refPx=((r?+r.avg_entry_price:0)+(c?+c.avg_entry_price:0))/((r?1:0)+(c?1:0)||1);
       const netUsd=net*refPx;
-      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span></td>
-        <td>${side(qr,r?+r.avg_entry_price:0)}</td><td>${r?r.avg_entry_price:'—'}</td><td>${side(qc,c?+c.avg_entry_price:0)}</td><td>${c?c.avg_entry_price:'—'}</td>
+      // подсказка: что добрать или открыть, чтобы ноги стали равными по монетам
+      let fix='', lack=null;
+      { const ar=Math.abs(qr), ac=Math.abs(qc), px=refPx||1;
+        const fq6=v=>String(+v.toFixed(6));
+        if(r&&c&&Math.sign(qr)!==Math.sign(qc)){ const d=Math.abs(ar-ac), rel=d/Math.max(ar,ac);
+          if(rel>0.005){ lack=ar<ac?'RH':'CORE'; const q0=lack==='RH'?qr:qc;
+            fix=`<button class="fix ${rel>0.02?'bad':'warn'}" data-copy="${fq6(d)}" title="Нажмите — количество скопируется, останется вставить в приложение">${lack==='RH'?'Robinhood':'Core'}: добрать ${q0<0?'шорт':'лонг'} +${fq6(d)} шт ≈ ${usd0(d*px)}</button>`; } }
+        else if(r&&!c){ lack='CORE'; fix=`<button class="fix bad" data-copy="${fq6(ar)}" title="Нажмите — количество скопируется">Core: открыть ${qr<0?'лонг':'шорт'} ${fq6(ar)} шт ≈ ${usd0(ar*px)}</button>`; }
+        else if(c&&!r){ lack='RH'; fix=`<button class="fix bad" data-copy="${fq6(ac)}" title="Нажмите — количество скопируется">Robinhood: открыть ${qc<0?'лонг':'шорт'} ${fq6(ac)} шт ≈ ${usd0(ac*px)}</button>`; } }
+      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span>${fix?'<br>'+fix:''}</td>
+        <td class="${lack==='RH'?'lack':''}">${side(qr,r?+r.avg_entry_price:0)}</td><td>${r?r.avg_entry_price:'—'}</td><td class="${lack==='CORE'?'lack':''}">${side(qc,c?+c.avg_entry_price:0)}</td><td>${c?c.avg_entry_price:'—'}</td>
         <td class="${Math.abs(netUsd)>=0.01?'dim':''}" title="${net?(+net.toFixed(6))+' шт':'0'}">${net?(netUsd>0?'+':'−')+usd0(Math.abs(netUsd)):'0'}</td>
         <td class="${cls(entryGap)}">${sgn(entryGap)}</td>
         <td class="${cls(pr)}">${sgn(pr)}</td><td class="${cls(pcx)}">${sgn(pcx)}</td><td class="${cls(fund)}">${sgn(fund)}</td>
@@ -988,12 +1016,35 @@ const Desk=(()=>{
     }));
     if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#pairs')) return;   // не мешаем вводу цели
     $('#pairs').innerHTML=rows.join(''); labelize('#pairs');
+    $('#pairs').onclick=async e=>{ const b=e.target.closest('button.fix'); if(!b) return;
+      try{ await navigator.clipboard.writeText(b.dataset.copy); const t=b.textContent; b.textContent='✓ скопировано: '+b.dataset.copy+' шт'; setTimeout(()=>{ if(b.isConnected) b.textContent=t; },1500); }
+      catch(err){ prompt('Скопируйте количество:',b.dataset.copy); } };
     document.querySelectorAll('#pairs input.tgt').forEach(inp=>inp.onchange=()=>{const v=parseFloat(inp.value.replace(',','.').replace('−','-'));
       if(isNaN(v)) delete st.tgt[inp.dataset.k]; else st.tgt[inp.dataset.k]=v; save(); Alerts.reset('x|'); tick(true)});
   }
-  function weekStart(ts){const d=new Date(ts);d.setUTCHours(0,0,0,0);const back=(d.getUTCDay()-st.wday+7)%7;d.setUTCDate(d.getUTCDate()-back);return d.getTime()}
-  // История PnL по дням: точка = значение на конец суток (последняя — текущее). Часовые данные Lighter хранит
-  // только ~неделю, поэтому результат недель берём из дневных (до года назад), а объём последней недели — из часовых.
+  // Граница недели: ручные фиксации («начать новую неделю сейчас») + авто (день и час МСК).
+  // Авто-граница не действует, если рядом (±3.5 дня) есть ручная фиксация.
+  const WK=7*864e5, MSK=3*3600e3;
+  const myCuts=()=>((st.cuts||{})[(st.addr||'').toLowerCase()]||[]).slice().sort((a,b)=>a.t-b.t);
+  function autoB(ts){const d=new Date(ts+MSK);d.setUTCHours(st.whr,0,0,0);let b=d.getTime()-MSK;
+    const back=(new Date(b+MSK).getUTCDay()-st.wday+7)%7; b-=back*864e5; if(b>ts) b-=WK; return b}
+  function bounds(){ return myCuts().map(c=>c.t) }
+  function weekStart(ts){
+    const cs=bounds(), near=b=>cs.some(c=>Math.abs(c-b)<3.5*864e5);
+    let best=-Infinity;
+    for(let k=0,b=autoB(ts);k<4;k++,b-=WK) if(!near(b)){best=b;break}
+    for(const c of cs) if(c<=ts&&c>best) best=c;
+    return best;
+  }
+  function weekEnd(w){ // следующая граница после начала недели
+    const cs=bounds(), near=b=>cs.some(c=>Math.abs(c-b)<3.5*864e5);
+    let e=Infinity;
+    for(let k=0,b=autoB(w)+WK;k<4;k++,b+=WK) if(b>w&&!near(b)){e=b;break}
+    for(const c of cs) if(c>w&&c<e) e=c;
+    return e;
+  }
+  // История PnL: дневные точки (до года назад) + часовые (последние ~7 дней, Lighter дольше не хранит).
+  // Точка = значение на конец периода; объём — за этот период.
   async function pnlSeries(k){
     if(acc[k]==null) return {pts:[],base:0,hrs:[]};
     const now=Math.floor(Date.now()/60000)*60000, D=864e5, H=3600e3, start=now-366*D, hs=now-167*H;
@@ -1006,69 +1057,121 @@ const Desk=(()=>{
     const cut=pts.length&&pts[0].timestamp*1000-start<1.5*D;
     return {pts:cut?pts.slice(1):pts, base:cut?+pts[0].trade_pnl:0, hrs};
   }
-  function weekly({pts,base,hrs}){
-    const out={}, D=864e5; let prev=base;
+  // единый ряд: дневные точки до начала часовых, дальше часовые — так граница посреди дня делится по часам
+  function series({pts,base,hrs}){
+    const D=864e5, h0=hrs.length?hrs[0].timestamp*1000-3600e3:Infinity, out=[];
+    for(const x of pts){
+      const T=x.timestamp*1000, v=+x.volume||0;
+      if(T<=h0){ out.push({T,pnl:+x.trade_pnl,vol:v}); continue; }
+      if(T-D<h0){ // сутки, которые часовые покрывают лишь частично: остаток объёма — до начала часовых
+        const part=hrs.filter(y=>y.timestamp*1000<=T).reduce((s,y)=>s+(+y.volume||0),0);
+        out.push({T:h0,pnl:null,vol:Math.max(0,v-part)});
+      }
+    }
+    if(!hrs.length) return {items:out,base};
+    for(const y of hrs) out.push({T:y.timestamp*1000,pnl:+y.trade_pnl,vol:+y.volume||0});
+    return {items:out.sort((a,b)=>a.T-b.T),base};
+  }
+  function weekly(raw){
+    const {items,base}=series(raw), out={}; let prev=base;
     const get=w=>out[w]||(out[w]={vol:0,start:null,end:null});
-    for(const x of pts){
-      const T=x.timestamp*1000, o=get(weekStart(T-1));   // точка на 00:00 закрывает предыдущие сутки
-      if(o.start==null) o.start=prev; o.end=+x.trade_pnl; prev=+x.trade_pnl;
+    for(const x of items){
+      const o=get(weekStart(x.T-1));   // точка на конец периода относится к неделе, где период закончился
+      o.vol+=x.vol;
+      if(x.pnl!=null){ if(o.start==null) o.start=prev; o.end=x.pnl; prev=x.pnl; }
     }
-    // объём: где есть часовые точки — по ним (точнее), раньше — по дневным
-    const h0=hrs.length?hrs[0].timestamp*1000-3600e3:Infinity;
-    for(const x of pts){
-      const T=x.timestamp*1000, v=+x.volume||0; if(T-D>=h0) continue;
-      const part=T>h0?hrs.filter(y=>y.timestamp*1000<=T).reduce((s,y)=>s+(+y.volume||0),0):0;
-      get(weekStart(T-1)).vol+=Math.max(0,v-part);
-    }
-    for(const y of hrs) get(weekStart(y.timestamp*1000-1)).vol+=+y.volume||0;
-    for(const w in out){ const o=out[w]; if(o.start==null){o.start=o.end=prev} o.pnl=o.end-o.start; }
+    // недели без точек PnL: результат 0; start — значение на конец предыдущей недели
+    const ks=Object.keys(out).map(Number).sort((a,b)=>a-b); let last=base;
+    for(const w of ks){ const o=out[w]; if(o.start==null){o.start=o.end=last} last=o.end; o.pnl=o.end-o.start; }
     return out;
   }
-  let cacheWeeks=null;
-  async function loadWeeks(){const e={pts:[],base:0,hrs:[]};const [sr,sc]=await Promise.all([pnlSeries('RH').catch(()=>e),pnlSeries('CORE').catch(()=>e)]);cacheWeeks={wr:weekly(sr),wc:weekly(sc)}}
+  let cacheWeeks=null, rawWeeks=null;
+  async function loadWeeks(){const e={pts:[],base:0,hrs:[]};const [sr,sc]=await Promise.all([pnlSeries('RH').catch(()=>e),pnlSeries('CORE').catch(()=>e)]);rawWeeks={sr,sc};recalcWeeks()}
+  function recalcWeeks(){ if(rawWeeks) cacheWeeks={wr:weekly(rawWeeks.sr),wc:weekly(rawWeeks.sc)} }
+  // значения, вписанные до v1.17, лежат под ключом начала недели в 00:00 UTC — подхватываем их
+  const legacyKey=w=>{const d=new Date(w);d.setUTCHours(0,0,0,0);return d.getTime()};
+  function bagGet(bag,w){ const a=bag[pk(w)]; if(a!=null) return a; const L=legacyKey(w); return L!==w?bag[pk(L)]:undefined }
+  function bagSet(bag,w,v){ const L=legacyKey(w); if(L!==w) delete bag[pk(L)]; if(v==null) delete bag[pk(w)]; else bag[pk(w)]=v }
+  const fmtCut=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Moscow'});
+  let cutOpen=false;
+  function renderCut(){
+    const el=$('#wcut'); if(!el) return;
+    if(!st.addr){ el.innerHTML=''; return; }
+    const cs=myCuts(), last=cs[cs.length-1];
+    const info=last?`<span class="sub">Последняя фиксация: <b>${fmtCut(last.t)} МСК</b>${last.total!=null?`, всего очков ${last.total}`:''} · <button class="link" id="wcutundo">отменить</button></span>`:
+      `<span class="sub">Пришло начисление поинтов? Зафиксируйте — с этой минуты пойдёт новая неделя.</span>`;
+    el.innerHTML=cutOpen?`<label class="sub">Ваши общие очки сейчас (необязательно) <input id="wcutpts" inputmode="decimal" placeholder="например 7.331372"></label>
+      <button class="primary btn-cut" id="wcutok">Зафиксировать</button> <button class="link" id="wcutno">отмена</button>`:
+      `<button class="primary btn-cut" id="wcutbtn">⏱ Начать новую неделю сейчас</button> ${info}`;
+    const b=$('#wcutbtn'); if(b) b.onclick=()=>{cutOpen=true;renderCut();$('#wcutpts').focus()};
+    const no=$('#wcutno'); if(no) no.onclick=()=>{cutOpen=false;renderCut()};
+    const ok=$('#wcutok'); if(ok) ok.onclick=doCut;
+    const inp=$('#wcutpts'); if(inp) inp.onkeydown=e=>{if(e.key==='Enter')doCut(); if(e.key==='Escape'){cutOpen=false;renderCut()}};
+    const u=$('#wcutundo'); if(u) u.onclick=()=>{ const a=st.addr.toLowerCase(), arr=myCuts(); const c=arr.pop(); st.cuts[a]=arr;
+      if(c&&c.auto&&bagGet(st.points,c.auto.w)===c.auto.v) bagSet(st.points,c.auto.w,null); save(); recalcWeeks(); renderWeeks(); };
+  }
+  function doCut(){
+    const a=st.addr.toLowerCase(), raw=($('#wcutpts').value||'').replace(',','.').trim(), total=raw?parseFloat(raw):null;
+    const t=Math.round(Date.now()/3600e3)*3600e3;   // по часу: точнее данные Lighter не делятся
+    const arr=myCuts().filter(c=>Math.abs(c.t-t)>=3600e3);
+    const prevTot=[...arr].reverse().find(c=>c.t<t&&c.total!=null);
+    const cut={t,total:(total!=null&&!isNaN(total))?total:null}; arr.push(cut); st.cuts[a]=arr;
+    cutOpen=false;
+    if(total!=null&&!isNaN(total)){
+      // поинты закрытой недели = рост общего счёта с прошлой фиксации (если она была с числом)
+      const got=prevTot?+(total-prevTot.total).toFixed(6):null;
+      const wNew=weekStart(t-1);   // начало закрытой недели при новых границах
+      if(got!=null&&got>=0&&bagGet(st.points,wNew)==null){ bagSet(st.points,wNew,got); cut.auto={w:wNew,v:got}; }
+    }
+    save(); wPage=0; recalcWeeks(); renderWeeks();
+  }
   let wPage=0, cPage=0;
   function renderWeeks(){
     if(!cacheWeeks) return;
     if(!st.wex||typeof st.wex!=='object') st.wex={};
+    renderCut();
     const {wr,wc}=cacheWeeks, now=weekStart(Date.now());
     // пустые недели (нет объёма и результата на обеих площадках) не показываем; текущую — всегда
-    const keys=[...new Set([...Object.keys(wr),...Object.keys(wc)])].map(Number).filter(w=>{
+    const keys=[...new Set([...Object.keys(wr),...Object.keys(wc),String(now)])].map(Number).filter(w=>{
       const r=wr[w]||{vol:0,pnl:0}, c=wc[w]||{vol:0,pnl:0};
-      return w===now||r.vol>0||c.vol>0||Math.abs(r.pnl)>=0.01||Math.abs(c.pnl)>=0.01||st.points[pk(w)]>0;
+      return w===now||r.vol>0||c.vol>0||Math.abs(r.pnl)>=0.01||Math.abs(c.pnl)>=0.01||bagGet(st.points,w)>0;
     }).sort((a,b)=>b-a);
-    const fmtW=w=>{const f=d=>new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',timeZone:'UTC'});return f(w)+'–'+f(w+6*864e5)};
-    const inc=w=>!st.wex[pk(w)];
+    const fmtW=w=>{const f=d=>new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',timeZone:'Europe/Moscow'}),
+      h=d=>new Date(d).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Moscow'});
+      const e=weekEnd(w); return f(w)+' '+h(w)+' – '+(e===Infinity?'…':f(e)+' '+h(e))};
+    const inc=w=>!bagGet(st.wex,w);
     let T={vr:0,vc:0,pr:0,pc:0,pts:0,val:0,n:0};
     keys.forEach(w=>{ if(!inc(w)) return; const r=wr[w]||{vol:0,pnl:0}, c=wc[w]||{vol:0,pnl:0};
-      const pts=st.points[pk(w)], otc=st.otc[pk(w)], val=pts>0&&otc>0?pts*otc:null;
+      const pts=bagGet(st.points,w), otc=bagGet(st.otc,w), val=pts>0&&otc>0?pts*otc:null;
       T.vr+=r.vol;T.vc+=c.vol;T.pr+=r.pnl;T.pc+=c.pnl;T.n++;if(pts>0)T.pts+=pts;if(val!=null)T.val+=val; });
     const PER=10; wPage=pager('#wpager',wPage,keys.length,PER,'недели',p=>{wPage=p;renderWeeks();});
     $('#weeks').innerHTML=keys.slice(wPage*PER,wPage*PER+PER).map(w=>{
       const r=wr[w]||{vol:0,pnl:0}, c=wc[w]||{vol:0,pnl:0}, tot=r.pnl+c.pnl;
-      const pts=st.points[pk(w)], otc=st.otc[pk(w)];
+      const pts=bagGet(st.points,w), otc=bagGet(st.otc,w);
+      const ppm=pts>0&&r.vol>0?pts/r.vol*1e6:null;
       const per=pts>0?-tot/pts:null, val=pts>0&&otc>0?pts*otc:null, net=val!=null?val+tot:null;
       const on=inc(w);
       return `<tr class="${on?'':'off'}"><td class="l"><label class="wck" title="${on?'Учитывается во «Всего». Снимите, чтобы не считать эту неделю':'Не учитывается во «Всего». Отметьте, чтобы считать'}"><input type="checkbox" data-wck="${w}" ${on?'checked':''} aria-label="Учитывать неделю ${fmtW(w)}"></label><span class="wlbl">${fmtW(w)}</span>${w===now?' <span class="tag ok">идёт</span>':''}</td>
         <td>${usdk(r.vol)}</td><td>${usdk(c.vol)}</td>
         <td class="${cls(r.pnl)}">${sgn(r.pnl)}</td><td class="${cls(c.pnl)}">${sgn(c.pnl)}</td><td class="${cls(tot)}"><b>${sgn(tot)}</b></td>
-        <td><input data-w="${w}" data-f="points" value="${pts??''}" aria-label="Поинты за неделю"></td>
+        <td><input data-w="${w}" data-f="points" value="${pts??''}" aria-label="Поинты за неделю">${ppm!=null?`<span class="ppm" title="Поинтов на $1 млн объёма RH">${n(ppm)} на $1M RH</span>`:''}</td>
         <td>${per==null?'—':'$'+n(per)}</td>
         <td><input data-w="${w}" data-f="otc" value="${otc??''}" aria-label="Цена поинта"></td>
         <td>${val==null?'—':'$'+n(val)}</td><td class="${cls(net)}">${net==null?'—':sgn(net)}</td></tr>`;
     }).join('')||'<tr><td class="l dim" colspan="11">Нет данных</td></tr>';
     const tot=T.pr+T.pc;
     $('#wtot').innerHTML=`<tr><td class="l">Всего${T.n<keys.length?` <span class="dim" style="font-weight:400">(${T.n} из ${keys.length} нед.)</span>`:''}</td><td>${usdk(T.vr)}</td><td>${usdk(T.vc)}</td><td class="${cls(T.pr)}">${sgn(T.pr)}</td><td class="${cls(T.pc)}">${sgn(T.pc)}</td>
-      <td class="${cls(tot)}">${sgn(tot)}</td><td>${T.pts||'—'}</td><td>${T.pts?'$'+n(-tot/T.pts):'—'}</td><td></td><td>${T.val?'$'+n(T.val):'—'}</td><td class="${cls(T.val+tot)}">${T.val?sgn(T.val+tot):'—'}</td></tr>`;
+      <td class="${cls(tot)}">${sgn(tot)}</td><td>${T.pts?+T.pts.toFixed(6):'—'}${T.pts&&T.vr?`<span class="ppm">${n(T.pts/T.vr*1e6)} на $1M RH</span>`:''}</td><td>${T.pts?'$'+n(-tot/T.pts):'—'}</td><td></td><td>${T.val?'$'+n(T.val):'—'}</td><td class="${cls(T.val+tot)}">${T.val?sgn(T.val+tot):'—'}</td></tr>`;
     labelize('#weeks'); labelize('#wtot');
     document.querySelectorAll('#weeks input[data-f]').forEach(inp=>inp.onchange=()=>{
       const v=parseFloat(inp.value.replace(',','.')), bag=inp.dataset.f==='points'?st.points:st.otc;
-      const key=pk(inp.dataset.w); if(isNaN(v)) delete bag[key]; else bag[key]=v; save(); renderWeeks();
+      bagSet(bag,+inp.dataset.w,isNaN(v)?null:v); save(); renderWeeks();
     });
     document.querySelectorAll('#weeks input[data-wck]').forEach(inp=>inp.onchange=()=>{
-      const key=pk(inp.dataset.wck); if(inp.checked) delete st.wex[key]; else st.wex[key]=true; save(); renderWeeks();
+      bagSet(st.wex,+inp.dataset.wck,inp.checked?null:true); save(); renderWeeks();
     });
-    $('#wall').onclick=()=>{ keys.forEach(w=>delete st.wex[pk(w)]); save(); renderWeeks(); };
-    $('#wnone').onclick=()=>{ keys.forEach(w=>st.wex[pk(w)]=true); save(); renderWeeks(); };
+    $('#wall').onclick=()=>{ keys.forEach(w=>bagSet(st.wex,w,null)); save(); renderWeeks(); };
+    $('#wnone').onclick=()=>{ keys.forEach(w=>bagSet(st.wex,w,true)); save(); renderWeeks(); };
   }
   let tradeCache={RH:[],CORE:[]}, tPage=0;
   async function fetchTrades(k){
@@ -1193,7 +1296,7 @@ const Desk=(()=>{
     if(pending||forAddr!==st.addr){pending=false; tick(true);}
   }
   function welcome(){
-    held=new Set();
+    held=new Set(); heldInfo={};
     ['#pairs','#weeks','#wtot','#trades','#tpager','#wpager','#cpager','#closed','#ctot'].forEach(s=>$(s).innerHTML='');
     $('#acc').innerHTML=`<div class="welcome"><b>Добавьте адрес кошелька</b>
       <span class="sub">Вставьте выше адрес (0x…), которым вы входите в Lighter, дайте ему название и нажмите «Загрузить и сохранить». Ключи и подключение кошелька не нужны — PerpHedge только читает публичные данные.</span>
@@ -1217,12 +1320,14 @@ const Desk=(()=>{
       $('#wsel').insertAdjacentHTML('afterbegin','<option value="ex">Пример · кошелёк фармера</option>'); $('#wsel').value='ex'; $('#wsel').disabled=false; $('#wdel').disabled=true; }
   }
   function load(addr){
-    st.addr=addr; save(); tPage=0; wPage=0; cPage=0; acc={RH:null,CORE:null}; lastSlow=0; cacheWeeks=null; held=new Set(); prevLegs={};
+    st.addr=addr; save(); tPage=0; wPage=0; cPage=0; acc={RH:null,CORE:null}; lastSlow=0; cacheWeeks=null; held=new Set(); heldInfo={}; prevLegs={};
     ['#pairs','#weeks','#wtot','#trades','#tpager','#wpager','#cpager','#closed','#ctot','#acc'].forEach(s=>$(s).innerHTML='');
     setStatus('desk','Загружаю '+short(addr)+'…'); fillWallets(); tick(true);
   }
   function init(){
-    $('#wday').value=String(st.wday); fillWallets();
+    $('#wday').value=String(st.wday);
+    $('#whr').innerHTML=Array.from({length:24},(_,h)=>`<option value="${h}">${String(h).padStart(2,'0')}:00</option>`).join(''); $('#whr').value=String(st.whr);
+    fillWallets();
     $('#wsel').onchange=e=>{const w=st.wallets[+e.target.value]; if(w) load(w.addr)};
     $('#exbtn').onclick=showExample;
     $('#exexit').onclick=()=>{ const back=st.wallets.find(w=>same(w.addr,prevAddr))||st.wallets[0];
@@ -1239,7 +1344,8 @@ const Desk=(()=>{
       st.wallets.splice(+$('#wsel').value,1);
       if(st.wallets.length) load(st.wallets[0].addr); else {st.addr='';save();acc={RH:null,CORE:null};fillWallets();welcome();}
     };
-    $('#wday').onchange=e=>{st.wday=+e.target.value;save();wPage=0;loadWeeks().then(renderWeeks)};
+    $('#wday').onchange=e=>{st.wday=+e.target.value;save();wPage=0;recalcWeeks();renderWeeks()};
+    $('#whr').onchange=e=>{st.whr=+e.target.value;save();wPage=0;recalcWeeks();renderWeeks()};
     const syncAl=()=>{ $('#pbell').classList.toggle('on',st.al.on); $('#pbelltxt').textContent=st.al.on?'уведомления включены':'уведомления выключены';
       $('#pexit').value=st.al.exit; $('#pzone').checked=st.al.zone; $('#pliq').checked=st.al.liq; $('#pmargin').checked=st.al.margin; $('#pleg').checked=st.al.leg; };
     syncAl();
@@ -1440,6 +1546,49 @@ const Scan=(()=>{
     $('#freset').onclick=resetFilters; $('#freset3').onclick=resetFilters;
   }
 
+  /* ---------- Живые стаканы открытой монеты (WebSocket Lighter) ---------- */
+  const Live=(()=>{
+    const URL={RH:'wss://api.rh.lighter.xyz/stream',CORE:'wss://mainnet.zklighter.elliot.ai/stream'};
+    const sock={RH:null,CORE:null}, sub={RH:null,CORE:null}, bk={RH:null,CORE:null}, last={RH:0,CORE:0};
+    let onUpd=null, resync=null;
+    function apply(k,ob,full){
+      const b=(full||!bk[k])?{bids:new Map(),asks:new Map()}:bk[k];
+      for(const sd of ['bids','asks']) for(const l of ob[sd]||[]){ const q=+l.size; if(q>0) b[sd].set(l.price,q); else b[sd].delete(l.price); }
+      bk[k]=b;
+    }
+    function close(k){ const w=sock[k]; sock[k]=null; sub[k]=null; bk[k]=null; last[k]=0; if(w){ w.onclose=w.onmessage=w.onerror=null; try{w.close()}catch(e){} } }
+    function open(k,mid){
+      close(k); let ws; try{ ws=new WebSocket(URL[k]); }catch(e){ return; }
+      sock[k]=ws; sub[k]=mid;
+      ws.onopen=()=>{ try{ ws.send(JSON.stringify({type:'subscribe',channel:'order_book/'+mid})); }catch(e){} };
+      ws.onmessage=e=>{ let d; try{ d=JSON.parse(e.data); }catch(x){ return; }
+        if(!d||!d.order_book||sock[k]!==ws) return;
+        apply(k,d.order_book,String(d.type||'').startsWith('subscribed')); last[k]=Date.now(); if(onUpd) onUpd(); };
+      ws.onclose=ws.onerror=()=>{ if(sock[k]===ws){ sock[k]=null; last[k]=0; } };
+    }
+    function side(k){
+      const b=bk[k]; if(!b) return null;
+      const bids=[...b.bids].map(([p,q])=>({p:+p,q})).sort((x,y)=>y.p-x.p), asks=[...b.asks].map(([p,q])=>({p:+p,q})).sort((x,y)=>x.p-y.p);
+      // защита от рассинхрона: если стакан «перехлестнулся», выбрасываем устаревшие уровни
+      if(bids.length&&asks.length&&bids[0].p>=asks[0].p) return null;
+      return {bids,asks};
+    }
+    return {
+      start(rh,core,cb){ onUpd=cb; if(sub.RH!==rh||!sock.RH) open('RH',rh); if(sub.CORE!==core||!sock.CORE) open('CORE',core);
+        if(!resync) resync=setInterval(()=>{ if(sub.RH!=null) open('RH',sub.RH); if(sub.CORE!=null) open('CORE',sub.CORE); },60e3); },   // раз в минуту — свежий снимок
+      stop(){ close('RH'); close('CORE'); onUpd=null; if(resync){ clearInterval(resync); resync=null; } },
+      ok(){ const t=Date.now(); return !!sock.RH&&!!sock.CORE&&t-last.RH<20e3&&t-last.CORE<20e3; },
+      get(){ const r=side('RH'), c=side('CORE'); return r&&c?{RH:r,CORE:c}:null; },
+      at(){ return Math.max(last.RH,last.CORE); }
+    };
+  })();
+  let liveDraw=0, liveTimer=null;
+  function onLive(force){
+    const now=Date.now();
+    if(!force&&now-liveDraw<250){ if(!liveTimer) liveTimer=setTimeout(()=>{ liveTimer=null; onLive(true); },260-(now-liveDraw)); return; }   // не чаще 4 раз в секунду, последнее обновление не теряем
+    const g=Live.get(), m=markets.find(x=>x.sym===ui.open); if(!g||!m) return;
+    liveDraw=now; books={sym:m.sym,RH:g.RH,CORE:g.CORE}; booksAt=now; drawCalc();
+  }
   /* ---------- Калькулятор входа: стаканы только для открытой монеты ---------- */
   let calcEl=null, books=null, booksAt=0, booksSym=null, calcTimer=null;
   function calcBox(){
@@ -1461,15 +1610,24 @@ const Scan=(()=>{
     slot.replaceWith(box); if(had){inp.focus(); try{inp.setSelectionRange(ss,se)}catch(e){}}
     if(booksSym!==ui.open){ books=null; booksSym=ui.open; box.querySelector('#cout').innerHTML='<span class="sub">Загружаю стаканы…</span>'; loadBooks(); }
     else drawCalc();
-    if(!calcTimer) calcTimer=setInterval(()=>{ if(activeTab==='scan'&&ui.open&&!document.hidden) loadBooks(); },10000);
+    liveOn();
+    if(!calcTimer) calcTimer=setInterval(()=>{
+      if(activeTab!=='scan'||!ui.open||document.hidden){ Live.stop(); return; }
+      liveOn(); if(!Live.ok()) loadBooks();          // живой поток недоступен — опрос раз в 3 секунды
+      else if(calcEl) calcEl.querySelector('#cage').innerHTML=cageTxt();
+    },3000);
   }
-  function stopCalc(){ if(calcTimer){clearInterval(calcTimer);calcTimer=null} booksSym=null; books=null; }
+  function liveOn(){ const m=markets.find(x=>x.sym===ui.open); if(m&&activeTab==='scan'&&!document.hidden) Live.start(m.rh,m.core,onLive); }
+  function stopCalc(){ if(calcTimer){clearInterval(calcTimer);calcTimer=null} Live.stop(); booksSym=null; books=null; }
+  const cageTxt=()=>Live.ok()?'<span class="live">● live</span> стаканы в реальном времени':'стаканы обновлены '+new Date(booksAt).toLocaleTimeString('ru-RU')+' · каждые 3 с';
   const lvl=o=>({p:+o.price, q:+(o.remaining_base_amount??o.base_amount??o.size??o.amount??0)});
   async function loadBooks(){
     const m=markets.find(x=>x.sym===ui.open); if(!m) return;
+    if(Live.ok()&&Live.get()){ onLive(true); return; }
     try{
       const [a,b]=await Promise.all([j(`${API.RH}/orderBookOrders?market_id=${m.rh}&limit=100`),j(`${API.CORE}/orderBookOrders?market_id=${m.core}&limit=100`)]);
       if(ui.open!==m.sym) return;
+      if(Live.ok()&&Live.get()){ onLive(true); return; }   // живой поток успел прийти — он свежее
       const side=x=>({bids:(x.bids||[]).map(lvl).filter(l=>l.p>0&&l.q>0).sort((u,v)=>v.p-u.p),asks:(x.asks||[]).map(lvl).filter(l=>l.p>0&&l.q>0).sort((u,v)=>u.p-v.p)});
       books={sym:m.sym,RH:side(a),CORE:side(b)}; booksAt=Date.now(); drawCalc();
     }catch(e){ const o=calcEl&&calcEl.querySelector('#cout'); if(o&&!books) o.innerHTML='<span class="sub">Не удалось загрузить стаканы. Попробую ещё раз через 5 секунд.</span>'; }
@@ -1523,7 +1681,7 @@ const Scan=(()=>{
         <div class="kv"><span>Макс. размер, проскальз. ≤ 0.05%</span><b>~$${n(maxUsd)}</b></div>
         <div class="kv"><span>Всего проскальзывание</span><b class="${cls(-(slipR+slipC))}">$${n(slipR+slipC)}</b></div>
       </div>`;
-    calcEl.querySelector('#cage').textContent='стаканы обновлены '+new Date(booksAt).toLocaleTimeString('ru-RU')+' · каждые 10 с';
+    calcEl.querySelector('#cage').innerHTML=cageTxt();
   }
   /* ---------- 🔔 Уведомления о входе и выходе ---------- */
   let cfgEl=null, cfgSym=null, legendOpen=false;
@@ -1608,6 +1766,16 @@ const Scan=(()=>{
     else { ui.bells[sym]={dir:ui.dir,mode:'pctl',val:80,vout:20,goal:held.has(sym)?'out':'in'}; Alerts.ask(); }
     save(); render(false); bgCheck(); checkBells();
   }
+  function heldTag(sym){
+    if(!held.has(sym)) return '';
+    const h=heldInfo[sym]; if(!h) return ' <span class="tag held">в позиции</span>';
+    const f=v=>'$'+(v>=100?Math.round(v).toLocaleString('ru-RU'):v.toFixed(0));
+    if(h.r&&!h.c) return ` <span class="tag held bad" title="Позиция только на Robinhood — без хеджа">только RH ${f(h.r)}</span>`;
+    if(h.c&&!h.r) return ` <span class="tag held bad" title="Позиция только на Core — без хеджа">только Core ${f(h.c)}</span>`;
+    const ar=Math.abs(h.qr), ac=Math.abs(h.qc), rel=Math.abs(ar-ac)/Math.max(ar,ac);
+    if(rel>0.005) return ` <span class="tag held ${rel>0.02?'bad':'warn'}" title="Ноги разного размера: RH ${+ar.toFixed(6)} шт, Core ${+ac.toFixed(6)} шт">RH ${f(h.r)} / Core ${f(h.c)}</span>`;
+    return ` <span class="tag held" title="Robinhood ${f(h.r)} · Core ${f(h.c)}">в позиции ${f(h.r)}</span>`;
+  }
   function toggleGoal(sym){
     const b=ui.bells[sym]; if(!b) return;
     b.goal=goalOf(sym,b)==='in'?'out':'in'; save(); Alerts.reset('in|'+sym); Alerts.reset('out|'+sym);
@@ -1666,7 +1834,7 @@ const Scan=(()=>{
       const ok=s.n>=6;
       const zbar=ok?`<span class="bar-z" style="width:${Math.max(0,Math.min(60,s.score*15))}px"></span>`:'';
       let h=`<tr class="row" data-sym="${m.sym}">
-        <td class="l"><button class="ico star${ui.fav.includes(m.sym)?' on':''}" data-act="fav" title="${ui.fav.includes(m.sym)?'Убрать из избранного':'В избранное'}" aria-label="Избранное ${m.sym}">${STAR_SVG}</button><button class="ico bell${ui.bells[m.sym]?' on':''}" data-act="bell" title="${ui.bells[m.sym]?'Выключить уведомление':'Уведомлять о входе и выходе'}" aria-label="Уведомление ${m.sym}">${BELL_SVG}</button>${ui.bells[m.sym]?'<button class="ico cfg" data-act="cfg" title="Условие уведомления" aria-label="Условие уведомления">⚙</button>':''} <b>${m.sym}</b> <span class="tag kind">${m.kind}</span>${held.has(m.sym)?' <span class="tag held">в позиции</span>':''}${goalBtn(m.sym)}</td>
+        <td class="l"><button class="ico star${ui.fav.includes(m.sym)?' on':''}" data-act="fav" title="${ui.fav.includes(m.sym)?'Убрать из избранного':'В избранное'}" aria-label="Избранное ${m.sym}">${STAR_SVG}</button><button class="ico bell${ui.bells[m.sym]?' on':''}" data-act="bell" title="${ui.bells[m.sym]?'Выключить уведомление':'Уведомлять о входе и выходе'}" aria-label="Уведомление ${m.sym}">${BELL_SVG}</button>${ui.bells[m.sym]?'<button class="ico cfg" data-act="cfg" title="Условие уведомления" aria-label="Условие уведомления">⚙</button>':''} <span class="symw"><b>${m.sym}</b><span class="kindsub">${m.kind}</span></span>${heldTag(m.sym)}${goalBtn(m.sym)}</td>
         <td>${ok?`<span class="sig ${s.sig}">${sigTxt[s.sig]}</span>`:'<span class="dim">мало данных</span>'}</td>
         <td class="${ok?cls(s.score):''}">${ok?s.score.toFixed(2):'—'}${zbar}</td>
         <td class="${cls(s.now)}">${pc(s.now)}</td>
@@ -1737,7 +1905,7 @@ const Scan=(()=>{
     timers.push(setInterval(refreshMarks,15000));
     timers.push(setInterval(()=>{ if(!busy) full(true); },5*60e3));
   }
-  function stop(){timers.forEach(clearInterval);timers=[];if(calcTimer){clearInterval(calcTimer);calcTimer=null}}
+  function stop(){timers.forEach(clearInterval);timers=[];if(calcTimer){clearInterval(calcTimer);calcTimer=null};Live.stop()}
   // фон: если есть 🔔 или нужна зона выхода для связок — продолжаем считать, даже когда открыта другая вкладка
   function bgCheck(){
     if(activeTab==='scan') return;
