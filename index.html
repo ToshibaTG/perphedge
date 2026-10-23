@@ -725,7 +725,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.14 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.15 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -894,18 +894,21 @@ const Desk=(()=>{
     const o=await j(`${API[k]}/orderBookOrders?market_id=${id}&limit=1`); const v={bid:+o.bids?.[0]?.price,ask:+o.asks?.[0]?.price};
     bookCache[key]={at:Date.now(),v}; return v;
   }
+  // занятая маржа: всё, что не свободно, — и кросс, и изолированная (позиции из приложения Robinhood Wallet всегда изолированные)
+  const usedPct=x=>{const tav=+x.total_asset_value, av=+x.available_balance; if(!(tav>0)) return 0;
+    const cross=+x.cross_initial_margin_requirement/tav*100, all=isFinite(av)?(tav-av)/tav*100:0; return Math.max(0,Math.min(100,Math.max(cross,all)));};
   function renderAcc(a){
     const card=(k,x)=>{
       if(!x) return `<div class="card"><span class="lbl">${k==='RH'?'Robinhood':'Core'}</span><span class="dim">аккаунт не найден</span></div>`;
-      const tav=+x.total_asset_value, imr=+x.cross_initial_margin_requirement;
-      const use=tav>0?imr/tav*100:0, c=use>70?'bad':use>50?'warn':'';
+      const tav=+x.total_asset_value;
+      const use=usedPct(x), c=use>70?'bad':use>50?'warn':'';
       const upnl=(x.positions||[]).reduce((s,p)=>s+(+p.unrealized_pnl||0),0);
       return `<div class="card"><span class="lbl">${k==='RH'?'Robinhood':'Core'} · аккаунт ${x.index}</span>
         <span class="val">$${n(tav)}</span>
         <span class="sub free">Свободно $${n(+x.available_balance)} · нереализ. <span class="${cls(upnl)}">${sgn(upnl)}</span></span>
         <span class="sub">Маржа занята ${use.toFixed(0)}%</span><div class="meter"><i class="${c}" style="width:${Math.min(100,use)}%"></i></div></div>`;
     };
-    if(alertsOn()&&st.al.margin) ['RH','CORE'].forEach(k=>{const x=a[k]; if(!x) return; const tav=+x.total_asset_value, use=tav>0?+x.cross_initial_margin_requirement/tav*100:0;
+    if(alertsOn()&&st.al.margin) ['RH','CORE'].forEach(k=>{const x=a[k]; if(!x) return; const use=usedPct(x);
       if(Alerts.edge(`m|${st.addr}|${k}`,use>70)) Alerts.notify({key:'m'+k,level:'danger',title:`⚠ Маржа ${k==='RH'?'Robinhood':'Core'}: ${use.toFixed(0)}%`,body:'Загрузка маржи выше 70%. Довнесите средства или уменьшите позиции, чтобы не поймать ликвидацию.',go:()=>showTab('desk')});});
     const tot=(+a.RH?.total_asset_value||0)+(+a.CORE?.total_asset_value||0);
     $('#acc').innerHTML=card('RH',a.RH)+card('CORE',a.CORE)+
