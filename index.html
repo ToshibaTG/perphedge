@@ -716,7 +716,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.11 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.12 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -731,13 +731,17 @@ const $=s=>document.querySelector(s);
 const TRADE={RH:'https://robinhoodchain.lighter.xyz/trade/',CORE:'https://app.lighter.xyz/trade/'};
 const toDirect=u=>{for(const k in DIRECT) if(u.startsWith(k+'/')) return DIRECT[k]+u.slice(k.length); return null};
 const getJ=u=>fetch(u).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()});
+// через наш прокси: браузер не держит свою копию, а устаревшую (X-Cache: STALE) проверяем напрямую у Lighter
+const getP=u=>fetch(u,{cache:'no-cache'}).then(async r=>{if(!r.ok)throw new Error(r.status);const body=await r.json();
+  if(r.headers.get('X-Cache')==='STALE'&&+(r.headers.get('X-Stale-Age')||999)>20){const e=new Error('stale');e.body=body;throw e}return body});
 async function j(u){
   const d=toDirect(u);
   if(!d) return getJ(u);
   const base=Object.keys(DIRECT).find(b=>u.startsWith(b+'/'));
   if(Date.now()<(proxySkip[base]||0)) return getJ(d);
-  try{ return await getJ(u); }
+  try{ return await getP(u); }
   catch(e){
+    if(e.message==='stale'){ proxySkip[base]=Date.now()+2*60e3; try{ return await getJ(d); }catch(e2){ return e.body; } }
     // сервер не ответил вообще — 1 мин напрямую; Lighter режет адреса Cloudflare (429) — 10 мин напрямую для этого инстанса
     if(e.message==='429') proxySkip[base]=Date.now()+10*60e3;
     else if(!/^\d+$/.test(e.message)) proxySkip[base]=Date.now()+60e3;
@@ -756,7 +760,7 @@ const Prem=(()=>{
   async function load(){
     if(busy||Date.now()-fetched<240e3) return false; busy=true; fetched=Date.now();
     try{
-      const rs=await Promise.all([0,1].map(i=>fetch(PROXY+'/rh/premium?part='+i).then(r=>r.ok?r.json():null).catch(()=>null)));
+      const rs=await Promise.all([0,1].map(i=>fetch(PROXY+'/rh/premium?part='+i,{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null)));
       const m={}; let a=0, any=false;
       rs.forEach(r=>{ if(r&&r.markets){ any=true; Object.assign(m,r.markets); a=Math.max(a,r.at||0); } });
       if(any){ data=m; at=a; ok=true; } else { ok=false; fetched=Date.now()-180e3; }   // не вышло — повторим через минуту
@@ -963,30 +967,40 @@ const Desk=(()=>{
       if(isNaN(v)) delete st.tgt[inp.dataset.k]; else st.tgt[inp.dataset.k]=v; save(); Alerts.reset('x|'); tick(true)});
   }
   function weekStart(ts){const d=new Date(ts);d.setUTCHours(0,0,0,0);const back=(d.getUTCDay()-st.wday+7)%7;d.setUTCDate(d.getUTCDate()-back);return d.getTime()}
+  // История PnL по дням: точка = значение на конец суток (последняя — текущее). Часовые данные Lighter хранит
+  // только ~неделю, поэтому результат недель берём из дневных (до года назад), а объём последней недели — из часовых.
   async function pnlSeries(k){
-    if(acc[k]==null) return [];
-    const now=Date.now(), H=3600e3, m=new Map();
-    for(let i=0;i<12;i++){
-      const end=now-i*168*H, start=end-168*H;
-      try{const r=await j(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1h&start_timestamp=${start}&end_timestamp=${end}&count_back=168`);
-        (r.pnl||[]).forEach(x=>m.set(x.timestamp,x));
-        if(!(r.pnl||[]).length&&i>0) break;
-      }catch(e){break}
-    }
-    return [...m.values()].sort((a,b)=>a.timestamp-b.timestamp);
+    if(acc[k]==null) return {pts:[],base:0,hrs:[]};
+    const now=Math.floor(Date.now()/60000)*60000, D=864e5, H=3600e3, start=now-366*D, hs=now-167*H;
+    const [d,h]=await Promise.all([
+      j(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1d&start_timestamp=${start}&end_timestamp=${now}&count_back=380`),
+      j(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1h&start_timestamp=${hs}&end_timestamp=${now}&count_back=168`).catch(()=>({pnl:[]}))]);
+    const pts=(d.pnl||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);
+    const hrs=(h.pnl||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);
+    // если история доходит до начала окна, первая точка — отправная (её результат был до окна)
+    const cut=pts.length&&pts[0].timestamp*1000-start<1.5*D;
+    return {pts:cut?pts.slice(1):pts, base:cut?+pts[0].trade_pnl:0, hrs};
   }
-  function weekly(series){
-    const out={}; let prev=0;
-    for(const x of series){
-      const w=weekStart(x.timestamp*1000);
-      const o=out[w]||(out[w]={vol:0,start:prev,end:prev});
-      o.vol+=+x.volume||0; o.end=+x.trade_pnl; prev=+x.trade_pnl;
+  function weekly({pts,base,hrs}){
+    const out={}, D=864e5; let prev=base;
+    const get=w=>out[w]||(out[w]={vol:0,start:null,end:null});
+    for(const x of pts){
+      const T=x.timestamp*1000, o=get(weekStart(T-1));   // точка на 00:00 закрывает предыдущие сутки
+      if(o.start==null) o.start=prev; o.end=+x.trade_pnl; prev=+x.trade_pnl;
     }
-    for(const w in out) out[w].pnl=out[w].end-out[w].start;
+    // объём: где есть часовые точки — по ним (точнее), раньше — по дневным
+    const h0=hrs.length?hrs[0].timestamp*1000-3600e3:Infinity;
+    for(const x of pts){
+      const T=x.timestamp*1000, v=+x.volume||0; if(T-D>=h0) continue;
+      const part=T>h0?hrs.filter(y=>y.timestamp*1000<=T).reduce((s,y)=>s+(+y.volume||0),0):0;
+      get(weekStart(T-1)).vol+=Math.max(0,v-part);
+    }
+    for(const y of hrs) get(weekStart(y.timestamp*1000-1)).vol+=+y.volume||0;
+    for(const w in out){ const o=out[w]; if(o.start==null){o.start=o.end=prev} o.pnl=o.end-o.start; }
     return out;
   }
   let cacheWeeks=null;
-  async function loadWeeks(){const [sr,sc]=await Promise.all([pnlSeries('RH').catch(()=>[]),pnlSeries('CORE').catch(()=>[])]);cacheWeeks={wr:weekly(sr),wc:weekly(sc)}}
+  async function loadWeeks(){const e={pts:[],base:0,hrs:[]};const [sr,sc]=await Promise.all([pnlSeries('RH').catch(()=>e),pnlSeries('CORE').catch(()=>e)]);cacheWeeks={wr:weekly(sr),wc:weekly(sc)}}
   function renderWeeks(){
     if(!cacheWeeks) return;
     const {wr,wc}=cacheWeeks;
