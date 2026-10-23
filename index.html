@@ -55,6 +55,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .tgbtn b{font-weight:800}
 .tgbtn small{font-size:13px;opacity:.9}
 @media (max-width:1560px){.tgfull{display:none}}
+@media (max-width:1380px) and (min-width:721px){.appbar{gap:10px 12px}.brand small{display:none}}
+@media (max-width:1240px) and (min-width:721px){.tgour{display:none}.tgbtn{padding:6px 12px}.modebtn,.theme{padding:6px 10px}}
 .refresh{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;padding:0;font-size:20px;line-height:1}
 .refresh.spin span{display:inline-block;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -155,7 +157,9 @@ button.link{border:0;background:none;color:var(--accent);padding:4px 6px;text-de
 .apanel li time{color:var(--muted);font-size:11.5px}
 .toasts{position:fixed;right:16px;bottom:16px;z-index:60;display:grid;gap:8px;width:min(380px,calc(100vw - 32px))}
 .toast{background:var(--panel);border:1px solid var(--line);border-left:4px solid #e5484d;border-radius:10px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.35);cursor:pointer;font-size:13.5px}
-.toast.ok{border-left-color:var(--accent)} .toast.warn{border-left-color:#c8781c}
+.toast.ok{border-left-color:var(--accent)} .toast.warn{border-left-color:#c8781c} .toast.exit{border-left-color:#ff6a3d}
+.toast.exit b{color:#ff6a3d} .toast.ok b{color:var(--accent)}
+#alog li.exit b{color:#ff6a3d} #alog li.ok b{color:var(--accent)} #alog li.danger b{color:#e5484d}
 .toast b{display:block;margin-bottom:2px}
 .vbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
 .cfgbox{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:10px 12px;margin:4px 0 10px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
@@ -247,7 +251,19 @@ tbody tr:last-child td{border-bottom:0}
 .tag.ok{color:var(--good)} .tag.warn{color:var(--warn)} .tag.bad{color:var(--bad)}
 .tag.kind{border-color:transparent;background:var(--chip);color:var(--muted)}
 .tag.held{color:var(--accent)}
-.tag.goal{opacity:.8}.tag.goal.out{color:#e0a84a;opacity:1}
+.goalbtn{display:inline-flex;padding:2px;border-radius:999px;border:1px solid var(--line);background:var(--chip);font-size:12.5px;line-height:1;cursor:pointer;vertical-align:middle;gap:0}
+.goalbtn span{padding:4px 10px;border-radius:999px;color:var(--muted,#8a9690)}
+.goalbtn .gi.on{background:var(--accent);color:#06140e;font-weight:700}
+.goalbtn .go.on{background:#ff6a3d;color:#1a0700;font-weight:700}
+.goalbtn.mis{box-shadow:0 0 0 2px #ff6a3d66;animation:gpulse 1.6s ease-in-out infinite}
+@keyframes gpulse{50%{box-shadow:0 0 0 4px #ff6a3d22}}
+.gtxt.in{color:var(--accent)} .gtxt.out{color:#ff6a3d}
+td.prem{white-space:nowrap;cursor:help}
+td.prem .pp{font-weight:700}
+.pp.hi{color:var(--accent)} .pp.mid{color:#d9a441} .pp.lo{color:#e5484d}
+td.prem .pbar{display:inline-block;width:46px;height:5px;border-radius:3px;background:var(--line);margin:0 0 2px 6px;vertical-align:middle;overflow:hidden}
+td.prem .pbar i{display:block;height:100%;border-radius:3px} .pbar i.hi{background:var(--accent)} .pbar i.mid{background:#d9a441} .pbar i.lo{background:#e5484d}
+td.prem small{display:block;font-size:10.5px;color:var(--muted,#8a9690);margin-top:1px;letter-spacing:-.01em}
 td input{width:90px;padding:3px 6px;text-align:right}
 tfoot td{font-weight:600;border-top:1px solid var(--line)}
 section{display:flex;flex-direction:column;gap:8px}
@@ -330,6 +346,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   .tw tr.detail td::before{content:none}
   #scan tr.row td:nth-child(5),#scan tr.row td:nth-child(7),#scan tr.row td:nth-child(8),#scan tr.row td:nth-child(12){display:none}
   #scan tr.row td:nth-child(2){grid-column:1/-1}
+  #scan tr.row td.prem{grid-column:1/-1;flex-wrap:wrap} #scan tr.row td.prem small{display:inline;margin-left:6px}
   .bar-z{display:none}
   td input{width:110px}
   .legend{font-size:11px}
@@ -357,7 +374,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
     </div>
     <button class="alertbtn" id="abtn" title="Уведомления и журнал сигналов" aria-label="Уведомления"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge" id="abadge" hidden>0</span></button>
     <button class="modebtn" id="modebtn" title="Простой режим — только главное; расширенный — все колонки и индикаторы">Режим: простой</button>
-    <a class="tgbtn" href="https://t.me/perphedge" target="_blank" rel="noopener" title="Новости, обновления и вопросы — в Telegram-канале"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 3.5 2.8 10.8c-.9.4-.9 1.6.1 1.9l4.6 1.5 1.8 5.6c.3.8 1.3 1 1.9.4l2.6-2.5 4.8 3.5c.7.5 1.6.1 1.8-.7l3-15.2c.2-1-.8-1.8-1.7-1.3ZM9.4 14.6l8.7-7.4-6.8 8.6-.4 3-1.5-4.2Z" fill="currentColor"/></svg><span><b>Наш Telegram</b><small class="tgfull"> · новости и обновления</small></span></a>
+    <a class="tgbtn" href="https://t.me/perphedge" target="_blank" rel="noopener" title="Новости, обновления и вопросы — в Telegram-канале"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 3.5 2.8 10.8c-.9.4-.9 1.6.1 1.9l4.6 1.5 1.8 5.6c.3.8 1.3 1 1.9.4l2.6-2.5 4.8 3.5c.7.5 1.6.1 1.8-.7l3-15.2c.2-1-.8-1.8-1.7-1.3ZM9.4 14.6l8.7-7.4-6.8 8.6-.4 3-1.5-4.2Z" fill="currentColor"/></svg><span><b><span class="tgour">Наш </span>Telegram</b><small class="tgfull"> · новости и обновления</small></span></a>
     <button class="theme" id="theme" title="Тема оформления: по системе → светлая → тёмная">Тема: авто</button>
     <button class="refresh" id="refresh" title="Обновить данные на этой вкладке" aria-label="Обновить"><span>⟳</span></button>
     <div class="status" id="status">Загрузка…</div>
@@ -490,6 +507,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <th data-s="pctl">Перцентиль</th>
         <th data-s="oi">OI на RH</th>
         <th data-s="vol">Объём 24ч RH</th>
+        <th data-s="prem" title="Сколько оборота по последним ~100 сделкам на Robinhood прошло с участием Premium-аккаунтов. Поинты дают только за такие сделки. Сортировка — по Premium-объёму в минуту">Premium RH</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table></div>
@@ -662,11 +680,11 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом». ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают.</p>
       <h3>Калькулятор входа</h3>
       <p>Кликните монету и впишите сумму на одну ногу. Сайт пройдёт по стаканам обоих инстансов и покажет количество монет, средние цены, проскальзывание, реальный спред на вашу сумму и сколько вы закладываете на входе — маркетом на обеих ногах и если Core поставить лимиткой. «Макс. размер» — сколько можно зайти, чтобы цена ушла не дальше 0.05%. Комиссии не учитываются.</p>
+      <h3>Колонка «Premium RH»</h3>
+      <p>Поинты на Robinhood начисляют только за сделки, где на другой стороне Premium-аккаунт. Колонка показывает, какая доля оборота по последним ~100 сделкам на Robinhood прошла с Premium: <b class="pp hi">зелёный</b> — 85% и выше, <b class="pp mid">жёлтый</b> — 60–85%, <b class="pp lo">красный</b> — ниже. Ниже — Premium-объём в минуту и за сколько времени набрались эти сделки: на тихих рынках это часы, и тогда высокий процент мало что значит. Наведите курсор на ячейку — увидите, кто кого бьёт: если много «Standard бьёт по Premium», выгодно заходить маркетом; если много «Premium бьёт по Standard» — лимитками. Сортировка по колонке — по Premium-объёму в минуту. Сводка обновляется раз в 5 минут.</p>
       <h3>🔔 Уведомления о входе и выходе</h3>
-      <p>Нажмите колокольчик у монеты — он станет красным, сайт начнёт следить. ⚙ рядом — настройка:</p>
-      <ul><li><b>Когда уведомлять:</b> «авто» (по умолчанию) — пока позиции по монете нет, ждём момент для входа, а как только она появилась у выбранного кошелька — момент для выхода; «только вход» или «только выход» — если хотите переключать вручную. Рядом с монетой видно, чего сейчас ждём: <span class="tag goal">🔔 вход</span> или <span class="tag goal out">🔔 выход</span>.</li>
-      <li><b>Условие:</b> перцентиль (вход ≥ 80%, выход ≤ 20% — это сигналы «открывать» и «закрывать»), выгода, спред или «заложено» — сколько долларов даёт разница цен по стаканам на сумму из калькулятора при открытии или закрытии.</li></ul>
-      <p>Сигнал приходит один раз, когда условие выполнилось; повторно — только если спред ушёл и вернулся. Выход по спреду не знает вашей цены входа — итог по связке смотрите в «Моих связках».</p>
+      <p>Нажмите колокольчик у монеты — он станет красным, сайт начнёт следить. Рядом появится переключатель <span class="goalbtn in" style="cursor:default"><span class="gi on">вход</span><span class="go">выход</span></span>: <b>зелёный «вход»</b> — сайт ждёт хороший момент, чтобы открыть связку; <b>красный «выход»</b> — момент, чтобы закрыть. Переключается одним нажатием, когда вам нужно. Сигналы на вход приходят зелёными, на выход — красными с флажком 🏁. Если монета уже в позиции, а переключатель стоит на «вход», он подсвечивается — подсказка, что, возможно, пора переключить.</p>
+      <p>⚙ — условие сигнала: перцентиль (по умолчанию вход ≥ 80%, выход ≤ 20% — это «открывать» и «закрывать»), выгода, спред или «заложено» — сколько долларов даёт разница цен по стаканам на сумму из калькулятора. Сигнал приходит один раз, когда условие выполнилось; повторно — только если спред ушёл и вернулся. Сканер не знает вашей цены входа — итог по связке смотрите в «Моих связках».</p>
       <h3>🔔 Уведомления по открытым связкам</h3>
       <p>Колокольчик над таблицей «Открытые связки» включает слежение за всеми вашими позициями: «можно закрывать» (итог при закрытии ≥ цели, по умолчанию 0 $; для каждой связки можно задать свою цель), спред в зоне выхода, приближение к ликвидации (10% и 5%), маржа выше 70% и пропавшая нога — если одну сторону закрыли или ликвидировали.</p>
       <h3>Как приходят сигналы</h3>
@@ -698,7 +716,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.10 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.11 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -732,6 +750,26 @@ const n=v=>v==null||!isFinite(v)?'—':(Math.abs(v)>=1000?v.toFixed(0):v.toFixed
 const sgn=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+n(v);
 const cls=v=>v==null||!isFinite(v)?'':v>0.005?'pos':v<-0.005?'neg':'';
 const pc=v=>{if(v==null||!isFinite(v))return '—';if(Math.abs(v)<0.0005)v=0;return (v>0?'+':'')+v.toFixed(3)+'%'};
+/* ---------- Premium на Robinhood: сводка от нашего Worker раз в 5 минут ---------- */
+const Prem=(()=>{
+  let data={}, at=0, fetched=0, ok=null, busy=false;
+  async function load(){
+    if(busy||Date.now()-fetched<240e3) return false; busy=true; fetched=Date.now();
+    try{
+      const rs=await Promise.all([0,1].map(i=>fetch(PROXY+'/rh/premium?part='+i).then(r=>r.ok?r.json():null).catch(()=>null)));
+      const m={}; let a=0, any=false;
+      rs.forEach(r=>{ if(r&&r.markets){ any=true; Object.assign(m,r.markets); a=Math.max(a,r.at||0); } });
+      if(any){ data=m; at=a; ok=true; } else { ok=false; fetched=Date.now()-180e3; }   // не вышло — повторим через минуту
+      return any;
+    } finally { busy=false; }
+  }
+  function get(sym){
+    const x=data[sym]; if(!x) return null;
+    const prem=x.sp+x.ps+x.pp, mins=Math.max(x.span/60,1);
+    return {...x, prem, pct:x.usd>0?prem/x.usd*100:null, perMin:prem/mins, mins};
+  }
+  return {load,get,ok:()=>ok,at:()=>at};
+})();
 const usdk=v=>!isFinite(v)?'—':v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+v.toFixed(0);
 const tstr=()=>new Date().toLocaleTimeString('ru-RU');
 
@@ -774,7 +812,7 @@ const Alerts=(()=>{
     setTimeout(()=>el.remove(),a.level==='danger'?60e3:15e3);
   }
   function notify(a){
-    st.log.unshift({t:Date.now(),title:a.title,body:a.body}); st.log=st.log.slice(0,100); save();
+    st.log.unshift({t:Date.now(),title:a.title,body:a.body,level:a.level||''}); st.log=st.log.slice(0,100); save();
     beep(); toast(a);
     try{ if('Notification' in window&&Notification.permission==='granted'){
       const n=new Notification(a.title,{body:a.body,tag:a.key||undefined,renotify:true,requireInteraction:a.level==='danger'});
@@ -791,7 +829,7 @@ const Alerts=(()=>{
   }
   function ask(){ try{ if('Notification' in window&&Notification.permission==='default') Notification.requestPermission().then(perm) }catch(e){} }
   function renderLog(){
-    $('#alog').innerHTML=st.log.length?st.log.map(x=>`<li><time>${new Date(x.t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})}</time><b>${esc(x.title)}</b>${esc(x.body)}</li>`).join(''):'<li class="sub">Сигналов пока не было.</li>';
+    $('#alog').innerHTML=st.log.length?st.log.map(x=>`<li class="${esc(x.level||'')}"><time>${new Date(x.t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})}</time><b>${esc(x.title)}</b>${esc(x.body)}</li>`).join(''):'<li class="sub">Сигналов пока не было.</li>';
   }
   function init(){
     $('#asound').checked=st.sound; perm(); renderLog();
@@ -1444,45 +1482,37 @@ const Scan=(()=>{
     if(cfgSym!==ui.open||!cfgEl.firstChild){ cfgSym=ui.open; drawCfg(); }
     slot.replaceWith(cfgEl); if(had){const el=cfgEl.querySelector('#'+had); if(el) el.focus()}
   }
-  const GOAL_TXT={auto:'авто: вход, а при позиции — выход',in:'только вход',out:'только выход'};
-  const goalOf=(sym,b)=>{const g=b.goal||'auto'; return g==='auto'?(held.has(sym)?'out':'in'):g};
+  // вход/выход выбирается вручную тумблером в строке; старые колокольчики без выбора — по наличию позиции
+  const goalOf=(sym,b)=>b.goal==='in'||b.goal==='out'?b.goal:(held.has(sym)?'out':'in');
   const DEF={pctl:80,score:1.5,spread:0.3,lock:2}, DEFO={pctl:20,score:-1.5,spread:0,lock:0};
   const vIn=b=>b.val??DEF[b.mode], vOut=b=>b.vout??DEFO[b.mode];
   function opTxt(b,g){ if(b.mode==='spread') return (b.dir==='shortRH')===(g==='in')?'≥':'≤'; return g==='in'||b.mode==='lock'?'≥':'≤'; }
   const MODE_LBL={pctl:'Перцентиль',score:'Выгода',spread:'Спред, %',lock:'Заложено, $'};
   function drawCfg(){
     const sym=cfgSym, b=ui.bells[sym]; if(!b) return;
-    const g=b.goal||'auto', showIn=g!=='out', showOut=g!=='in';
-    cfgEl.innerHTML=`<b>🔔 ${sym}: уведомлять</b>
-      <select id="bgoal" aria-label="Когда уведомлять">${Object.entries(GOAL_TXT).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
+    const g=goalOf(sym,b), inG=g==='in';
+    cfgEl.innerHTML=`<b>⚙ ${sym}: условие сигнала ${inG?'<span class="gtxt in">на вход</span>':'<span class="gtxt out">на выход</span>'}</b>
       <select id="bdir" aria-label="Направление"><option value="shortRH">шорт RH / лонг Core</option><option value="longRH">лонг RH / шорт Core</option></select>
       <span>по</span>
       <select id="bmode" aria-label="Условие">${Object.entries(MODE_LBL).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
-      ${showIn?`<label class="fg">вход ${opTxt(b,'in')} <input type="text" id="bval" inputmode="decimal" aria-label="Порог входа"></label>`:''}
-      ${showOut?`<label class="fg">выход ${opTxt(b,'out')} <input type="text" id="bvout" inputmode="decimal" aria-label="Порог выхода"></label>`:''}
-      <span class="sub" id="bgnow"></span>
+      <label class="fg">${opTxt(b,g)} <input type="text" id="bv" inputmode="decimal" aria-label="Порог"></label>
       <span class="sub" id="bhint"></span>
       <span class="sub" id="bnow"></span>`;
     const q=x=>cfgEl.querySelector(x);
-    q('#bgoal').value=g; q('#bdir').value=b.dir; q('#bmode').value=b.mode;
-    if(showIn) q('#bval').value=vIn(b); if(showOut) q('#bvout').value=vOut(b);
+    q('#bdir').value=b.dir; q('#bmode').value=b.mode; q('#bv').value=inG?vIn(b):vOut(b);
     hint();
     const resetB=()=>{Alerts.reset('in|'+sym);Alerts.reset('out|'+sym)};
-    q('#bgoal').onchange=e=>{b.goal=e.target.value;save();resetB();drawCfg();render(false);checkBells()};
     q('#bdir').onchange=e=>{b.dir=e.target.value;save();resetB();drawCfg();checkBells()};
     q('#bmode').onchange=e=>{b.mode=e.target.value;b.val=DEF[b.mode];b.vout=DEFO[b.mode];save();resetB();drawCfg();checkBells()};
-    const num=(id,key,pre)=>{const el=q(id); if(!el) return; let t; el.oninput=e=>{clearTimeout(t);t=setTimeout(()=>{const v=parseFloat(e.target.value.replace(',','.').replace('−','-'));if(!isNaN(v)){b[key]=v;save();Alerts.reset(pre+sym);hint();checkBells()}},400)}};
-    num('#bval','val','in|'); num('#bvout','vout','out|');
+    let t; q('#bv').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{const v=parseFloat(e.target.value.replace(',','.').replace('−','-'));if(!isNaN(v)){b[inG?'val':'vout']=v;save();resetB();hint();checkBells()}},400)};
   }
   function hint(){
     const b=ui.bells[cfgSym]; if(!cfgEl||!b) return;
-    const H={pctl:`перцентиль — доля окна ${WIN_TXT[ui.h]}, когда спред был хуже для входа, чем сейчас. 80 и выше — хорошо входить, 20 и ниже — хорошо выходить`,
+    const H={pctl:`перцентиль — доля окна ${WIN_TXT[ui.h]}, когда спред был хуже для входа, чем сейчас: 80 и выше — хорошо входить, 20 и ниже — хорошо выходить`,
       score:'выгода — на сколько «сигм» текущий спред лучше медианы окна для входа; для выхода нужен минус',
       spread:'спред (RH − Core)/Core в %',
       lock:`заложено — сколько $ даёт разница цен по стаканам на сумму $${n(ui.size)} из калькулятора: на входе — при открытии, на выходе — при закрытии`};
     cfgEl.querySelector('#bhint').textContent='· '+H[b.mode];
-    const gn=goalOf(cfgSym,b), gEl=cfgEl.querySelector('#bgnow');
-    if(gEl) gEl.textContent=(b.goal||'auto')==='auto'?`· сейчас ждём ${gn==='out'?'выход (монета в позиции)':'вход (позиции нет)'}`:'';
     const m=markets.find(x=>x.sym===cfgSym), st=m&&stats(m,b.dir);
     cfgEl.querySelector('#bnow').textContent=st?`· Сейчас: спред ${pc(st.now)}${st.n>=6?`, перцентиль ${Math.round(st.pctl)}%, выгода ${st.score.toFixed(2)}`:''}${lastLock[cfgSym]!=null?`, заложено ${sgn(lastLock[cfgSym])} $`:''}`:'';
   }
@@ -1512,7 +1542,7 @@ const Scan=(()=>{
           try{ const L=await lockFor(m,d); lastLock[sym]=L; ok=L!=null&&L>=v; why=`${inG?'на входе':'на выходе'} по стаканам ${sgn(L)} $ на $${n(ui.size)}`; }catch(e){ continue; } }
         const key=(inG?'in|':'out|')+sym; Alerts.edge((inG?'out|':'in|')+sym,false);
         const dirTxt=b.dir==='shortRH'?'шорт RH / лонг Core':'лонг RH / шорт Core';
-        if(Alerts.edge(key,ok)) Alerts.notify({key:(inG?'in':'out')+sym,level:'ok',title:inG?`🔔 ${sym}: момент для входа`:`🏁 ${sym}: момент для выхода`,
+        if(Alerts.edge(key,ok)) Alerts.notify({key:(inG?'in':'out')+sym,level:inG?'ok':'exit',title:inG?`🔔 ${sym}: момент для входа`:`🏁 ${sym}: момент для выхода`,
           body:`${inG?'Открыть':'Закрыть'} ${dirTxt} · ${why}${b.mode==='spread'?'':' · спред '+pc(st.now)}${st.n>=6?', медиана '+pc(st.med):''}.${inG?'':' Проверьте итог по связке во вкладке «Мои связки».'}`,
           go:()=>{showTab('scan'); ui.open=sym; save(); openPts=null; render(false); refreshOpen(false).then(()=>render(false));}});
       }
@@ -1522,8 +1552,31 @@ const Scan=(()=>{
   function toggleFav(sym){ const i=ui.fav.indexOf(sym); if(i>=0) ui.fav.splice(i,1); else ui.fav.push(sym); save(); render(false); }
   function toggleBell(sym){
     if(ui.bells[sym]){ delete ui.bells[sym]; Alerts.reset('in|'+sym); Alerts.reset('out|'+sym); }
-    else { ui.bells[sym]={dir:ui.dir,mode:'pctl',val:80,vout:20,goal:'auto'}; Alerts.ask(); }
+    else { ui.bells[sym]={dir:ui.dir,mode:'pctl',val:80,vout:20,goal:held.has(sym)?'out':'in'}; Alerts.ask(); }
     save(); render(false); bgCheck(); checkBells();
+  }
+  function toggleGoal(sym){
+    const b=ui.bells[sym]; if(!b) return;
+    b.goal=goalOf(sym,b)==='in'?'out':'in'; save(); Alerts.reset('in|'+sym); Alerts.reset('out|'+sym);
+    if(cfgSym===sym&&cfgEl) drawCfg(); render(false); checkBells();
+  }
+  function goalBtn(sym){
+    const b=ui.bells[sym]; if(!b) return '';
+    const g=goalOf(sym,b), mis=(g==='in'&&held.has(sym))?' mis':'';
+    const tip=g==='in'?'Сейчас ждём момент для ВХОДА. Нажмите, чтобы ждать выход':'Сейчас ждём момент для ВЫХОДА. Нажмите, чтобы ждать вход';
+    return ` <button class="goalbtn ${g}${mis}" data-act="goal" title="${mis?'Монета уже в позиции — возможно, пора переключить на выход. ':''}${tip}" aria-label="${tip}"><span class="gi${g==='in'?' on':''}">вход</span><span class="go${g==='out'?' on':''}">выход</span></button>`;
+  }
+  const minTxt=m=>m<1.5?'~1 мин':m<90?Math.round(m)+' мин':m<36*60?(m/60).toFixed(m<600?1:0)+' ч':Math.round(m/1440)+' дн';
+  const minS=m=>m<1.5?'1м':m<90?Math.round(m)+'м':m<36*60?Math.round(m/60)+'ч':Math.round(m/1440)+'д';
+  const usdS=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1e3?'$'+(v/1e3).toFixed(v>=1e4?0:1)+'K':'$'+Math.round(v);
+  function premCell(sym){
+    const x=Prem.get(sym);
+    if(!x) return `<td class="prem dim" title="${Prem.ok()===false?'Сводка по Premium сейчас недоступна':'Загружаем сводку по Premium…'}">—</td>`;
+    if(!x.n||x.pct==null) return '<td class="prem dim">нет сделок</td>';
+    const pc=Math.round(x.pct), c=pc>=85?'hi':pc>=60?'mid':'lo';
+    const tip=`Последние ${x.n} сделок на Robinhood за ${minTxt(x.mins)}: оборот ${usdk(x.usd)}, из них с Premium ${usdk(x.prem)} (${pc}%).\n`+
+      `Standard бьёт по Premium-лимиткам (маркет-ордером в поинты): ${usdk(x.sp)}\nPremium бьёт по Standard-лимиткам (лимиткой в поинты): ${usdk(x.ps)}\nPremium ↔ Premium: ${usdk(x.pp)}\nPremium-аккаунтов: ${x.acc}`;
+    return `<td class="prem" title="${tip}"><b class="pp ${c}">${pc}%</b><small>${usdS(x.perMin)}/мин · ${minS(x.mins)}</small></td>`;
   }
   function render(resort){
     const nf=ui.fav.filter(x=>markets.some(m=>m.sym===x)).length, nb=Object.keys(ui.bells).filter(x=>markets.some(m=>m.sym===x)).length;
@@ -1550,7 +1603,7 @@ const Scan=(()=>{
   }
   function drawRows(rows,resort,emptyMsg){
     const key=ui.sort, dir=ui.desc?-1:1, sigRank={open:2,wait:1,close:0};
-    const val=r=>key==='sym'?r.m.sym:key==='oi'?r.m.oi:key==='vol'?r.m.vol:key==='sig'?(sigRank[r.s.sig]??-1)*1000+(r.s.score??-99):(r.s[key]??-1e9);
+    const val=r=>key==='sym'?r.m.sym:key==='oi'?r.m.oi:key==='vol'?r.m.vol:key==='prem'?(Prem.get(r.m.sym)?.perMin??-1):key==='sig'?(sigRank[r.s.sig]??-1)*1000+(r.s.score??-99):(r.s[key]??-1e9);
     const syms=rows.map(r=>r.m.sym).join();
     if(resort||!order.length||[...order].sort().join()!==[...rows.map(r=>r.m.sym)].sort().join()){
       rows.sort((a,b)=>{const x=val(a),y=val(b);return (x>y?1:x<y?-1:0)*dir}); order=rows.map(r=>r.m.sym);
@@ -1560,7 +1613,7 @@ const Scan=(()=>{
       const ok=s.n>=6;
       const zbar=ok?`<span class="bar-z" style="width:${Math.max(0,Math.min(60,s.score*15))}px"></span>`:'';
       let h=`<tr class="row" data-sym="${m.sym}">
-        <td class="l"><button class="ico star${ui.fav.includes(m.sym)?' on':''}" data-act="fav" title="${ui.fav.includes(m.sym)?'Убрать из избранного':'В избранное'}" aria-label="Избранное ${m.sym}">${STAR_SVG}</button><button class="ico bell${ui.bells[m.sym]?' on':''}" data-act="bell" title="${ui.bells[m.sym]?'Выключить уведомление':'Уведомлять о входе и выходе'}" aria-label="Уведомление ${m.sym}">${BELL_SVG}</button>${ui.bells[m.sym]?'<button class="ico cfg" data-act="cfg" title="Условие уведомления" aria-label="Условие уведомления">⚙</button>':''} <b>${m.sym}</b> <span class="tag kind">${m.kind}</span>${held.has(m.sym)?' <span class="tag held">в позиции</span>':''}${ui.bells[m.sym]?(goalOf(m.sym,ui.bells[m.sym])==='out'?' <span class="tag goal out" title="Ждём момент для выхода">🔔 выход</span>':' <span class="tag goal" title="Ждём момент для входа">🔔 вход</span>'):''}</td>
+        <td class="l"><button class="ico star${ui.fav.includes(m.sym)?' on':''}" data-act="fav" title="${ui.fav.includes(m.sym)?'Убрать из избранного':'В избранное'}" aria-label="Избранное ${m.sym}">${STAR_SVG}</button><button class="ico bell${ui.bells[m.sym]?' on':''}" data-act="bell" title="${ui.bells[m.sym]?'Выключить уведомление':'Уведомлять о входе и выходе'}" aria-label="Уведомление ${m.sym}">${BELL_SVG}</button>${ui.bells[m.sym]?'<button class="ico cfg" data-act="cfg" title="Условие уведомления" aria-label="Условие уведомления">⚙</button>':''} <b>${m.sym}</b> <span class="tag kind">${m.kind}</span>${held.has(m.sym)?' <span class="tag held">в позиции</span>':''}${goalBtn(m.sym)}</td>
         <td>${ok?`<span class="sig ${s.sig}">${sigTxt[s.sig]}</span>`:'<span class="dim">мало данных</span>'}</td>
         <td class="${ok?cls(s.score):''}">${ok?s.score.toFixed(2):'—'}${zbar}</td>
         <td class="${cls(s.now)}">${pc(s.now)}</td>
@@ -1568,13 +1621,13 @@ const Scan=(()=>{
         <td>${ok?pc(s.med):'—'}</td><td>${ok?pc(s.lo):'—'}</td><td>${ok?pc(s.hi):'—'}</td>
         <td>${ok?s.range.toFixed(3)+'%':'—'}</td>
         <td>${ok?Math.round(s.pctl)+'%':'—'}</td>
-        <td>${usdk(m.oi)}</td><td>${usdk(m.vol)}</td></tr>`;
-      if(ui.open===m.sym) h+=`<tr class="detail"><td colspan="12">${ui.bells[m.sym]?'<div id="cfgslot"></div>':''}
+        <td>${usdk(m.oi)}</td><td>${usdk(m.vol)}</td>${premCell(m.sym)}</tr>`;
+      if(ui.open===m.sym) h+=`<tr class="detail"><td colspan="13">${ui.bells[m.sym]?'<div id="cfgslot"></div>':''}
         <div class="tlinks"><a class="tl rh" href="${TRADE.RH}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Robinhood ↗</a><a class="tl core" href="${TRADE.CORE}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Core ↗</a></div>
         <div id="calcslot"></div>
         <div class="sub">${m.sym}: сделка RH ${+m.lRH.toFixed(6)} / Core ${+m.lCore.toFixed(6)} · марк RH ${+m.mRH.toFixed(6)} / Core ${+m.mCore.toFixed(6)}</div>${chart(s,m,openPts)}</td></tr>`;
       return h;
-    }).join('')||(emptyMsg?`<tr><td class="l dim" colspan="12">${emptyMsg}</td></tr>`:`<tr><td class="l dim" colspan="12">Под фильтры ничего не попало${filtersOn()?' — <button class="link" id="freset2">сбросить фильтры</button>':''}</td></tr>`);
+    }).join('')||(emptyMsg?`<tr><td class="l dim" colspan="13">${emptyMsg}</td></tr>`:`<tr><td class="l dim" colspan="13">Под фильтры ничего не попало${filtersOn()?' — <button class="link" id="freset2">сбросить фильтры</button>':''}</td></tr>`);
     labelize('#tb');
     const r2=$('#freset2'); if(r2) r2.onclick=resetFilters;
     placeCalc(); placeCfg();
@@ -1583,18 +1636,19 @@ const Scan=(()=>{
     const m=markets.find(x=>x.sym===ui.open); if(!m){openPts=null;return}
     try{openPts=await loadChart(m,force)}catch(e){openPts=null}
   }
-  const doneMsg=()=>{const h=curHist();return `Сканер · обновлено ${tstr()} · рынков на обоих инстансах: ${markets.length} · окно ${WIN_TXT[ui.h]} (свечи ${AUTO_RES[ui.h]})${h?' · история от '+new Date(h.at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}`};
+  const doneMsg=()=>{const h=curHist();return `Сканер · обновлено ${tstr()} · рынков на обоих инстансах: ${markets.length} · окно ${WIN_TXT[ui.h]} (свечи ${AUTO_RES[ui.h]})${h?' · история от '+new Date(h.at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}${Prem.at()?' · Premium от '+new Date(Prem.at()).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}`};
   let lastMarks=0;
   async function refreshMarks(){
     if(document.hidden&&Date.now()-lastMarks<60e3) return;   // вкладка в фоне — раз в минуту
     if(busy) return; busy=true; lastMarks=Date.now();
-    try{await loadMarkets(); await refreshOpen(false); render(false); setStatus('scan',doneMsg()); checkBells()}catch(e){setStatus('scan','Сканер: не удалось получить цены. Проверьте интернет и нажмите ⟳.')}
+    try{await loadMarkets(); await refreshOpen(false); render(false); setStatus('scan',doneMsg()); checkBells(); premTick()}catch(e){setStatus('scan','Сканер: не удалось получить цены. Проверьте интернет и нажмите ⟳.')}
     busy=false;
   }
+  function premTick(){ if(activeTab!=='scan') return; Prem.load().then(ch=>{ if(ch){ render(ui.sort==='prem'); if(!busy) setStatus('scan',doneMsg()); } }); }
   let queued=null;
   async function full(force,resort){
     if(busy){ queued={force:force||queued?.force,resort:resort||queued?.resort}; return; } busy=true; if(activeTab==='scan') spinning(true);
-    try{await loadMarkets(); await loadHist(force); await refreshOpen(force); render(resort); setStatus('scan',doneMsg()); checkBells()}catch(e){setStatus('scan','Сканер: ошибка загрузки истории. Нажмите ⟳.')}
+    try{await loadMarkets(); await loadHist(force); await refreshOpen(force); render(resort); setStatus('scan',doneMsg()); checkBells(); premTick()}catch(e){setStatus('scan','Сканер: ошибка загрузки истории. Нажмите ⟳.')}
     busy=false; if(activeTab==='scan') spinning(false);
     if(queued){const q=queued; queued=null; full(q.force,q.resort);}
   }
@@ -1615,6 +1669,7 @@ const Scan=(()=>{
       if(act){ e.stopPropagation(); const sym=tr.dataset.sym;
         if(act.dataset.act==='fav') return toggleFav(sym);
         if(act.dataset.act==='bell') return toggleBell(sym);
+        if(act.dataset.act==='goal') return toggleGoal(sym);
         if(act.dataset.act==='cfg'){ if(ui.open!==sym){ui.open=sym; openPts=null; render(false); await refreshOpen(false); render(false);} setTimeout(()=>cfgEl&&cfgEl.scrollIntoView({block:'center',behavior:'smooth'}),50); return; } }
       ui.open=ui.open===tr.dataset.sym?null:tr.dataset.sym; openPts=null; render(false); if(ui.open){await refreshOpen(false); render(false)}};
     $('#tb').addEventListener('click',e=>{const b=e.target.closest('.lgbtn'); if(!b) return; e.stopPropagation(); legendOpen=!legendOpen; b.closest('.legend').classList.toggle('open',legendOpen);},true);
