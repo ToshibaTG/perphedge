@@ -181,6 +181,7 @@ tr.danger td{background:color-mix(in srgb,#e5484d 14%,transparent)}
 .pager .pinfo{color:var(--muted);font-size:13px}
 .pager button[disabled]{opacity:.4;cursor:default}
 .wbar{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin:0 0 6px;font-size:13px}
+.qty{font-size:11px}
 .wck{display:inline-flex;align-items:center;margin-right:8px;cursor:pointer;vertical-align:middle}
 .wck input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;margin:0}
 #weeks tr.off td{opacity:.42} #weeks tr.off td:first-child{opacity:1} #weeks tr.off td:first-child .wlbl{opacity:.42;text-decoration:line-through}
@@ -415,8 +416,8 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <div class="tw"><table id="t-pairs">
         <thead><tr>
           <th class="l">Рынок</th><th class="l">Статус</th>
-          <th>RH</th><th>Вход RH</th><th>Core</th><th>Вход Core</th>
-          <th>Перекос</th><th>Заложено на входе</th><th>PnL RH</th><th>PnL Core</th><th>Фандинг</th><th>Связка</th>
+          <th>RH, $</th><th>Вход RH</th><th>Core, $</th><th>Вход Core</th>
+          <th>Перекос, $</th><th>Заложено на входе</th><th>PnL RH</th><th>PnL Core</th><th>Фандинг</th><th>Связка</th>
           <th>Спред сейчас</th><th>Выход сейчас</th><th>Итог при закрытии</th><th>Цель, $</th>
         </tr></thead>
         <tbody id="pairs"></tbody>
@@ -590,9 +591,9 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <h3>Таблица «Открытые связки»</h3>
       <dl class="g-terms">
         <dt>Статус</dt><dd><span class="tag ok">хедж</span> ноги равны и противоположны · <span class="tag warn">перекос</span> размеры разошлись больше чем на 2% · <span class="tag bad">одна нога</span> позиция только на одной площадке · <span class="tag bad">не хедж</span> обе ноги в одну сторону.</dd>
-        <dt>RH / Core</dt><dd>Сторона и количество монет в каждой ноге.</dd>
         <dt>Вход RH / Вход Core</dt><dd>Средние цены открытия ног.</dd>
-        <dt>Перекос</dt><dd>Разница размеров ног в монетах. Близко к нулю — хорошо.</dd>
+        <dt>RH, $ / Core, $</dt><dd>Размер ноги в долларах по цене входа, под ним — в монетах.</dd>
+        <dt>Перекос, $</dt><dd>Разница размеров ног в долларах (в монетах — при наведении). Близко к нулю — хорошо.</dd>
         <dt>Заложено на входе</dt><dd>Результат на спреде в момент открытия: разница цен входа × размер. Зафиксирован, пока позиция открыта. Минус здесь — не ошибка сам по себе: его может компенсировать выход.</dd>
         <dt>PnL RH / PnL Core</dt><dd>Результат каждой ноги по данным Lighter. По отдельности смысла не имеют — одна нога всегда в плюсе, другая в минусе.</dd>
         <dt>Фандинг</dt><dd>Сумма полученных (+) и уплаченных (−) фандинговых платежей по обеим ногам.</dd>
@@ -724,7 +725,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.13 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.14 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -967,10 +968,13 @@ const Desk=(()=>{
             if(Alerts.edge(`l${lim}|${A}|${k}`,d<=lim)) Alerts.notify({key:'l'+lim+s+k,level:'danger',title:`⚠ ${s} на ${k==='RH'?'Robinhood':'Core'}: ${txt}`,body:`Цена ${fpx(mid)}, ликвидация ${fpx(liq)} — осталось ${d.toFixed(1)}%. Довнесите маржу или уменьшите позицию.`,go:()=>showTab('desk')});});
         });
       }
-      const side=q=>q===0?'—':(q<0?'шорт ':'лонг ')+Math.abs(q);
+      const usd0=v=>'$'+(v>=100?Math.round(v).toLocaleString('ru-RU'):v.toFixed(2));
+      const side=(q,px)=>q===0?'—':`${q<0?'шорт':'лонг'} <b>${usd0(Math.abs(q)*px)}</b><br><span class="dim qty">${+Math.abs(q).toFixed(6)} шт</span>`;
+      const refPx=((r?+r.avg_entry_price:0)+(c?+c.avg_entry_price:0))/((r?1:0)+(c?1:0)||1);
+      const netUsd=net*refPx;
       return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span></td>
-        <td>${side(qr)}</td><td>${r?r.avg_entry_price:'—'}</td><td>${side(qc)}</td><td>${c?c.avg_entry_price:'—'}</td>
-        <td class="${Math.abs(net)>0?'dim':''}">${net?(+net.toFixed(5)):'0'}</td>
+        <td>${side(qr,r?+r.avg_entry_price:0)}</td><td>${r?r.avg_entry_price:'—'}</td><td>${side(qc,c?+c.avg_entry_price:0)}</td><td>${c?c.avg_entry_price:'—'}</td>
+        <td class="${Math.abs(netUsd)>=0.01?'dim':''}" title="${net?(+net.toFixed(6))+' шт':'0'}">${net?(netUsd>0?'+':'−')+usd0(Math.abs(netUsd)):'0'}</td>
         <td class="${cls(entryGap)}">${sgn(entryGap)}</td>
         <td class="${cls(pr)}">${sgn(pr)}</td><td class="${cls(pcx)}">${sgn(pcx)}</td><td class="${cls(fund)}">${sgn(fund)}</td>
         <td class="${cls(pr+pcx+fund)}"><b>${sgn(pr+pcx+fund)}</b></td>
