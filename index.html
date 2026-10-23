@@ -180,6 +180,10 @@ tr.danger td{background:color-mix(in srgb,#e5484d 14%,transparent)}
 .pager{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:center;margin-top:8px}
 .pager .pinfo{color:var(--muted);font-size:13px}
 .pager button[disabled]{opacity:.4;cursor:default}
+.wbar{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin:0 0 6px;font-size:13px}
+.wck{display:inline-flex;align-items:center;margin-right:8px;cursor:pointer;vertical-align:middle}
+.wck input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;margin:0}
+#weeks tr.off td{opacity:.42} #weeks tr.off td:first-child{opacity:1} #weeks tr.off td:first-child .wlbl{opacity:.42;text-decoration:line-through}
 
 /* --- простой режим: прячем вторичные колонки и детали --- */
 .modebtn{font-size:13px;padding:6px 12px;border-radius:999px}
@@ -427,6 +431,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
           <select id="wday"><option value="5">в пятницу</option><option value="4">в четверг</option><option value="1">в понедельник</option></select>
           (00:00 UTC)</label>
       </div>
+      <div class="wbar"><span class="sub">✓ — неделя учитывается во «Всего».</span> <button class="link" id="wall">отметить все</button> · <button class="link" id="wnone">снять все</button></div>
       <div class="tw"><table id="t-weeks">
         <thead><tr>
           <th class="l">Неделя</th><th>Объём RH</th><th>Объём Core</th><th>Итог RH</th><th>Итог Core</th><th>Итог за неделю</th>
@@ -435,6 +440,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <tbody id="weeks"></tbody>
         <tfoot id="wtot"></tfoot>
       </table></div>
+      <div class="pager" id="wpager"></div>
       <div class="note">«Итог» — изменение результата торговли за неделю по данным Lighter: закрытые и открытые позиции, фандинг и комиссии; пополнения и выводы не учитываются. Поинты и цену поинта на OTC вписываете сами — они сохраняются в этом браузере отдельно для каждого кошелька. Текущая неделя ещё идёт, её цифры меняются.</div>
     </section>
 
@@ -445,6 +451,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
         <tbody id="closed"></tbody>
         <tfoot id="ctot"></tfoot>
       </table></div>
+      <div class="pager" id="cpager"></div>
       <div class="note">Связка считается закрытой, когда позиция по рынку на обоих инстансах вернулась в ноль. PnL — разница цен входа и выхода по вашим сделкам (средняя цена, частичные закрытия учтены). Фандинг и комиссии сюда не входят — их видно в недельной таблице. Берутся последние ~500 сделок на каждом инстансе.</div>
     </section>
 
@@ -599,6 +606,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <dl class="g-terms">
         <dt>Объём RH / Core</dt><dd>Оборот за неделю на каждой площадке.</dd>
         <dt>Итог</dt><dd>Изменение торгового результата за неделю: закрытые и открытые позиции, фандинг и комиссии. Пополнения и выводы не учитываются.</dd>
+        <dt>Галочка у недели</dt><dd>Учитывать ли неделю во «Всего». Снимите галочки со старых недель, когда вы ещё не фармили, — итог, затраты и $ за поинт будут считаться только по нужному периоду. Выбор запоминается для каждого кошелька. Пустые недели без торговли не показываются.</dd>
         <dt>Поинты</dt><dd>Впишите вручную после еженедельной раздачи Lighter.</dd>
         <dt>$ за поинт</dt><dd>Сколько стоил один поинт: минус итога недели / поинты.</dd>
         <dt>Цена поинта OTC</dt><dd>Впишите текущую рыночную оценку поинта — получите стоимость поинтов и чистый результат.</dd>
@@ -716,7 +724,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.12 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v1.13 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -774,6 +782,16 @@ const Prem=(()=>{
   }
   return {load,get,ok:()=>ok,at:()=>at};
 })();
+/* листалка страниц для таблиц */
+function pager(sel,page,total,per,noun,go){
+  const el=$(sel), pages=Math.max(1,Math.ceil(total/per)); page=Math.max(0,Math.min(page,pages-1));
+  if(total<=per){ el.innerHTML=''; el.onclick=null; return page; }
+  el.innerHTML=`<button data-p="0" ${page?'':'disabled'} aria-label="Первая страница">«</button><button data-p="${page-1}" ${page?'':'disabled'}>← Новее</button>
+    <span class="pinfo">стр. <b>${page+1}</b> из ${pages} · ${noun} ${page*per+1}–${Math.min(total,page*per+per)} из ${total}</span>
+    <button data-p="${page+1}" ${page<pages-1?'':'disabled'}>Старее →</button><button data-p="${pages-1}" ${page<pages-1?'':'disabled'} aria-label="Последняя страница">»</button>`;
+  el.onclick=e=>{const b=e.target.closest('button[data-p]'); if(b&&!b.disabled) go(+b.dataset.p);};
+  return page;
+}
 const usdk=v=>!isFinite(v)?'—':v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+v.toFixed(0);
 const tstr=()=>new Date().toLocaleTimeString('ru-RU');
 
@@ -851,7 +869,7 @@ const Alerts=(()=>{
 /* ---------- TAB 1: МОИ СВЯЗКИ ---------- */
 const Desk=(()=>{
   const LS='perphedge.desk.v1';
-  let st={addr:'',wday:5,points:{},otc:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
+  let st={addr:'',wday:5,points:{},otc:{},wex:{},wallets:[],al:{on:false,exit:0,zone:true,liq:true,margin:true,leg:true},tgt:{}};
   try{Object.assign(st,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
   if(!Array.isArray(st.wallets)) st.wallets=[];
   st.al=Object.assign({on:false,exit:0,zone:true,liq:true,margin:true,leg:true},st.al||{}); st.tgt=st.tgt||{};
@@ -1001,19 +1019,29 @@ const Desk=(()=>{
   }
   let cacheWeeks=null;
   async function loadWeeks(){const e={pts:[],base:0,hrs:[]};const [sr,sc]=await Promise.all([pnlSeries('RH').catch(()=>e),pnlSeries('CORE').catch(()=>e)]);cacheWeeks={wr:weekly(sr),wc:weekly(sc)}}
+  let wPage=0, cPage=0;
   function renderWeeks(){
     if(!cacheWeeks) return;
-    const {wr,wc}=cacheWeeks;
-    const keys=[...new Set([...Object.keys(wr),...Object.keys(wc)])].map(Number).sort((a,b)=>b-a);
+    if(!st.wex||typeof st.wex!=='object') st.wex={};
+    const {wr,wc}=cacheWeeks, now=weekStart(Date.now());
+    // пустые недели (нет объёма и результата на обеих площадках) не показываем; текущую — всегда
+    const keys=[...new Set([...Object.keys(wr),...Object.keys(wc)])].map(Number).filter(w=>{
+      const r=wr[w]||{vol:0,pnl:0}, c=wc[w]||{vol:0,pnl:0};
+      return w===now||r.vol>0||c.vol>0||Math.abs(r.pnl)>=0.01||Math.abs(c.pnl)>=0.01||st.points[pk(w)]>0;
+    }).sort((a,b)=>b-a);
     const fmtW=w=>{const f=d=>new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',timeZone:'UTC'});return f(w)+'–'+f(w+6*864e5)};
-    let T={vr:0,vc:0,pr:0,pc:0,pts:0,val:0};
-    $('#weeks').innerHTML=keys.map(w=>{
+    const inc=w=>!st.wex[pk(w)];
+    let T={vr:0,vc:0,pr:0,pc:0,pts:0,val:0,n:0};
+    keys.forEach(w=>{ if(!inc(w)) return; const r=wr[w]||{vol:0,pnl:0}, c=wc[w]||{vol:0,pnl:0};
+      const pts=st.points[pk(w)], otc=st.otc[pk(w)], val=pts>0&&otc>0?pts*otc:null;
+      T.vr+=r.vol;T.vc+=c.vol;T.pr+=r.pnl;T.pc+=c.pnl;T.n++;if(pts>0)T.pts+=pts;if(val!=null)T.val+=val; });
+    const PER=10; wPage=pager('#wpager',wPage,keys.length,PER,'недели',p=>{wPage=p;renderWeeks();});
+    $('#weeks').innerHTML=keys.slice(wPage*PER,wPage*PER+PER).map(w=>{
       const r=wr[w]||{vol:0,pnl:0}, c=wc[w]||{vol:0,pnl:0}, tot=r.pnl+c.pnl;
       const pts=st.points[pk(w)], otc=st.otc[pk(w)];
       const per=pts>0?-tot/pts:null, val=pts>0&&otc>0?pts*otc:null, net=val!=null?val+tot:null;
-      T.vr+=r.vol;T.vc+=c.vol;T.pr+=r.pnl;T.pc+=c.pnl;if(pts>0)T.pts+=pts;if(val!=null)T.val+=val;
-      const cur=w===weekStart(Date.now());
-      return `<tr><td class="l">${fmtW(w)}${cur?' <span class="tag ok">идёт</span>':''}</td>
+      const on=inc(w);
+      return `<tr class="${on?'':'off'}"><td class="l"><label class="wck" title="${on?'Учитывается во «Всего». Снимите, чтобы не считать эту неделю':'Не учитывается во «Всего». Отметьте, чтобы считать'}"><input type="checkbox" data-wck="${w}" ${on?'checked':''} aria-label="Учитывать неделю ${fmtW(w)}"></label><span class="wlbl">${fmtW(w)}</span>${w===now?' <span class="tag ok">идёт</span>':''}</td>
         <td>${usdk(r.vol)}</td><td>${usdk(c.vol)}</td>
         <td class="${cls(r.pnl)}">${sgn(r.pnl)}</td><td class="${cls(c.pnl)}">${sgn(c.pnl)}</td><td class="${cls(tot)}"><b>${sgn(tot)}</b></td>
         <td><input data-w="${w}" data-f="points" value="${pts??''}" aria-label="Поинты за неделю"></td>
@@ -1022,13 +1050,18 @@ const Desk=(()=>{
         <td>${val==null?'—':'$'+n(val)}</td><td class="${cls(net)}">${net==null?'—':sgn(net)}</td></tr>`;
     }).join('')||'<tr><td class="l dim" colspan="11">Нет данных</td></tr>';
     const tot=T.pr+T.pc;
-    $('#wtot').innerHTML=`<tr><td class="l">Всего</td><td>${usdk(T.vr)}</td><td>${usdk(T.vc)}</td><td class="${cls(T.pr)}">${sgn(T.pr)}</td><td class="${cls(T.pc)}">${sgn(T.pc)}</td>
+    $('#wtot').innerHTML=`<tr><td class="l">Всего${T.n<keys.length?` <span class="dim" style="font-weight:400">(${T.n} из ${keys.length} нед.)</span>`:''}</td><td>${usdk(T.vr)}</td><td>${usdk(T.vc)}</td><td class="${cls(T.pr)}">${sgn(T.pr)}</td><td class="${cls(T.pc)}">${sgn(T.pc)}</td>
       <td class="${cls(tot)}">${sgn(tot)}</td><td>${T.pts||'—'}</td><td>${T.pts?'$'+n(-tot/T.pts):'—'}</td><td></td><td>${T.val?'$'+n(T.val):'—'}</td><td class="${cls(T.val+tot)}">${T.val?sgn(T.val+tot):'—'}</td></tr>`;
     labelize('#weeks'); labelize('#wtot');
-    document.querySelectorAll('#weeks input').forEach(inp=>inp.onchange=()=>{
+    document.querySelectorAll('#weeks input[data-f]').forEach(inp=>inp.onchange=()=>{
       const v=parseFloat(inp.value.replace(',','.')), bag=inp.dataset.f==='points'?st.points:st.otc;
       const key=pk(inp.dataset.w); if(isNaN(v)) delete bag[key]; else bag[key]=v; save(); renderWeeks();
     });
+    document.querySelectorAll('#weeks input[data-wck]').forEach(inp=>inp.onchange=()=>{
+      const key=pk(inp.dataset.wck); if(inp.checked) delete st.wex[key]; else st.wex[key]=true; save(); renderWeeks();
+    });
+    $('#wall').onclick=()=>{ keys.forEach(w=>delete st.wex[pk(w)]); save(); renderWeeks(); };
+    $('#wnone').onclick=()=>{ keys.forEach(w=>st.wex[pk(w)]=true); save(); renderWeeks(); };
   }
   let tradeCache={RH:[],CORE:[]}, tPage=0;
   async function fetchTrades(k){
@@ -1049,14 +1082,9 @@ const Desk=(()=>{
     tradeCache={RH:r,CORE:c};
   }
   function renderTrades(){
-    const PER=25, list=[...tradeCache.RH,...tradeCache.CORE].sort((a,b)=>b.timestamp-a.timestamp);
-    const pages=Math.max(1,Math.ceil(list.length/PER)); tPage=Math.min(tPage,pages-1);
+    const PER=15, list=[...tradeCache.RH,...tradeCache.CORE].sort((a,b)=>b.timestamp-a.timestamp);
+    tPage=pager('#tpager',tPage,list.length,PER,'сделки',p=>{tPage=p;renderTrades();});
     const all=list.slice(tPage*PER,tPage*PER+PER);
-    $('#tpager').innerHTML=list.length>PER?`<button id="tfirst" ${tPage?'':'disabled'} aria-label="Первая страница">«</button><button id="tprev" ${tPage?'':'disabled'}>← Новее</button>
-      <span class="pinfo">стр. <b>${tPage+1}</b> из ${pages} · сделки ${tPage*PER+1}–${Math.min(list.length,tPage*PER+PER)} из ${list.length}</span>
-      <button id="tnext" ${tPage<pages-1?'':'disabled'}>Старее →</button><button id="tlast" ${tPage<pages-1?'':'disabled'} aria-label="Последняя страница">»</button>`:'';
-    const go=p=>{tPage=p; renderTrades();};
-    if(list.length>PER){ $('#tfirst').onclick=()=>go(0); $('#tprev').onclick=()=>go(tPage-1); $('#tnext').onclick=()=>go(tPage+1); $('#tlast').onclick=()=>go(pages-1); }
     $('#trades').innerHTML=all.map(t=>{
       const me=acc[t.k], sell=t.ask_account_id===me, maker=sell?t.is_maker_ask:!t.is_maker_ask;
       return `<tr><td class="l">${new Date(t.timestamp).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
@@ -1103,7 +1131,9 @@ const Desk=(()=>{
     }
     return out;
   }
+  let lastAcc=null;
   function renderClosed(a){
+    lastAcc=a;
     const all=[...cycles('RH',tradeCache.RH,a.RH),...cycles('CORE',tradeCache.CORE,a.CORE)];
     // объединяем циклы одного рынка, пересекающиеся по времени, в одну связку
     const groups=[];
@@ -1116,20 +1146,22 @@ const Desk=(()=>{
     const dur=ms=>{const m=Math.round(ms/60e3);if(m<60)return m+' мин';const h=Math.floor(m/60);if(h<48)return h+' ч '+(m%60)+' мин';return Math.floor(h/24)+' д '+(h%24)+' ч'};
     const dt=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
     let T={r:0,c:0,v:0};
-    const rows=groups.slice(0,30).map(g=>{
+    const CPER=15; cPage=pager('#cpager',cPage,groups.length,CPER,'связки',p=>{cPage=p;renderClosed(lastAcc);});
+    groups.forEach(g=>{ const R=g.items.filter(x=>x.k==='RH'), C=g.items.filter(x=>x.k==='CORE');
+      T.r+=R.reduce((s,x)=>s+x.pnl,0); T.c+=C.reduce((s,x)=>s+x.pnl,0); T.v+=g.items.reduce((s,x)=>s+x.vol,0); });
+    const rows=groups.slice(cPage*CPER,cPage*CPER+CPER).map(g=>{
       const R=g.items.filter(x=>x.k==='RH'), C=g.items.filter(x=>x.k==='CORE');
       const pr=R.reduce((s,x)=>s+x.pnl,0), pcx=C.reduce((s,x)=>s+x.pnl,0), vol=g.items.reduce((s,x)=>s+x.vol,0);
       const size=Math.max(0,...g.items.map(x=>x.max));
       const rs=R[0]?.side, tag=!R.length||!C.length?`<span class="tag kind" title="Цикл закрылся только на ${R.length?'Robinhood':'Core'}: на другом инстансе позиция в это время не открывалась и не закрывалась до нуля (например, держалась дольше) или её сделки старше загруженной истории">только ${R.length?'RH':'Core'}</span>`:(rs===C[0].side?'<span class="tag bad">не хедж</span>':'');
       const dir=R.length?(rs<0?'шорт RH':'лонг RH'):(C[0].side<0?'шорт Core':'лонг Core');
-      T.r+=pr;T.c+=pcx;T.v+=vol;
       return `<tr><td class="l"><b>${g.sym}</b> <span class="dim">${dir}</span> ${tag}</td><td class="l">${dt(g.start)}</td><td class="l">${dt(g.end)}</td>
         <td>${dur(g.end-g.start)}</td><td>${+size.toFixed(5)}</td><td>${usdk(vol)}</td>
         <td class="${R.length?cls(pr):'dim'}">${R.length?sgn(pr):'—'}</td><td class="${C.length?cls(pcx):'dim'}">${C.length?sgn(pcx):'—'}</td>
         <td class="${cls(pr+pcx)}"><b>${sgn(pr+pcx)}</b></td></tr>`;
     });
     $('#closed').innerHTML=rows.join('')||'<tr><td class="l dim" colspan="9">Закрытых связок в последних сделках не найдено</td></tr>';
-    $('#ctot').innerHTML=rows.length?`<tr><td class="l">Всего (${rows.length})</td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td>${usdk(T.v)}</td>
+    $('#ctot').innerHTML=rows.length?`<tr><td class="l">Всего (${groups.length})</td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td>${usdk(T.v)}</td>
       <td class="${cls(T.r)}">${sgn(T.r)}</td><td class="${cls(T.c)}">${sgn(T.c)}</td><td class="${cls(T.r+T.c)}"><b>${sgn(T.r+T.c)}</b></td></tr>`:'';
     labelize('#closed'); labelize('#ctot');
   }
@@ -1155,7 +1187,7 @@ const Desk=(()=>{
   }
   function welcome(){
     held=new Set();
-    ['#pairs','#weeks','#wtot','#trades','#tpager','#closed','#ctot'].forEach(s=>$(s).innerHTML='');
+    ['#pairs','#weeks','#wtot','#trades','#tpager','#wpager','#cpager','#closed','#ctot'].forEach(s=>$(s).innerHTML='');
     $('#acc').innerHTML=`<div class="welcome"><b>Добавьте адрес кошелька</b>
       <span class="sub">Вставьте выше адрес (0x…), которым вы входите в Lighter, дайте ему название и нажмите «Загрузить и сохранить». Ключи и подключение кошелька не нужны — PerpHedge только читает публичные данные.</span>
       <span><button class="primary" id="exshow">Посмотреть пример</button> <span class="sub">— откроет публичный кошелёк активного фармера, чтобы вы увидели, как всё выглядит</span></span></div>`;
@@ -1178,8 +1210,8 @@ const Desk=(()=>{
       $('#wsel').insertAdjacentHTML('afterbegin','<option value="ex">Пример · кошелёк фармера</option>'); $('#wsel').value='ex'; $('#wsel').disabled=false; $('#wdel').disabled=true; }
   }
   function load(addr){
-    st.addr=addr; save(); tPage=0; acc={RH:null,CORE:null}; lastSlow=0; cacheWeeks=null; held=new Set(); prevLegs={};
-    ['#pairs','#weeks','#wtot','#trades','#tpager','#closed','#ctot','#acc'].forEach(s=>$(s).innerHTML='');
+    st.addr=addr; save(); tPage=0; wPage=0; cPage=0; acc={RH:null,CORE:null}; lastSlow=0; cacheWeeks=null; held=new Set(); prevLegs={};
+    ['#pairs','#weeks','#wtot','#trades','#tpager','#wpager','#cpager','#closed','#ctot','#acc'].forEach(s=>$(s).innerHTML='');
     setStatus('desk','Загружаю '+short(addr)+'…'); fillWallets(); tick(true);
   }
   function init(){
@@ -1200,7 +1232,7 @@ const Desk=(()=>{
       st.wallets.splice(+$('#wsel').value,1);
       if(st.wallets.length) load(st.wallets[0].addr); else {st.addr='';save();acc={RH:null,CORE:null};fillWallets();welcome();}
     };
-    $('#wday').onchange=e=>{st.wday=+e.target.value;save();loadWeeks().then(renderWeeks)};
+    $('#wday').onchange=e=>{st.wday=+e.target.value;save();wPage=0;loadWeeks().then(renderWeeks)};
     const syncAl=()=>{ $('#pbell').classList.toggle('on',st.al.on); $('#pbelltxt').textContent=st.al.on?'уведомления включены':'уведомления выключены';
       $('#pexit').value=st.al.exit; $('#pzone').checked=st.al.zone; $('#pliq').checked=st.al.liq; $('#pmargin').checked=st.al.margin; $('#pleg').checked=st.al.leg; };
     syncAl();
