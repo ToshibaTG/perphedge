@@ -260,6 +260,7 @@ tbody tr:last-child td{border-bottom:0}
 .tag.ok{color:var(--good)} .tag.warn{color:var(--warn)} .tag.bad{color:var(--bad)}
 .tag.kind{border-color:transparent;background:var(--chip);color:var(--muted)}
 .symw{display:inline-flex;flex-direction:column;vertical-align:middle;line-height:1.15;margin-right:4px}
+.tag.boost{margin-top:4px;display:inline-block}
 .symw .kindsub{font:500 10px var(--sans);color:var(--muted);letter-spacing:.02em}
 .tag.held.warn{color:#d9a441} .tag.held.bad{color:#e5484d}
 button.fix{display:inline-block;margin-top:4px;font:600 11.5px var(--sans);border-radius:6px;padding:3px 8px;cursor:pointer;border:1px solid currentColor;background:transparent;white-space:nowrap}
@@ -603,6 +604,7 @@ svg.chart{width:100%;height:auto;display:block;max-width:100%;max-height:300px;f
       <h3>Таблица «Открытые связки»</h3>
       <dl class="g-terms">
         <dt>Статус</dt><dd><span class="tag ok">хедж</span> ноги равны и противоположны · <span class="tag warn">перекос</span> размеры разошлись больше чем на 2% · <span class="tag bad">одна нога</span> позиция только на одной площадке · <span class="tag bad">не хедж</span> обе ноги в одну сторону.</dd>
+        <dt>Буст 2.5x <span class="dim">(расширенный режим)</span></dt><dd>Хедж-буст Lighter к недельным поинтам действует только для одного направления: крипта, сырьё и ETF — <b>лонг на RH / шорт на Core</b>; pre-IPO и акции — <b>шорт на RH / лонг на Core</b>. <span class="tag ok">буст 2.5x</span> — связка в нужную сторону, <span class="tag bad">без буста 2.5x</span> — в обратную. Правило взято из документации Lighter (23.10.2026), Lighter может его менять каждую неделю.</dd>
         <dt>Вход RH / Вход Core</dt><dd>Средние цены открытия ног.</dd>
         <dt>RH, $ / Core, $</dt><dd>Размер ноги в долларах по цене входа, под ним — в монетах.</dd>
         <dt>Перекос, $</dt><dd>Разница размеров ног в долларах (в монетах — при наведении). Близко к нулю — хорошо.</dd>
@@ -816,6 +818,18 @@ function labelize(sel){
   body.querySelectorAll('tr').forEach(tr=>{ if(tr.querySelector('td[colspan]')) return;
     [...tr.children].forEach((td,i)=>{ if(ths[i]!=null) td.dataset.label=ths[i]; }); });
 }
+// Тип рынка (общий для «Моих связок» и сканера)
+const MKT=(()=>{
+  const CRYPTO=new Set('BTC ETH SOL XRP SUI NEAR ZEC HYPE LIT VVV USELESS ANSEM PONS CASHCAT DOGE BNB AVAX LINK'.split(' '));
+  const PREIPO=new Set('ANTHROPIC OPENAI SPCX SHEIN'.split(' '));
+  const ETF=new Set('SPY QQQ SOXL SGOV SLV USO'.split(' '));
+  const COMMOD=new Set('XAU XAG'.split(' '));
+  const kind=s=>PREIPO.has(s)?'pre-IPO':ETF.has(s)?'ETF':COMMOD.has(s)?'сырьё':CRYPTO.has(s)?'крипта':'акция';
+  // Хедж-буст 2.5x недельных поинтов (docs.lighter.xyz, версия от 23.10.2026; Lighter может менять еженедельно):
+  // крипта, сырьё, ETF — RH лонг / Core шорт; pre-IPO и акции — RH шорт / Core лонг
+  const boostRH=s=>{const k=kind(s); return k==='pre-IPO'||k==='акция'?'short':'long'};
+  return {kind,boostRH};
+})();
 let held=new Set();          // symbols with an open position on the selected wallet (for the scanner)
 let heldInfo={};             // sym -> {r:$ RH, c:$ Core, qr, qc} — размеры ног для сканера
 const statusText={desk:'Загрузка…',scan:'Открой вкладку, чтобы загрузить сканер'};
@@ -1003,7 +1017,13 @@ const Desk=(()=>{
             fix=`<button class="fix ${rel>0.02?'bad':'warn'}" data-copy="${fq6(d)}" title="Нажмите — количество скопируется, останется вставить в приложение">${lack==='RH'?'Robinhood':'Core'}: добрать ${q0<0?'шорт':'лонг'} +${fq6(d)} шт ≈ ${usd0(d*px)}</button>`; } }
         else if(r&&!c){ lack='CORE'; fix=`<button class="fix bad" data-copy="${fq6(ar)}" title="Нажмите — количество скопируется">Core: открыть ${qr<0?'лонг':'шорт'} ${fq6(ar)} шт ≈ ${usd0(ar*px)}</button>`; }
         else if(c&&!r){ lack='RH'; fix=`<button class="fix bad" data-copy="${fq6(ac)}" title="Нажмите — количество скопируется">Robinhood: открыть ${qc<0?'лонг':'шорт'} ${fq6(ac)} шт ≈ ${usd0(ac*px)}</button>`; } }
-      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span>${fix?'<br>'+fix:''}</td>
+      // метка хедж-буста (только расширенный режим)
+      let boost='';
+      if(r&&c&&Math.sign(qr)!==Math.sign(qc)){ const need=MKT.boostRH(s), have=qr<0?'short':'long', k=MKT.kind(s);
+        const want=need==='short'?'RH шорт / Core лонг':'RH лонг / Core шорт';
+        boost=have===need?`<span class="adv"><br><span class="tag ok boost" title="Хедж-буст 2.5x к недельным поинтам: для «${k}» засчитывается направление ${want}. Правило Lighter, может меняться еженедельно">буст 2.5x</span></span>`
+          :`<span class="adv"><br><span class="tag bad boost" title="Это направление не получает хедж-буст 2.5x к недельным поинтам. Для «${k}» буст даёт ${want}. Правило Lighter, может меняться еженедельно">без буста 2.5x</span></span>`; }
+      return `<tr class="${danger?'danger':hit&&alertsOn()?'hit':''}"><td class="l"><b>${s}</b>${opened[s]?`<br><span class="dim" style="font-size:11px" title="Когда открыта связка">${new Date(opened[s]).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>`:''}</td><td class="l"><span class="tag ${tag}">${status}</span>${boost}${fix?'<br>'+fix:''}</td>
         <td class="${lack==='RH'?'lack':''}">${side(qr,r?+r.avg_entry_price:0)}</td><td>${r?r.avg_entry_price:'—'}</td><td class="${lack==='CORE'?'lack':''}">${side(qc,c?+c.avg_entry_price:0)}</td><td>${c?c.avg_entry_price:'—'}</td>
         <td class="${Math.abs(netUsd)>=0.01?'dim':''}" title="${net?(+net.toFixed(6))+' шт':'0'}">${net?(netUsd>0?'+':'−')+usd0(Math.abs(netUsd)):'0'}</td>
         <td class="${cls(entryGap)}">${sgn(entryGap)}</td>
@@ -1360,11 +1380,7 @@ const Desk=(()=>{
 
 /* ---------- TAB 2: СКАНЕР СПРЕДА ---------- */
 const Scan=(()=>{
-  const CRYPTO=new Set('BTC ETH SOL XRP SUI NEAR ZEC HYPE LIT VVV USELESS ANSEM PONS CASHCAT DOGE BNB AVAX LINK'.split(' '));
-  const PREIPO=new Set('ANTHROPIC OPENAI SPCX SHEIN'.split(' '));
-  const ETF=new Set('SPY QQQ SOXL SGOV SLV USO'.split(' '));
-  const COMMOD=new Set('XAU XAG'.split(' '));
-  const kind=s=>PREIPO.has(s)?'pre-IPO':ETF.has(s)?'ETF':COMMOD.has(s)?'сырьё':CRYPTO.has(s)?'крипта':'акция';
+  const kind=MKT.kind;
   const LS='perphedge.scan.v1';
   const H=3600e3, RES_MS={'1m':60e3,'5m':300e3,'15m':900e3,'1h':H};
   // table statistics use one candle size per window (≤500 candles = one request per market)
