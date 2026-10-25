@@ -602,7 +602,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       <b>Выгода входа</b> — насколько текущий спред лучше медианы окна для выбранного направления: чем выше, тем удачнее момент открыть связку.
       <b>Перцентиль</b> — какая доля окна была хуже текущего момента для входа; «открывать» — от 80%, «закрывать» — до 20%.
       <b>Размах</b> — как сильно ходил спред. Метка «в позиции» — рынки, где у выбранного кошелька сейчас открыта позиция.
-      Сканер обновляется только пока открыта эта вкладка: цены каждые 15 секунд, история раз в 5 минут. Клик по строке — график. Это статистика, а не торговая рекомендация.<br>
+      Сканер обновляется только пока открыта эта вкладка: цены каждые 30 секунд, история раз в 5 минут. Клик по строке — график. Это статистика, а не торговая рекомендация.<br>
       <b>Фильтры</b>: суммы можно писать коротко — 500k, 2.5m, 10м. Объём и OI считаются по Robinhood. <b>Калькулятор входа</b> (клик по строке) проходит по стаканам обоих инстансов на вашу сумму и показывает реальные цены, проскальзывание и что вы закладываете на входе; комиссии в расчёт не входят.
     </p>
   </div>
@@ -712,7 +712,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       </tr></thead>
       <tbody id="dtb"></tbody>
     </table></div>
-    <p class="note">Список показывает только спред стакана Robinhood: насколько лучший аск выше лучшего бида. «Вход в пару» — сколько это стоит на вашу сумму, если открыть лонг по лучшему аску и шорт по лучшему биду. Цены в списке обновляются раз в минуту, пока открыта вкладка. <b>Клик по монете</b> открывает живой стакан в обе стороны: сколько можно взять маркетом в лонг и в шорт, проскальзывание, глубина до 0.05% и 0.1% и где встать лимиткой. ★ — добавить монету в избранное, без ограничения по числу. Метка «в паре» — монета открыта у выбранной пары аккаунтов.</p>
+    <p class="note">Список показывает только спред стакана Robinhood: насколько лучший аск выше лучшего бида. «Вход в пару» — сколько это стоит на вашу сумму, если открыть лонг по лучшему аску и шорт по лучшему биду. Цены в списке обновляются раз в 3 минуты, пока открыта вкладка. <b>Клик по монете</b> открывает живой стакан в обе стороны: сколько можно взять маркетом в лонг и в шорт, проскальзывание, глубина до 0.05% и 0.1% и где встать лимиткой. ★ — добавить монету в избранное, без ограничения по числу. Метка «в паре» — монета открыта у выбранной пары аккаунтов.</p>
   </div>
 
   <!-- ================= TAB 3: КАК ПОЛЬЗОВАТЬСЯ ================= -->
@@ -953,7 +953,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.2 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.3 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -987,6 +987,9 @@ async function j(u){
   }
 }
 
+// v2.3: личные данные, стаканы и свечи одной монеты — сначала напрямую в Lighter (не тратим лимит нашего сервера);
+// если Lighter не ответил или попросил подождать (429) — через наш сервер
+async function jd(u){ const d=toDirect(u); if(!d) return getJ(u); try{ return await getJ(d); }catch(e){ if(e.message==='400') throw e; return j(u); } }
 const n=v=>v==null||!isFinite(v)?'—':(Math.abs(v)>=1000?v.toFixed(0):v.toFixed(2));
 const sgn=v=>v==null||!isFinite(v)?'—':(v>0?'+':'')+n(v);
 const cls=v=>v==null||!isFinite(v)?'':v>0.005?'pos':v<-0.005?'neg':'';
@@ -1166,16 +1169,16 @@ const Desk=(()=>{
   const save=()=>{try{localStorage.setItem(LS,JSON.stringify(st))}catch(e){}};
   let acc={RH:null,CORE:null};
   async function resolve(){
-    const [r,c]=await Promise.all(['RH','CORE'].map(k=>j(`${API[k]}/accountsByL1Address?l1_address=${st.addr}`).catch(()=>null)));
+    const [r,c]=await Promise.all(['RH','CORE'].map(k=>jd(`${API[k]}/accountsByL1Address?l1_address=${st.addr}`).catch(()=>null)));
     const pick=x=>x?.sub_accounts?.find(a=>a.account_type===0)?.index??x?.sub_accounts?.[0]?.index??null;
     acc={RH:pick(r),CORE:pick(c)};
   }
-  const account=async k=>(await j(`${API[k]}/account?by=index&value=${acc[k]}`)).accounts[0];
+  const account=async k=>(await jd(`${API[k]}/account?by=index&value=${acc[k]}`)).accounts[0];
   const bookCache={};
   async function book(k,id,sym){
     const key=k+'|'+id, c=bookCache[key], ttl=(sym&&Scan.openSym&&Scan.openSym()===sym)?10e3:30e3;   // монета в фокусе — 10 с, остальные — 30 с
     if(c&&Date.now()-c.at<ttl) return c.v;
-    const o=await j(`${API[k]}/orderBookOrders?market_id=${id}&limit=1`); const v={bid:+o.bids?.[0]?.price,ask:+o.asks?.[0]?.price};
+    const o=await jd(`${API[k]}/orderBookOrders?market_id=${id}&limit=1`); const v={bid:+o.bids?.[0]?.price,ask:+o.asks?.[0]?.price};
     bookCache[key]={at:Date.now(),v}; return v;
   }
   // занятая маржа: всё, что не свободно, — и кросс, и изолированная (позиции из приложения Robinhood Wallet всегда изолированные)
@@ -1308,8 +1311,8 @@ const Desk=(()=>{
     if(acc[k]==null) return {pts:[],base:0,hrs:[]};
     const now=Math.floor(Date.now()/60000)*60000, D=864e5, H=3600e3, start=now-366*D, hs=now-167*H;
     const [d,h]=await Promise.all([
-      j(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1d&start_timestamp=${start}&end_timestamp=${now}&count_back=380`),
-      j(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1h&start_timestamp=${hs}&end_timestamp=${now}&count_back=168`).catch(()=>({pnl:[]}))]);
+      jd(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1d&start_timestamp=${start}&end_timestamp=${now}&count_back=380`),
+      jd(`${API[k]}/pnl?by=index&value=${acc[k]}&resolution=1h&start_timestamp=${hs}&end_timestamp=${now}&count_back=168`).catch(()=>({pnl:[]}))]);
     const pts=(d.pnl||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);
     const hrs=(h.pnl||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);
     // если история доходит до начала окна, первая точка — отправная (её результат был до окна)
@@ -1437,8 +1440,8 @@ const Desk=(()=>{
     let out=[], cursor='';
     for(let i=0;i<5;i++){
       let r;
-      try{ r=await j(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=100${cursor?'&cursor='+encodeURIComponent(cursor):''}`); }
-      catch(e){ if(i===0){ r=await j(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=40`); out=r.trades||[]; } break; }
+      try{ r=await jd(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=100${cursor?'&cursor='+encodeURIComponent(cursor):''}`); }
+      catch(e){ if(i===0){ r=await jd(`${API[k]}/trades?account_index=${acc[k]}&sort_by=timestamp&limit=40`); out=r.trades||[]; } break; }
       const t=r.trades||[]; out=out.concat(t);
       if(!r.next_cursor||t.length<100) break; cursor=r.next_cursor;
     }
@@ -1537,7 +1540,7 @@ const Desk=(()=>{
   let lastTick=0;
   async function tick(force){
     if(PAIR!=='core') return;   // v2.0: открыт режим RH ↔ RH — эти связки не опрашиваем
-    if(!force&&document.hidden&&Date.now()-lastTick<60e3) return;   // вкладка в фоне — раз в минуту
+    if(!force&&document.hidden&&Date.now()-lastTick<180e3) return;   // вкладка в фоне — раз в 3 минуты
     if(busy){ if(force) pending=true; return; } busy=true; lastTick=Date.now();
     const forAddr=st.addr;
     if(!st.addr){ welcome(); busy=false; return; }
@@ -1650,7 +1653,7 @@ const Scan=(()=>{
     for(let s=start;s<end;s+=page){
       const e=Math.min(s+page,end);
       const cb=Math.min(500,Math.ceil((e-s)/step)+1);
-      const r=await j(`${base}/candles?market_id=${id}&resolution=${res}&start_timestamp=${s}&end_timestamp=${e}&count_back=${cb}`);
+      const r=await jd(`${base}/candles?market_id=${id}&resolution=${res}&start_timestamp=${s}&end_timestamp=${e}&count_back=${cb}`);
       (r.c||[]).forEach(c=>{ if(c.t>=start-step) m[c.t]=c.c; });   // the API may return older candles than asked
     }
     return m;
@@ -1660,6 +1663,18 @@ const Scan=(()=>{
     const res=AUTO_RES[ui.h], key=res+'|'+ui.h, h=hist[key];
     if(h&&!force&&Date.now()-h.at<5*60e3&&!(h.partial&&activeTab==='scan')) return;
     const bg=activeTab!=='scan', need=m=>ui.bells[m.sym]||held.has(m.sym)||ui.fav.includes(m.sym);
+    // v2.3: история всех рынков одним запросом с нашего сервера (по частям), вместо ~90 запросов свечей
+    try{
+      const agg={}; let parts=1;
+      for(let i=0;i<parts;i++){
+        const r=await fetch(`${PROXY}/hist?h=${ui.h}&part=${i}`,{cache:'no-cache'}); if(!r.ok) throw new Error(r.status);
+        const d=await r.json(); if(!d||!d.markets||d.res!==res) throw new Error('bad'); parts=Math.min(10,d.parts||1);
+        for(const sym in d.markets) agg[sym]=d.markets[sym].map(([t,a,b])=>[t,(a-b)/b*100,a,b]);
+        setStatus('scan',`Сканер · загружаю историю (${WIN_TXT[ui.h]}, свечи ${res})… ${i+1}/${parts}`);
+      }
+      if(Object.keys(agg).length){ hist[key]={at:Date.now(),data:agg,partial:false}; return; }
+    }catch(e){}
+    // запасной путь — свечи по каждому рынку напрямую в Lighter
     const list=bg?markets.filter(need):markets.filter(m=>ui.crypto||m.kind!=='крипта'||need(m)), data={};
     let done=0;
     await pool(list.map(m=>async()=>{
@@ -1870,19 +1885,19 @@ const Scan=(()=>{
     liveOn();
     if(!calcTimer) calcTimer=setInterval(()=>{
       if(activeTab!=='scan'||!ui.open||document.hidden){ Live.stop(); return; }
-      liveOn(); if(!Live.ok()) loadBooks();          // живой поток недоступен — опрос раз в 3 секунды
+      liveOn(); if(!Live.ok()&&Date.now()-booksAt>9500) loadBooks();          // живой поток недоступен — опрос раз в 10 секунд
       else if(calcEl) calcEl.querySelector('#cage').innerHTML=cageTxt();
     },3000);
   }
   function liveOn(){ const m=markets.find(x=>x.sym===ui.open); if(m&&activeTab==='scan'&&!document.hidden) Live.start(m.rh,m.core,onLive); }
   function stopCalc(){ if(calcTimer){clearInterval(calcTimer);calcTimer=null} Live.stop(); booksSym=null; books=null; }
-  const cageTxt=()=>Live.ok()?'<span class="live">● live</span> стаканы в реальном времени':'стаканы обновлены '+new Date(booksAt).toLocaleTimeString('ru-RU')+' · каждые 3 с';
+  const cageTxt=()=>Live.ok()?'<span class="live">● live</span> стаканы в реальном времени':'стаканы обновлены '+new Date(booksAt).toLocaleTimeString('ru-RU')+' · каждые 10 с';
   const lvl=o=>({p:+o.price, q:+(o.remaining_base_amount??o.base_amount??o.size??o.amount??0)});
   async function loadBooks(){
     const m=markets.find(x=>x.sym===ui.open); if(!m) return;
     if(Live.ok()&&Live.get()){ onLive(true); return; }
     try{
-      const [a,b]=await Promise.all([j(`${API.RH}/orderBookOrders?market_id=${m.rh}&limit=100`),j(`${API.CORE}/orderBookOrders?market_id=${m.core}&limit=100`)]);
+      const [a,b]=await Promise.all([jd(`${API.RH}/orderBookOrders?market_id=${m.rh}&limit=100`),jd(`${API.CORE}/orderBookOrders?market_id=${m.core}&limit=100`)]);
       if(ui.open!==m.sym) return;
       if(Live.ok()&&Live.get()){ onLive(true); return; }   // живой поток успел прийти — он свежее
       const side=x=>({bids:(x.bids||[]).map(lvl).filter(l=>l.p>0&&l.q>0).sort((u,v)=>v.p-u.p),asks:(x.asks||[]).map(lvl).filter(l=>l.p>0&&l.q>0).sort((u,v)=>u.p-v.p)});
@@ -2018,7 +2033,7 @@ const Scan=(()=>{
   }
   const lastLock={};
   async function lockFor(m,dir){
-    const [a,b]=await Promise.all([j(`${API.RH}/orderBookOrders?market_id=${m.rh}&limit=100`),j(`${API.CORE}/orderBookOrders?market_id=${m.core}&limit=100`)]);
+    const [a,b]=await Promise.all([jd(`${API.RH}/orderBookOrders?market_id=${m.rh}&limit=100`),jd(`${API.CORE}/orderBookOrders?market_id=${m.core}&limit=100`)]);
     const sd=x=>({bids:(x.bids||[]).map(lvl).filter(l=>l.p>0&&l.q>0).sort((u,v)=>v.p-u.p),asks:(x.asks||[]).map(lvl).filter(l=>l.p>0&&l.q>0).sort((u,v)=>u.p-v.p)});
     const R=sd(a), C=sd(b), short=dir==='shortRH', rL=short?R.bids:R.asks, cL=short?C.asks:C.bids;
     if(!rL.length||!cL.length) return null;
@@ -2149,7 +2164,7 @@ const Scan=(()=>{
   const doneMsg=()=>{const h=curHist();return `Сканер · обновлено ${tstr()} · рынков на обоих инстансах: ${markets.length} · окно ${WIN_TXT[ui.h]} (свечи ${AUTO_RES[ui.h]})${h?' · история от '+new Date(h.at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}${Prem.at()?' · Premium от '+new Date(Prem.at()).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}`};
   let lastMarks=0;
   async function refreshMarks(){
-    if(document.hidden&&Date.now()-lastMarks<60e3) return;   // вкладка в фоне — раз в минуту
+    if(document.hidden&&Date.now()-lastMarks<180e3) return;   // вкладка в фоне — раз в 3 минуты
     if(busy) return; busy=true; lastMarks=Date.now();
     try{await loadMarkets(); await refreshOpen(false); render(false); setStatus('scan',doneMsg()); checkBells(); premTick()}catch(e){setStatus('scan','Сканер: не удалось получить цены. Проверьте интернет и нажмите ⟳.')}
     busy=false;
@@ -2192,7 +2207,7 @@ const Scan=(()=>{
     if(!started){started=true; syncUI(); bind(); full(false,true);}
     else full(false,false);
     stop();
-    timers.push(setInterval(refreshMarks,15000));
+    timers.push(setInterval(refreshMarks,30000));   // v2.3: цены раз в 30 с
     timers.push(setInterval(()=>{ if(!busy) full(true); },5*60e3));
   }
   function stop(){timers.forEach(clearInterval);timers=[];if(calcTimer){clearInterval(calcTimer);calcTimer=null};Live.stop()}
@@ -2203,7 +2218,7 @@ const Scan=(()=>{
     const want=Object.keys(ui.bells).length>0||held.size>0;
     if(!want){ stop(); return; }
     if(!timers.length){ if(!started){started=true; syncUI(); bind();} full(false,false);
-      timers.push(setInterval(refreshMarks,15000)); timers.push(setInterval(()=>{ if(!busy) full(true); },5*60e3)); }
+      timers.push(setInterval(refreshMarks,60000)); timers.push(setInterval(()=>{ if(!busy) full(true); },5*60e3)); }
   }
   function zone(sym,dir){ const m=markets.find(x=>x.sym===sym); if(!m) return null; const st=stats(m,dir); return st.n>=6?{pctl:st.pctl,win:WIN_TXT[ui.h]}:null }
   return {start,stop,bgCheck,zone,openSym:()=>ui.open,marks:()=>refreshMarks(),rerender:()=>render(false),refresh:()=>full(true,true)};
@@ -2252,14 +2267,14 @@ const Desk2=(()=>{
   async function resolve(){
     const p=P(); idx={A:null,B:null}; if(!p) return;
     const pick=x=>x?.sub_accounts?.find(a=>a.account_type===0)?.index??x?.sub_accounts?.[0]?.index??null;
-    const [a,b]=await Promise.all([p.a,p.b].map(ad=>j(`${API.RH}/accountsByL1Address?l1_address=${ad}`).catch(()=>null)));
+    const [a,b]=await Promise.all([p.a,p.b].map(ad=>jd(`${API.RH}/accountsByL1Address?l1_address=${ad}`).catch(()=>null)));
     idx={A:pick(a),B:pick(b)};
   }
-  const account=async k=>(await j(`${API.RH}/account?by=index&value=${idx[k]}`)).accounts[0];
+  const account=async k=>(await jd(`${API.RH}/account?by=index&value=${idx[k]}`)).accounts[0];
   const bookCache={};
   async function top(id){
     const c=bookCache[id]; if(c&&Date.now()-c.at<15e3) return c.v;
-    const o=await j(`${API.RH}/orderBookOrders?market_id=${id}&limit=1`);
+    const o=await jd(`${API.RH}/orderBookOrders?market_id=${id}&limit=1`);
     const v={bid:+o.bids?.[0]?.price,ask:+o.asks?.[0]?.price}; bookCache[id]={at:Date.now(),v}; return v;
   }
   // подписи колонок под названия аккаунтов
@@ -2378,8 +2393,8 @@ const Desk2=(()=>{
     if(idx[k]==null) return {pts:[],base:0,hrs:[]};
     const now=Math.floor(Date.now()/60000)*60000, D=864e5, H=3600e3, start=now-366*D, hs=now-167*H;
     const [d,h]=await Promise.all([
-      j(`${API.RH}/pnl?by=index&value=${idx[k]}&resolution=1d&start_timestamp=${start}&end_timestamp=${now}&count_back=380`),
-      j(`${API.RH}/pnl?by=index&value=${idx[k]}&resolution=1h&start_timestamp=${hs}&end_timestamp=${now}&count_back=168`).catch(()=>({pnl:[]}))]);
+      jd(`${API.RH}/pnl?by=index&value=${idx[k]}&resolution=1d&start_timestamp=${start}&end_timestamp=${now}&count_back=380`),
+      jd(`${API.RH}/pnl?by=index&value=${idx[k]}&resolution=1h&start_timestamp=${hs}&end_timestamp=${now}&count_back=168`).catch(()=>({pnl:[]}))]);
     const pts=(d.pnl||[]).slice().sort((a,b)=>a.timestamp-b.timestamp), hrs=(h.pnl||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);
     const cut=pts.length&&pts[0].timestamp*1000-start<1.5*D;
     return {pts:cut?pts.slice(1):pts, base:cut?+pts[0].trade_pnl:0, hrs};
@@ -2494,8 +2509,8 @@ const Desk2=(()=>{
     let out=[], cursor='';
     for(let i=0;i<5;i++){
       let r;
-      try{ r=await j(`${API.RH}/trades?account_index=${idx[k]}&sort_by=timestamp&limit=100${cursor?'&cursor='+encodeURIComponent(cursor):''}`); }
-      catch(e){ if(i===0){ r=await j(`${API.RH}/trades?account_index=${idx[k]}&sort_by=timestamp&limit=40`); out=r.trades||[]; } break; }
+      try{ r=await jd(`${API.RH}/trades?account_index=${idx[k]}&sort_by=timestamp&limit=100${cursor?'&cursor='+encodeURIComponent(cursor):''}`); }
+      catch(e){ if(i===0){ r=await jd(`${API.RH}/trades?account_index=${idx[k]}&sort_by=timestamp&limit=40`); out=r.trades||[]; } break; }
       const t=r.trades||[]; out=out.concat(t);
       if(!r.next_cursor||t.length<100) break; cursor=r.next_cursor;
     }
@@ -2582,7 +2597,7 @@ const Desk2=(()=>{
   let busy=false, pending=false, lastSlow=0, lastTick=0;
   async function tick(force){
     if(PAIR!=='rh2') return;
-    if(!force&&document.hidden&&Date.now()-lastTick<60e3) return;
+    if(!force&&document.hidden&&Date.now()-lastTick<180e3) return;
     if(busy){ if(force) pending=true; return; } busy=true; lastTick=Date.now();
     const forKey=pairKey();
     if(!P()){ welcome(); busy=false; return; }
@@ -2701,10 +2716,10 @@ const Depth=(()=>{
   }
   const visible=()=>ui.view==='fav'?markets.filter(m=>ui.fav.includes(m.sym)):ui.view==='held'?markets.filter(m=>!!Desk2.held()[m.sym]):markets.filter(kindOk);
   async function loadTops(force){
-    const list=visible().filter(m=>force||!tops[m.sym]||Date.now()-tops[m.sym].at>55e3);
+    const list=visible().filter(m=>force||!tops[m.sym]||Date.now()-tops[m.sym].at>170e3);
     let done=0;
     await poolRun(list.map(m=>async()=>{
-      const o=await j(`${API.RH}/orderBookOrders?market_id=${m.id}&limit=1`);
+      const o=await jd(`${API.RH}/orderBookOrders?market_id=${m.id}&limit=1`);
       tops[m.sym]={bid:+o.bids?.[0]?.price||null,ask:+o.asks?.[0]?.price||null,at:Date.now()};
       done++; if(done%8===0) setStatus('depth',`Глубина стакана · загружаю цены… ${done}/${list.length}`);
     }),3);
@@ -2764,7 +2779,7 @@ const Depth=(()=>{
   async function loadRest(){
     const m=markets.find(x=>x.sym===ui.open); if(!m) return;
     try{
-      const o=await j(`${API.RH}/orderBookOrders?market_id=${m.id}&limit=100`);
+      const o=await jd(`${API.RH}/orderBookOrders?market_id=${m.id}&limit=100`);
       if(ui.open!==m.sym) return;
       const me=Desk2.idxs(), nm=Desk2.names(), own=[];
       const agg=(arr,isBid)=>{ const mp=new Map();
@@ -2784,7 +2799,7 @@ const Depth=(()=>{
     const el=document.getElementById('dcalc'); if(!el) return;
     const m=markets.find(x=>x.sym===ui.open); if(!m) return;
     const g=book();
-    const age=LiveRH.ok()?'<span class="live">● live</span> стакан в реальном времени':(restAt?'стакан обновлён '+new Date(restAt).toLocaleTimeString('ru-RU')+' · каждые 3 с':'');
+    const age=LiveRH.ok()?'<span class="live">● live</span> стакан в реальном времени':(restAt?'стакан обновлён '+new Date(restAt).toLocaleTimeString('ru-RU')+' · каждые 10 с':'');
     if(!g){ el.innerHTML='<span class="sub">Загружаю стакан…</span>'; return; }
     const {bids,asks}=g;
     if(!bids.length||!asks.length){ el.innerHTML='<span class="sub">В стакане нет заявок с одной из сторон.</span>'; return; }
@@ -2843,11 +2858,11 @@ const Depth=(()=>{
       if(activeTab!=='depth'||!ui.open||document.hidden){ LiveRH.stop(); return; }
       const mm=markets.find(x=>x.sym===ui.open); if(!mm) return;
       LiveRH.start(mm.id,onLive);
-      k++; if(!LiveRH.ok()||k%3===0) loadRest();   // без живого потока — раз в 3 с; с ним — раз в 9 с, чтобы видеть свои заявки
-      else drawDetail();
+      k++; if(LiveRH.ok()?k%5===0:Date.now()-restAt>9500) loadRest();   // без живого потока — раз в 10 с; с ним — раз в 15 с, чтобы видеть свои заявки
+      else if(LiveRH.ok()) drawDetail();
     },3000);
   }
-  const doneMsg=()=>`Глубина стакана · обновлено ${tstr()} · рынков Robinhood: ${markets.length} · цены в списке раз в минуту${Prem.at()?' · Premium от '+new Date(Prem.at()).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}`;
+  const doneMsg=()=>`Глубина стакана · обновлено ${tstr()} · рынков Robinhood: ${markets.length} · цены в списке раз в 3 минуты${Prem.at()?' · Premium от '+new Date(Prem.at()).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):''}`;
   async function refresh(force,resort){
     if(busy) return; busy=true; if(activeTab==='depth'&&force) spinning(true);
     try{ await loadMarkets(); render(resort); if(ui.open&&!detTimer&&activeTab==='depth') openDetail(); await loadTops(force); lastList=Date.now(); render(resort); setStatus('depth',doneMsg());
@@ -2871,7 +2886,7 @@ const Depth=(()=>{
     if(!started){ started=true; bind(); refresh(true,true); }
     else refresh(false,false);
     stop();
-    timers.push(setInterval(()=>{ if(document.hidden) return; refresh(false,false); },60e3));
+    timers.push(setInterval(()=>{ if(document.hidden) return; refresh(false,false); },180e3));   // v2.3: цены в списке раз в 3 минуты
     openDetail();
   }
   function stop(){ timers.forEach(clearInterval); timers=[]; if(detTimer){clearInterval(detTimer);detTimer=null} LiveRH.stop(); }
