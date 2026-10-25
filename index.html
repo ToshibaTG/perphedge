@@ -559,7 +559,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       </select>
     </div>
     <div class="vbar"><div class="seg" id="view">
-      <button data-v="all">Все рынки</button><button data-v="fav">★ Избранное (<span id="nfav">0</span>)</button><button data-v="bell">🔔 С уведомлениями (<span id="nbell">0</span>)</button>
+      <button data-v="all">Все рынки</button><button data-v="fav">★ Избранное (<span id="nfav">0</span>)</button><button data-v="bell">🔔 С уведомлениями (<span id="nbell">0</span>)</button><button data-v="held">💼 В позиции (<span id="nheld">0</span>)</button>
     </div><button class="fbtn" id="fbtn">Фильтры</button><button id="freset3" hidden title="Вернуть все фильтры к исходным">✕ Сбросить фильтры</button><span class="sub" id="vnote"></span></div>
     <div class="fbar" id="fbar">
       <label class="fg">Тип
@@ -690,14 +690,13 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   <!-- ================= v2.0 · RH ↔ RH: ГЛУБИНА СТАКАНА ================= -->
   <div id="depth" class="wrap" role="tabpanel" aria-labelledby="tab-depth" hidden style="gap:14px">
     <div class="bar dbar">
-      <div class="seg" id="dview"><button data-v="all">Все рынки</button><button data-v="fav">★ Избранное (<span id="dnfav">0</span>)</button></div>
+      <div class="seg" id="dview"><button data-v="all">Все рынки</button><button data-v="fav">★ Избранное (<span id="dnfav">0</span>)</button><button data-v="held">💼 В паре (<span id="dnheld">0</span>)</button></div>
       <select id="dkind" aria-label="Тип рынков">
         <option value="nocrypto">все, кроме крипты</option><option value="all">все, включая крипту</option>
         <option value="акция">только акции</option><option value="pre-IPO">только pre-IPO</option>
         <option value="etf">ETF и сырьё</option><option value="крипта">только крипта</option>
       </select>
-      <label class="fg sub">Сумма на ногу, $ <input type="text" id="dsize" inputmode="decimal" aria-label="Сумма на одну ногу в долларах"></label>
-      <span class="presets" id="dpre"><button data-v="500">$500</button><button data-v="1000">$1K</button><button data-v="3000">$3K</button><button data-v="5000">$5K</button><button data-v="10000">$10K</button></span>
+      <label class="fg sub">Сумма на ногу, $ <input type="text" id="dsize" inputmode="decimal" aria-label="Сумма на одну ногу в долларах" placeholder="например 2000" title="Сумма на одну ногу в долларах, например 2000"></label>
     </div>
     <div class="tw"><table id="t-depth">
       <thead id="dthead"><tr>
@@ -876,10 +875,10 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       <h3>Простой и расширенный режим</h3>
       <p>По умолчанию сайт открывается в <b>простом режиме</b>: в таблицах только главное — рынок, статус, итог связки, итог при закрытии, сигнал и спред, а фильтры, детали калькулятора и последние сделки спрятаны за кнопками. Кнопка «Режим» вверху включает <b>расширенный режим</b> со всеми колонками и индикаторами. Выбор запоминается в браузере, уведомления работают в обоих режимах.</p>
       <h3>Фильтры и избранное</h3>
-      <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом», в расширенном режиме — «только с бустом 2.5x». Рядом с монетой (расширенный режим): <span class="tag ok boost">2.5x</span> — выбранное направление получает хедж-буст Lighter, <span class="tag bad boost no">2.5x</span> — буст только в обратном направлении; <span class="tag earn">📊</span> — отчёт компании внутри недели подсчёта поинтов. ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают.</p>
+      <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом», в расширенном режиме — «только с бустом 2.5x». Рядом с монетой (расширенный режим): <span class="tag ok boost">2.5x</span> — выбранное направление получает хедж-буст Lighter, <span class="tag bad boost no">2.5x</span> — буст только в обратном направлении; <span class="tag earn">📊</span> — отчёт компании внутри недели подсчёта поинтов. ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают. Кнопка <b>«💼 В позиции»</b> показывает только ваши открытые связки — калькулятор у них сразу считает выход.</p>
       <h3>Калькулятор входа</h3>
       <p>Кликните монету и впишите сумму на одну ногу. Сайт пройдёт по стаканам обоих инстансов и покажет количество монет, средние цены, проскальзывание, реальный спред на вашу сумму и сколько вы закладываете на входе — маркетом на обеих ногах и если Core поставить лимиткой. «Макс. размер» — сколько можно зайти, чтобы цена ушла не дальше 0.05%. Комиссии не учитываются.</p>
-      <p><b>Вход / Выход.</b> Переключатель рядом с кнопками «Открыть … на Robinhood / на Core». «Вход» считает открытие связки, «Выход» — закрытие: для шорта RH это покупка по аскам Robinhood и продажа в биды Core, то есть другие стороны стаканов. Если монета у вас в позиции, калькулятор сам открывается на «Выходе», берёт размер вашей позиции и показывает итог, если закрыть сейчас: заложено на входе + выход + фандинг. «Против обычного» сравнивает середину стаканов сейчас с медианой окна: «лучше» — момент удачнее обычного.</p>
+      <p><b>Вход / Выход.</b> Переключатель рядом с кнопками «Открыть … на Robinhood / на Core». «Вход» считает открытие связки (у монеты в позиции кнопка называется «Добавить» и считает добавление в направлении позиции, со строкой «Позиция станет»), «Выход» — закрытие: для шорта RH это покупка по аскам Robinhood и продажа в биды Core, то есть другие стороны стаканов. Если монета у вас в позиции, калькулятор сам открывается на «Выходе», берёт размер вашей позиции и показывает итог, если закрыть сейчас: заложено на входе + выход + фандинг. «Против обычного» сравнивает середину стаканов сейчас с медианой окна: «лучше» — момент удачнее обычного.</p>
       <h3>Колонка «Premium RH»</h3>
       <p>Поинты на Robinhood начисляют только за сделки, где на другой стороне Premium-аккаунт. Колонка показывает, какая доля оборота по последним ~100 сделкам на Robinhood прошла с Premium: <b class="pp hi">зелёный</b> — 85% и выше, <b class="pp mid">жёлтый</b> — 60–85%, <b class="pp lo">красный</b> — ниже. Ниже — Premium-объём в минуту и за сколько времени набрались эти сделки: на тихих рынках это часы, и тогда высокий процент мало что значит. Наведите курсор на ячейку — увидите, кто кого бьёт: если много «Standard бьёт по Premium», выгодно заходить маркетом; если много «Premium бьёт по Standard» — лимитками. Сортировка по колонке — по Premium-объёму в минуту. Сводка обновляется раз в 5 минут.</p>
       <h3>🔔 Уведомления о входе и выходе</h3>
@@ -954,7 +953,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.1 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.2 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -1854,12 +1853,10 @@ const Scan=(()=>{
     if(calcEl) return calcEl;
     calcEl=document.createElement('div'); calcEl.className='calc';
     calcEl.innerHTML=`<div class="ch"><b id="cttl">Калькулятор входа</b>
-      <label class="fg" id="csizel">Сумма на ногу, $ <input type="text" id="csize" inputmode="decimal" aria-label="Сумма позиции в долларах"></label>
-      <span class="presets">${[500,1000,3000,5000,10000].map(v=>`<button data-v="${v}">$${v>=1000?v/1000+'K':v}</button>`).join('')}</span>
+      <label class="fg" id="csizel">Сумма на ногу, $ <input type="text" id="csize" inputmode="decimal" aria-label="Сумма позиции в долларах" placeholder="например 2000" title="Сумма на одну ногу в долларах, например 2000"></label>
       <span class="sub" id="cpos" hidden></span>
       <span class="sub" id="cage"></span></div><div id="cout"><span class="sub">Загружаю стаканы…</span></div>`;
     calcEl.addEventListener('click',e=>e.stopPropagation());
-    calcEl.querySelector('.presets').onclick=e=>{const b=e.target.closest('button');if(!b)return;ui.size=+b.dataset.v;save();calcEl.querySelector('#csize').value=ui.size;drawCalc()};
     let t; calcEl.querySelector('#csize').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{const v=amt(e.target.value);if(v>0){ui.size=v;save();drawCalc()}},250)};
     calcEl.querySelector('#csize').value=ui.size;
     return calcEl;
@@ -1906,24 +1903,25 @@ const Scan=(()=>{
   function cmodeBtns(sym){
     if(calcModeSym!==sym){ calcModeSym=sym; calcMode=heldPos(sym)?'out':'in'; }
     const tip=heldPos(sym)?'':' title="Монеты нет в позиции — выход считается на сумму из калькулятора"';
-    return `<span class="cmodes" role="group" aria-label="Что считать"><button class="cmb${calcMode==='in'?' on':''}" data-m="in" aria-pressed="${calcMode==='in'}">Вход</button><button class="cmb out${calcMode==='out'?' on':''}" data-m="out" aria-pressed="${calcMode==='out'}"${tip}>Выход</button></span>`;
+    return `<span class="cmodes" role="group" aria-label="Что считать"><button class="cmb${calcMode==='in'?' on':''}" data-m="in" aria-pressed="${calcMode==='in'}"${heldPos(sym)?' title="Посчитать добавление к позиции в её направлении"':''}>${heldPos(sym)?'Добавить':'Вход'}</button><button class="cmb out${calcMode==='out'?' on':''}" data-m="out" aria-pressed="${calcMode==='out'}"${tip}>Выход</button></span>`;
   }
   function drawCalc(){
     if(!calcEl||!books||books.sym!==ui.open) return;
     const out=calcEl.querySelector('#cout'), m=markets.find(x=>x.sym===ui.open); if(!m) return;
-    const exit=calcMode==='out', hp=exit?heldPos(m.sym):null;
-    // направление связки: на выходе с позицией — по самой позиции, иначе — как выбрано над таблицей
-    const dir=hp?(hp.qr<0?'shortRH':'longRH'):ui.dir, short=dir==='shortRH';
+    const exit=calcMode==='out', hpAny=heldPos(m.sym), hp=exit?hpAny:null, add=!exit&&!!hpAny;
+    // направление связки: у монеты в позиции — по самой позиции (и выход, и добавление), иначе — как выбрано над таблицей
+    const dir=hpAny?(hpAny.qr<0?'shortRH':'longRH'):ui.dir, short=dir==='shortRH';
     const sellRH=exit?!short:short;                                     // вход шорта RH и выход из лонга RH — продажа на RH
     const R=books.RH, C=books.CORE;
     const rLv=sellRH?R.bids:R.asks, cLv=sellRH?C.asks:C.bids;          // продаём на RH в биды, покупаем на Core с асков — и наоборот
-    calcEl.querySelector('#cttl').textContent=exit?'Калькулятор выхода':'Калькулятор входа';
-    calcEl.querySelector('#csizel').hidden=!!hp; calcEl.querySelector('.presets').hidden=!!hp;
-    const posEl=calcEl.querySelector('#cpos'); posEl.hidden=!hp;
+    calcEl.querySelector('#cttl').textContent=exit?'Калькулятор выхода':add?'Добавить к позиции':'Калькулятор входа';
+    calcEl.querySelector('#csizel').hidden=!!hp;
+    const posEl=calcEl.querySelector('#cpos'); posEl.hidden=!hpAny;
     if(!rLv.length||!cLv.length){out.innerHTML='<span class="sub">В одном из стаканов нет заявок с нужной стороны.</span>';return}
     const ref=(cLv[0].p+rLv[0].p)/2;
     const qR=hp?Math.abs(hp.qr):ui.size/ref, qC=hp?Math.abs(hp.qc):ui.size/ref;
     if(hp) posEl.innerHTML=`размер позиции: <b>${fq(qR)} ${m.sym}</b> на RH · <b>${fq(qC)}</b> на Core ≈ $${n(qR*ref)}`;
+    if(add) posEl.innerHTML=`сейчас в позиции: <b>$${n(Math.abs(hpAny.qr)*ref)}</b> · ${short?'шорт RH / лонг Core':'лонг RH / шорт Core'}`;
     const r=walk(rLv,qR), c=walk(cLv,qC);
     const slipR=r.avg!=null?(sellRH?(r.best-r.avg):(r.avg-r.best))*r.got:null;
     const slipC=c.avg!=null?(sellRH?(c.avg-c.best):(c.best-c.avg))*c.got:null;
@@ -1957,6 +1955,7 @@ const Scan=(()=>{
       total=`<div class="kv key"><span>Заложено на входе · фандинг</span><b><span class="${cls(entry)}">${usd(entry)}</span> · <span class="${cls(hp.fund)}">${usd(hp.fund||0)}</span></b></div>
         <div class="kv key"><span>Итог, если закрыть сейчас</span><b class="${cls(tot)}">${usd(tot)}</b></div>`; }
     const what=exit?'выход':'вход';
+    if(add){ const now=Math.abs(hpAny.qr)*ref; total=`<div class="kv key"><span>Позиция станет</span><b>$${n(now)} → $${n(now+ui.size)}</b></div>`; }
     out.innerHTML=`${thin?`<div class="warnbox">⚠ Стакан не держит ${hp?'вашу позицию':'$'+n(ui.size)}: на ${!r.full?'Robinhood':'Core'} набралось только ${fq(!r.full?r.got:c.got)} ${m.sym} (~$${n((!r.full?r.got:c.got)*ref)}) в первых 100 заявках. Цифры ниже — на то, что есть.</div>`:''}
       ${exit&&!hp?`<div class="sub" style="margin-bottom:6px">Монеты нет в позиции — выход связки «${short?'шорт RH / лонг Core':'лонг RH / шорт Core'}» посчитан на сумму из калькулятора.</div>`:''}
       ${legsTbl}
@@ -2091,18 +2090,18 @@ const Scan=(()=>{
   }
   function render(resort){
     const nf=ui.fav.filter(x=>markets.some(m=>m.sym===x)).length, nb=Object.keys(ui.bells).filter(x=>markets.some(m=>m.sym===x)).length;
-    $('#nfav').textContent=nf; $('#nbell').textContent=nb;
+    $('#nfav').textContent=nf; $('#nbell').textContent=nb; $('#nheld').textContent=markets.filter(m=>held.has(m.sym)).length;
     document.querySelectorAll('#view button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ui.view)));
     const listView=ui.view!=='all';
     $('#fbar').hidden=listView; $('#fbtn').hidden=listView;
     const nAct=[ui.kind!=='nocrypto',!!(ui.vmin||ui.vmax),!!(ui.omin||ui.omax),ui.sigOnly,boostF()].filter(Boolean).length;
     $('#freset3').hidden=listView||!nAct;
     if(!$('#fbar').classList.contains('show')) $('#fbtn').textContent=nAct?`Фильтры (${nAct})`:'Фильтры';
-    $('#vnote').textContent=ui.view==='fav'?'Фильтры здесь не применяются. ★ — добавить или убрать монету.':ui.view==='bell'?'Монеты, за которыми следит сайт. 🔔 — включить или выключить, ⚙ — условие.':'';
+    $('#vnote').textContent=ui.view==='fav'?'Фильтры здесь не применяются. ★ — добавить или убрать монету.':ui.view==='bell'?'Монеты, за которыми следит сайт. 🔔 — включить или выключить, ⚙ — условие.':ui.view==='held'?'Ваши открытые связки. Калькулятор считает выход на размер позиции, «Добавить» — добавление к ней.':'';
     if(listView){
-      const pick=ui.view==='fav'?(m=>ui.fav.includes(m.sym)):(m=>!!ui.bells[m.sym]);
+      const pick=ui.view==='fav'?(m=>ui.fav.includes(m.sym)):ui.view==='held'?(m=>held.has(m.sym)):(m=>!!ui.bells[m.sym]);
       const lrows=markets.filter(pick).map(m=>({m,s:stats(m)}));
-      return drawRows(lrows,resort,ui.view==='fav'?'В избранном пока пусто — отметьте монеты ★ во вкладке «Все рынки».':'Уведомлений пока нет — нажмите 🔔 у монеты во вкладке «Все рынки».');
+      return drawRows(lrows,resort,ui.view==='fav'?'В избранном пока пусто — отметьте монеты ★ во вкладке «Все рынки».':ui.view==='held'?'Открытых позиций нет — добавьте кошелёк во вкладке «Мои связки» или откройте связку.':'Уведомлений пока нет — нажмите 🔔 у монеты во вкладке «Все рынки».');
     }
     const typed=markets.filter(kindOk), all=typed.length;
     const vmin=amt(ui.vmin), vmax=amt(ui.vmax), omin=amt(ui.omin), omax=amt(ui.omax);
@@ -2700,7 +2699,7 @@ const Depth=(()=>{
     markets=(a.order_book_details||[]).filter(x=>x.status==='active').map(x=>({sym:x.symbol,id:x.market_id,kind:MKT.kind(x.symbol),
       mark:+x.mark_price,last:+x.last_trade_price,oi:(+x.open_interest)*(+x.mark_price),vol:+x.daily_quote_token_volume}));
   }
-  const visible=()=>ui.view==='fav'?markets.filter(m=>ui.fav.includes(m.sym)):markets.filter(kindOk);
+  const visible=()=>ui.view==='fav'?markets.filter(m=>ui.fav.includes(m.sym)):ui.view==='held'?markets.filter(m=>!!Desk2.held()[m.sym]):markets.filter(kindOk);
   async function loadTops(force){
     const list=visible().filter(m=>force||!tops[m.sym]||Date.now()-tops[m.sym].at>55e3);
     let done=0;
@@ -2733,9 +2732,9 @@ const Depth=(()=>{
     return ` <span class="tag held" title="${escH(nm.A)} ${f(h.a)} · ${escH(nm.B)} ${f(h.b)}">в паре ${f(Math.max(h.a,h.b))}</span>`;
   }
   function render(resort){
-    $('#dnfav').textContent=ui.fav.filter(x=>markets.some(m=>m.sym===x)).length;
+    $('#dnfav').textContent=ui.fav.filter(x=>markets.some(m=>m.sym===x)).length; $('#dnheld').textContent=markets.filter(m=>!!Desk2.held()[m.sym]).length;
     document.querySelectorAll('#dview button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ui.view)));
-    $('#dkind').hidden=ui.view==='fav'; $('#dkind').value=ui.kind;
+    $('#dkind').hidden=ui.view!=='all'; $('#dkind').value=ui.kind;
     const rows=visible().map(m=>({m,s:rowStats(m)}));
     const key=ui.sort, dir=ui.desc?-1:1;
     const val=r=>key==='sym'?r.m.sym:key==='oi'?r.m.oi:key==='vol'?r.m.vol:key==='prem'?(Prem.get(r.m.sym)?.perMin??-1):(r.s[key]??(dir>0?1e12:-1e12));
@@ -2752,7 +2751,7 @@ const Depth=(()=>{
         <td>${usdk(m.oi)}</td><td>${usdk(m.vol)}</td>${premCell(m.sym)}</tr>`;
       if(ui.open===m.sym) h+=`<tr class="detail"><td colspan="9"><div class="tlinks"><a class="tl rh" href="${TRADE.RH}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Robinhood ↗</a></div><div id="dcalc" class="calc"><span class="sub">Загружаю стакан…</span></div></td></tr>`;
       return h;
-    }).join('')||`<tr><td class="l dim" colspan="9">${ui.view==='fav'?'В избранном пока пусто — отметьте монеты ★ во вкладке «Все рынки».':'Рынков не найдено.'}</td></tr>`;
+    }).join('')||`<tr><td class="l dim" colspan="9">${ui.view==='fav'?'В избранном пока пусто — отметьте монеты ★ во вкладке «Все рынки».':ui.view==='held'?'У выбранной пары нет открытых позиций — добавьте пару во вкладке «Мои связки».':'Рынков не найдено.'}</td></tr>`;
     labelize('#dtb');
     if(ui.open) drawDetail();
   }
@@ -2861,7 +2860,6 @@ const Depth=(()=>{
     $('#dkind').onchange=e=>{ui.kind=e.target.value;save();render(true);refresh(false,true)};
     $('#dsize').value=ui.size;
     let t; $('#dsize').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{const v=amt2(e.target.value);if(v>0){ui.size=v;save();render(false)}},300)};
-    $('#dpre').onclick=e=>{const b=e.target.closest('button');if(!b)return;ui.size=+b.dataset.v;save();$('#dsize').value=ui.size;render(false)};
     $('#dthead').onclick=e=>{const th=e.target.closest('th');if(!th)return;
       if(ui.sort===th.dataset.s) ui.desc=!ui.desc; else {ui.sort=th.dataset.s; ui.desc=['oi','vol','prem'].includes(th.dataset.s)}; save(); render(true)};
     $('#dtb').onclick=e=>{const tr=e.target.closest('tr.row');if(!tr)return;
