@@ -368,6 +368,11 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
 .calc .rules{font:13px/1.5 var(--sans);color:var(--muted);margin:0;padding-left:18px}
 .calc .rules b{color:var(--fg)}
 .calc .rules .ok{color:var(--good)} .calc .rules .no{color:var(--bad)}
+.cmodes{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-right:4px}
+.cmodes .cmb{border:0;border-radius:0;padding:7px 14px;font-weight:600;background:var(--panel);color:var(--muted)}
+.cmodes .cmb.on{background:var(--accent);color:#fff}
+.cmodes .cmb.out.on{background:#ff6a3d;color:#1a0700}
+#cpos b{color:var(--fg)}
 @media (max-width:720px){
   .ladder{font-size:11.5px}
   .ladder h4{padding:5px 6px;font-size:11.5px}
@@ -520,12 +525,12 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
     <section>
       <h2>Закрытые связки</h2>
       <div class="tw"><table id="t-closed">
-        <thead><tr><th class="l">Рынок</th><th class="l">Открыта</th><th class="l">Закрыта</th><th>Длилась</th><th>Размер</th><th>Объём</th><th>PnL RH</th><th>PnL Core</th><th>Итог связки</th></tr></thead>
+        <thead><tr><th class="l">Рынок</th><th class="l">Открыта</th><th class="l">Закрыта</th><th>Длилась</th><th>Размер</th><th title="Объём на Robinhood: вход + выход. Поинты дают только за эту ногу; общий объём с Core — при наведении на число">Объём RH</th><th>PnL RH</th><th>PnL Core</th><th>Итог связки</th></tr></thead>
         <tbody id="closed"></tbody>
         <tfoot id="ctot"></tfoot>
       </table></div>
       <div class="pager" id="cpager"></div>
-      <div class="note">Связка считается закрытой, когда позиция по рынку на обоих инстансах вернулась в ноль. PnL — разница цен входа и выхода по вашим сделкам (средняя цена, частичные закрытия учтены). Фандинг и комиссии сюда не входят — их видно в недельной таблице. Берутся последние ~500 сделок на каждом инстансе.</div>
+      <div class="note">Связка считается закрытой, когда позиция по рынку на обоих инстансах вернулась в ноль. PnL — разница цен входа и выхода по вашим сделкам (средняя цена, частичные закрытия учтены). «Объём RH» — вход и выход только на Robinhood: поинты дают за эту ногу; общий объём с Core — при наведении. Фандинг и комиссии сюда не входят — их видно в недельной таблице. Берутся последние ~500 сделок на каждом инстансе.</div>
     </section>
 
     <section id="trsec">
@@ -874,6 +879,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       <p>Над таблицей сканера — тип рынка, объём и OI на Robinhood (можно писать 500k, 2m), «только с сигналом», в расширенном режиме — «только с бустом 2.5x». Рядом с монетой (расширенный режим): <span class="tag ok boost">2.5x</span> — выбранное направление получает хедж-буст Lighter, <span class="tag bad boost no">2.5x</span> — буст только в обратном направлении; <span class="tag earn">📊</span> — отчёт компании внутри недели подсчёта поинтов. ★ у монеты добавляет её в «Избранное»: там видны только ваши монеты, фильтры не мешают.</p>
       <h3>Калькулятор входа</h3>
       <p>Кликните монету и впишите сумму на одну ногу. Сайт пройдёт по стаканам обоих инстансов и покажет количество монет, средние цены, проскальзывание, реальный спред на вашу сумму и сколько вы закладываете на входе — маркетом на обеих ногах и если Core поставить лимиткой. «Макс. размер» — сколько можно зайти, чтобы цена ушла не дальше 0.05%. Комиссии не учитываются.</p>
+      <p><b>Вход / Выход.</b> Переключатель рядом с кнопками «Открыть … на Robinhood / на Core». «Вход» считает открытие связки, «Выход» — закрытие: для шорта RH это покупка по аскам Robinhood и продажа в биды Core, то есть другие стороны стаканов. Если монета у вас в позиции, калькулятор сам открывается на «Выходе», берёт размер вашей позиции и показывает итог, если закрыть сейчас: заложено на входе + выход + фандинг. «Против обычного» сравнивает середину стаканов сейчас с медианой окна: «лучше» — момент удачнее обычного.</p>
       <h3>Колонка «Premium RH»</h3>
       <p>Поинты на Robinhood начисляют только за сделки, где на другой стороне Premium-аккаунт. Колонка показывает, какая доля оборота по последним ~100 сделкам на Robinhood прошла с Premium: <b class="pp hi">зелёный</b> — 85% и выше, <b class="pp mid">жёлтый</b> — 60–85%, <b class="pp lo">красный</b> — ниже. Ниже — Premium-объём в минуту и за сколько времени набрались эти сделки: на тихих рынках это часы, и тогда высокий процент мало что значит. Наведите курсор на ячейку — увидите, кто кого бьёт: если много «Standard бьёт по Premium», выгодно заходить маркетом; если много «Premium бьёт по Standard» — лимитками. Сортировка по колонке — по Premium-объёму в минуту. Сводка обновляется раз в 5 минут.</p>
       <h3>🔔 Уведомления о входе и выходе</h3>
@@ -911,7 +917,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       <h3>Глубина стакана</h3>
       <dl class="g-terms">
         <dt>Список</dt><dd>Все рынки Robinhood со спредом стакана и стоимостью входа в пару на вашу сумму по лучшим ценам. ★ — избранное, без ограничения.</dd>
-        <dt>Монета открыта</dt><dd>Живой стакан в обе стороны. <b>Лонг</b> — покупка по аскам, <b>шорт</b> — продажа в биды: количество, средняя цена, проскальзывание, глубина до 0.05% и 0.1%. Ниже — вход в пару маркетом, вход обеими лимитками и десять уровней стакана. Заявки ваших аккаунтов в стакане подсвечены жёлтым.</dd>
+        <dt>Монета открыта</dt><dd>Если монета в позиции у выбранной пары, расчёт идёт на размер этой позиции. Живой стакан в обе стороны. <b>Лонг</b> — покупка по аскам, <b>шорт</b> — продажа в биды: количество, средняя цена, проскальзывание, глубина до 0.05% и 0.1%. Ниже — вход в пару маркетом, вход обеими лимитками и десять уровней стакана. Заявки ваших аккаунтов в стакане подсвечены жёлтым.</dd>
       </dl>
 
       <h3>Как не налиться на самого себя</h3>
@@ -948,7 +954,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.0 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.1 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -1028,7 +1034,10 @@ function labelize(sel){
 }
 // Тип рынка (общий для «Моих связок» и сканера)
 const MKT=(()=>{
-  const CRYPTO=new Set('BTC ETH SOL XRP SUI NEAR ZEC HYPE LIT VVV USELESS ANSEM PONS CASHCAT DOGE BNB AVAX LINK'.split(' '));
+  const CRYPTO=new Set('BTC ETH SOL XRP SUI NEAR ZEC HYPE LIT VVV USELESS ANSEM PONS CASHCAT DOGE BNB AVAX LINK XMR UNI AAVE TRX AI'.split(' '));
+  const PREIPO0=new Set('ANTHROPIC OPENAI SPCX SHEIN'.split(' '));
+  // v2.1: новые рынки Lighter узнаём по параметрам — у крипты базовая ставка фандинга 0.01 (у акций, ETF и pre-IPO — 0.0032)
+  function learn(list){ (list||[]).forEach(x=>{ if(x&&x.symbol&&String(x.base_interest_rate)==='0.0100'&&!PREIPO0.has(x.symbol)) CRYPTO.add(x.symbol); }); }
   const PREIPO=new Set('ANTHROPIC OPENAI SPCX SHEIN'.split(' '));
   const ETF=new Set('SPY QQQ SOXL SGOV SLV USO'.split(' '));
   const COMMOD=new Set('XAU XAG'.split(' '));
@@ -1053,7 +1062,7 @@ const MKT=(()=>{
     return have===need?`<span class="adv"> <span class="tag ok boost" data-tip="Хедж-буст 2.5x к недельным поинтам есть: для «${k}» засчитывается ${want} — как выбрано сейчас. Правило Lighter, может меняться еженедельно">2.5x</span></span>`
       :`<span class="adv"> <span class="tag bad boost no" data-tip="В выбранном направлении буста 2.5x нет. Для «${k}» хедж-буст даёт ${want} — переключите направление над таблицей">2.5x</span></span>`; }
   const hasBoost=(s,dir)=>boostRH(s)===(dir==='shortRH'?'short':'long');
-  return {kind,boostRH,earnTag,boostTag,hasBoost};
+  return {kind,boostRH,earnTag,boostTag,hasBoost,learn};
 })();
 // всплывающие подсказки для меток (наведение и нажатие — для телефона)
 (()=>{ let tip=null, timer=null;
@@ -1203,7 +1212,8 @@ const Desk=(()=>{
     const syms=Object.keys(opened).sort((x,y)=>(opened[y]??-1)-(opened[x]??-1)||x.localeCompare(y));   // свежие сверху
     held=new Set(syms);
     heldInfo={}; syms.forEach(s=>{ const r=R[s], c=C[s];
-      heldInfo[s]={qr:r?(+r.position)*r.sign:0, qc:c?(+c.position)*c.sign:0, r:r?Math.abs(+r.position)*(+r.avg_entry_price):0, c:c?Math.abs(+c.position)*(+c.avg_entry_price):0}; });
+      heldInfo[s]={qr:r?(+r.position)*r.sign:0, qc:c?(+c.position)*c.sign:0, r:r?Math.abs(+r.position)*(+r.avg_entry_price):0, c:c?Math.abs(+c.position)*(+c.avg_entry_price):0,
+        er:r?+r.avg_entry_price:null, ec:c?+c.avg_entry_price:null, fund:-((r?+r.total_funding_paid_out||0:0)+(c?+c.total_funding_paid_out||0:0))}; });
     if(alertsOn()&&st.al.leg){ const legs={}; syms.forEach(s=>legs[s]={r:!!R[s],c:!!C[s]});
       for(const s in prevLegs){ const was=prevLegs[s], now=legs[s]||{r:false,c:false};
         if(was.r&&was.c&&(now.r!==now.c)){ const gone=now.r?'Core':'Robinhood', left=now.r?'Robinhood':'Core';
@@ -1504,23 +1514,23 @@ const Desk=(()=>{
     groups.sort((x,y)=>y.end-x.end);
     const dur=ms=>{const m=Math.round(ms/60e3);if(m<60)return m+' мин';const h=Math.floor(m/60);if(h<48)return h+' ч '+(m%60)+' мин';return Math.floor(h/24)+' д '+(h%24)+' ч'};
     const dt=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    let T={r:0,c:0,v:0};
+    let T={r:0,c:0,v:0,all:0};
     const CPER=15; cPage=pager('#cpager',cPage,groups.length,CPER,'связки',p=>{cPage=p;renderClosed(lastAcc);});
     groups.forEach(g=>{ const R=g.items.filter(x=>x.k==='RH'), C=g.items.filter(x=>x.k==='CORE');
-      T.r+=R.reduce((s,x)=>s+x.pnl,0); T.c+=C.reduce((s,x)=>s+x.pnl,0); T.v+=g.items.reduce((s,x)=>s+x.vol,0); });
+      T.r+=R.reduce((s,x)=>s+x.pnl,0); T.c+=C.reduce((s,x)=>s+x.pnl,0); T.v+=R.reduce((s,x)=>s+x.vol,0); T.all+=g.items.reduce((s,x)=>s+x.vol,0); });
     const rows=groups.slice(cPage*CPER,cPage*CPER+CPER).map(g=>{
       const R=g.items.filter(x=>x.k==='RH'), C=g.items.filter(x=>x.k==='CORE');
-      const pr=R.reduce((s,x)=>s+x.pnl,0), pcx=C.reduce((s,x)=>s+x.pnl,0), vol=g.items.reduce((s,x)=>s+x.vol,0);
+      const pr=R.reduce((s,x)=>s+x.pnl,0), pcx=C.reduce((s,x)=>s+x.pnl,0), vol=R.reduce((s,x)=>s+x.vol,0), volAll=g.items.reduce((s,x)=>s+x.vol,0);
       const size=Math.max(0,...g.items.map(x=>x.max));
       const rs=R[0]?.side, tag=!R.length||!C.length?`<span class="tag kind" title="Цикл закрылся только на ${R.length?'Robinhood':'Core'}: на другом инстансе позиция в это время не открывалась и не закрывалась до нуля (например, держалась дольше) или её сделки старше загруженной истории">только ${R.length?'RH':'Core'}</span>`:(rs===C[0].side?'<span class="tag bad">не хедж</span>':'');
       const dir=R.length?(rs<0?'шорт RH':'лонг RH'):(C[0].side<0?'шорт Core':'лонг Core');
       return `<tr><td class="l"><b>${g.sym}</b> <span class="dim">${dir}</span> ${tag}</td><td class="l">${dt(g.start)}</td><td class="l">${dt(g.end)}</td>
-        <td>${dur(g.end-g.start)}</td><td>${+size.toFixed(5)}</td><td>${usdk(vol)}</td>
+        <td>${dur(g.end-g.start)}</td><td>${+size.toFixed(5)}</td><td title="Robinhood ${usdk(vol)} · Core ${usdk(volAll-vol)} · всего ${usdk(volAll)}">${R.length?usdk(vol):'—'}</td>
         <td class="${R.length?cls(pr):'dim'}">${R.length?sgn(pr):'—'}</td><td class="${C.length?cls(pcx):'dim'}">${C.length?sgn(pcx):'—'}</td>
         <td class="${cls(pr+pcx)}"><b>${sgn(pr+pcx)}</b></td></tr>`;
     });
     $('#closed').innerHTML=rows.join('')||'<tr><td class="l dim" colspan="9">Закрытых связок в последних сделках не найдено</td></tr>';
-    $('#ctot').innerHTML=rows.length?`<tr><td class="l">Всего (${groups.length})</td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td>${usdk(T.v)}</td>
+    $('#ctot').innerHTML=rows.length?`<tr><td class="l">Всего (${groups.length})</td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td class="mempty"></td><td title="Robinhood ${usdk(T.v)} · Core ${usdk(T.all-T.v)} · всего ${usdk(T.all)}">${usdk(T.v)}</td>
       <td class="${cls(T.r)}">${sgn(T.r)}</td><td class="${cls(T.c)}">${sgn(T.c)}</td><td class="${cls(T.r+T.c)}"><b>${sgn(T.r+T.c)}</b></td></tr>`:'';
     labelize('#closed'); labelize('#ctot');
   }
@@ -1628,7 +1638,7 @@ const Scan=(()=>{
   async function pool(tasks,k){let i=0;await Promise.all(Array(k).fill(0).map(async()=>{while(i<tasks.length){const t=tasks[i++];try{await t()}catch(e){}}}))}
   async function loadMarkets(){
     const [a,b]=await Promise.all([j(API.RH+'/orderBookDetails'),j(API.CORE+'/orderBookDetails')]);
-    const bm={}; b.order_book_details.forEach(x=>bm[x.symbol]=x);
+    MKT.learn(a.order_book_details); const bm={}; b.order_book_details.forEach(x=>bm[x.symbol]=x);
     markets=a.order_book_details.filter(x=>x.status==='active'&&bm[x.symbol]&&bm[x.symbol].status==='active').map(x=>{
       const y=bm[x.symbol];
       return {sym:x.symbol,rh:x.market_id,core:y.market_id,kind:kind(x.symbol),mRH:+x.mark_price,mCore:+y.mark_price,lRH:+x.last_trade_price,lCore:+y.last_trade_price,
@@ -1843,9 +1853,10 @@ const Scan=(()=>{
   function calcBox(){
     if(calcEl) return calcEl;
     calcEl=document.createElement('div'); calcEl.className='calc';
-    calcEl.innerHTML=`<div class="ch"><b>Калькулятор входа</b>
-      <label class="fg">Сумма на ногу, $ <input type="text" id="csize" inputmode="decimal" aria-label="Сумма позиции в долларах"></label>
+    calcEl.innerHTML=`<div class="ch"><b id="cttl">Калькулятор входа</b>
+      <label class="fg" id="csizel">Сумма на ногу, $ <input type="text" id="csize" inputmode="decimal" aria-label="Сумма позиции в долларах"></label>
       <span class="presets">${[500,1000,3000,5000,10000].map(v=>`<button data-v="${v}">$${v>=1000?v/1000+'K':v}</button>`).join('')}</span>
+      <span class="sub" id="cpos" hidden></span>
       <span class="sub" id="cage"></span></div><div id="cout"><span class="sub">Загружаю стаканы…</span></div>`;
     calcEl.addEventListener('click',e=>e.stopPropagation());
     calcEl.querySelector('.presets').onclick=e=>{const b=e.target.closest('button');if(!b)return;ui.size=+b.dataset.v;save();calcEl.querySelector('#csize').value=ui.size;drawCalc()};
@@ -1889,44 +1900,74 @@ const Scan=(()=>{
   const fp=v=>v==null||!isFinite(v)?'—':v>=1000?v.toFixed(2):v>=1?v.toFixed(4).replace(/0+$/,'').replace(/\.$/,''):v.toPrecision(5);
   const usd=v=>v==null||!isFinite(v)?'—':(v>=0?'+':'−')+'$'+n(Math.abs(v));
   const fq=v=>v==null||!isFinite(v)?'—':v>=100?v.toFixed(2):v>=1?v.toFixed(3):v.toPrecision(4);
+  // v2.1: режим калькулятора — 'in' (вход) или 'out' (выход); у монеты в позиции по умолчанию «выход»
+  let calcMode='in', calcModeSym=null;
+  const heldPos=sym=>{ const h=heldInfo[sym]; if(!h||!h.qr||!h.qc||Math.sign(h.qr)===Math.sign(h.qc)) return null; return h; };
+  function cmodeBtns(sym){
+    if(calcModeSym!==sym){ calcModeSym=sym; calcMode=heldPos(sym)?'out':'in'; }
+    const tip=heldPos(sym)?'':' title="Монеты нет в позиции — выход считается на сумму из калькулятора"';
+    return `<span class="cmodes" role="group" aria-label="Что считать"><button class="cmb${calcMode==='in'?' on':''}" data-m="in" aria-pressed="${calcMode==='in'}">Вход</button><button class="cmb out${calcMode==='out'?' on':''}" data-m="out" aria-pressed="${calcMode==='out'}"${tip}>Выход</button></span>`;
+  }
   function drawCalc(){
     if(!calcEl||!books||books.sym!==ui.open) return;
     const out=calcEl.querySelector('#cout'), m=markets.find(x=>x.sym===ui.open); if(!m) return;
-    const short=ui.dir==='shortRH', R=books.RH, C=books.CORE;
-    const rLv=short?R.bids:R.asks, cLv=short?C.asks:C.bids;          // шорт RH = продаём в биды RH, лонг Core = покупаем у асков Core
+    const exit=calcMode==='out', hp=exit?heldPos(m.sym):null;
+    // направление связки: на выходе с позицией — по самой позиции, иначе — как выбрано над таблицей
+    const dir=hp?(hp.qr<0?'shortRH':'longRH'):ui.dir, short=dir==='shortRH';
+    const sellRH=exit?!short:short;                                     // вход шорта RH и выход из лонга RH — продажа на RH
+    const R=books.RH, C=books.CORE;
+    const rLv=sellRH?R.bids:R.asks, cLv=sellRH?C.asks:C.bids;          // продаём на RH в биды, покупаем на Core с асков — и наоборот
+    calcEl.querySelector('#cttl').textContent=exit?'Калькулятор выхода':'Калькулятор входа';
+    calcEl.querySelector('#csizel').hidden=!!hp; calcEl.querySelector('.presets').hidden=!!hp;
+    const posEl=calcEl.querySelector('#cpos'); posEl.hidden=!hp;
     if(!rLv.length||!cLv.length){out.innerHTML='<span class="sub">В одном из стаканов нет заявок с нужной стороны.</span>';return}
-    const ref=(cLv[0].p+rLv[0].p)/2, qty=ui.size/ref;
-    const r=walk(rLv,qty), c=walk(cLv,qty);
-    const slipR=r.avg!=null?(short?(r.best-r.avg):(r.avg-r.best))*r.got:null;
-    const slipC=c.avg!=null?(short?(c.avg-c.best):(c.best-c.avg))*c.got:null;
+    const ref=(cLv[0].p+rLv[0].p)/2;
+    const qR=hp?Math.abs(hp.qr):ui.size/ref, qC=hp?Math.abs(hp.qc):ui.size/ref;
+    if(hp) posEl.innerHTML=`размер позиции: <b>${fq(qR)} ${m.sym}</b> на RH · <b>${fq(qC)}</b> на Core ≈ $${n(qR*ref)}`;
+    const r=walk(rLv,qR), c=walk(cLv,qC);
+    const slipR=r.avg!=null?(sellRH?(r.best-r.avg):(r.avg-r.best))*r.got:null;
+    const slipC=c.avg!=null?(sellRH?(c.avg-c.best):(c.best-c.avg))*c.got:null;
     const pctS=(x,best)=>x==null?'—':(Math.abs(x-best)/best*100).toFixed(3)+'%';
     const q=Math.min(r.got,c.got);
     const spread=(r.avg-c.avg)/c.avg*100;                              // как в сканере: (RH − Core)/Core
-    const lock=short?(r.avg-c.avg)*q:(c.avg-r.avg)*q;                   // что закладываем на входе
+    const val=sellRH?(r.avg-c.avg)*q:(c.avg-r.avg)*q;                   // вход: что закладываем; выход: что добавит закрытие
     // вариант с лимиткой на Core по лучшей цене своей стороны (мейкер, без проскальзывания)
-    const cLim=short?C.bids[0]?.p:C.asks[0]?.p;
-    const lockLim=cLim?(short?(r.avg-cLim)*q:(cLim-r.avg)*q):null;
-    const st=stats(m), med=st.med;
-    const medLock=med!=null?(short?1:-1)*med/100*c.avg*q:null, vsMed=medLock!=null?lock-medLock:null;
-    const lim=0.0005, maxQ=Math.min(depthWithin(rLv,lim,!short),depthWithin(cLv,lim,short)), maxUsd=maxQ*ref;
+    const cLim=sellRH?C.bids[0]?.p:C.asks[0]?.p;
+    const valLim=cLim?(sellRH?(r.avg-cLim)*q:(cLim-r.avg)*q):null;
+    // «против обычного»: середина стакана против медианы окна — сравниваем одно с одним (ширина стаканов уже учтена в строке выше)
+    const st=stats(m), med=st.med, g=sellRH?1:-1;
+    const midR=(R.bids[0]&&R.asks[0])?(R.bids[0].p+R.asks[0].p)/2:null, midC=(C.bids[0]&&C.asks[0])?(C.bids[0].p+C.asks[0].p)/2:null;
+    const spMid=midR&&midC?(midR-midC)/midC*100:null;
+    const vsMed=med!=null&&spMid!=null?g*(spMid-med)/100*c.avg*q:null;
+    const lim=0.0005, maxQ=Math.min(depthWithin(rLv,lim,!sellRH),depthWithin(cLv,lim,sellRH)), maxUsd=maxQ*ref;
     const thin=!r.full||!c.full;
-    const sR=short?'шорт':'лонг', sC=short?'лонг':'шорт';
-    const kv=(lab,val,key,c='')=>`<div class="kv${key?' key':''}"><span>${lab}</span><b class="${c}">${val}</b></div>`;
-    const card=(title,side,w,slip,extra,mirror)=>`<div class="leg${mirror?' mirror':''}"><h4>${mirror?`<span class="${side==='шорт'?'neg':'pos'}">${side}</span> · ${title}`:`${title} · <span class="${side==='шорт'?'neg':'pos'}">${side}</span>`}</h4>
-      ${kv('Кол-во',fq(w.got)+' '+m.sym,1)}${kv('Лучшая цена',fp(w.best))}${kv('Средняя цена на сумму',fp(w.avg),1)}
+    const sR=exit?(sellRH?'продажа · закрыть лонг':'покупка · закрыть шорт'):(short?'шорт':'лонг');
+    const sC=exit?(sellRH?'покупка · закрыть шорт':'продажа · закрыть лонг'):(short?'лонг':'шорт');
+    const kv=(lab,v,key,c='')=>`<div class="kv${key?' key':''}"><span>${lab}</span><b class="${c}">${v}</b></div>`;
+    const card=(title,side,isSell,w,slip,extra,mirror)=>`<div class="leg${mirror?' mirror':''}"><h4>${mirror?`<span class="${isSell?'neg':'pos'}">${side}</span> · ${title}`:`${title} · <span class="${isSell?'neg':'pos'}">${side}</span>`}</h4>
+      ${kv('Кол-во',fq(w.got)+' '+m.sym,1)}${kv('Лучшая цена',fp(w.best))}${kv(hp?'Средняя цена на позицию':'Средняя цена на сумму',fp(w.avg),1)}
       ${kv('Проскальзывание',pctS(w.avg,w.best)+' · $'+n(slip),0,slip>0.005?'neg':'')}${kv('Уровней стакана',w.n+(w.full?'':' (не хватило)'))}${extra||''}</div>`;
-    const coreExtra=cLim?kv('Лимитка (мейкер)',(short?'покупка по ':'продажа по ')+fp(cLim))+kv('Напротив',(short?'аск ':'бид ')+fp(short?C.asks[0]?.p:C.bids[0]?.p)):'';
+    const coreExtra=cLim?kv('Лимитка (мейкер)',(sellRH?'покупка по ':'продажа по ')+fp(cLim))+kv('Напротив',(sellRH?'аск ':'бид ')+fp(sellRH?C.asks[0]?.p:C.bids[0]?.p)):'';
     const rhExtra=cLim?kv('&nbsp;','&nbsp;')+kv('&nbsp;','&nbsp;'):'';   // пустые строки, чтобы ряды совпадали по высоте
-    const legsTbl=`<div class="legs">${card('Robinhood',sR,r,slipR,rhExtra,false)}${card('Core',sC,c,slipC,coreExtra,true)}</div>`;
-    out.innerHTML=`${thin?`<div class="warnbox">⚠ Стакан не держит $${n(ui.size)}: на ${!r.full?'Robinhood':'Core'} набралось только ${fq(!r.full?r.got:c.got)} ${m.sym} (~$${n((!r.full?r.got:c.got)*ref)}) в первых 100 заявках. Цифры ниже — на то, что есть.</div>`:''}
+    const legsTbl=`<div class="legs">${card('Robinhood',sR,sellRH,r,slipR,rhExtra,false)}${card('Core',sC,!sellRH,c,slipC,coreExtra,true)}</div>`;
+    // итог при закрытии — только если монета в позиции
+    let total='';
+    if(hp&&hp.er!=null&&hp.ec!=null){ const qq=Math.min(Math.abs(hp.qr),Math.abs(hp.qc));
+      const entry=hp.qr<0?(hp.er-hp.ec)*qq:(hp.ec-hp.er)*qq, tot=entry+val+(hp.fund||0);
+      total=`<div class="kv key"><span>Заложено на входе · фандинг</span><b><span class="${cls(entry)}">${usd(entry)}</span> · <span class="${cls(hp.fund)}">${usd(hp.fund||0)}</span></b></div>
+        <div class="kv key"><span>Итог, если закрыть сейчас</span><b class="${cls(tot)}">${usd(tot)}</b></div>`; }
+    const what=exit?'выход':'вход';
+    out.innerHTML=`${thin?`<div class="warnbox">⚠ Стакан не держит ${hp?'вашу позицию':'$'+n(ui.size)}: на ${!r.full?'Robinhood':'Core'} набралось только ${fq(!r.full?r.got:c.got)} ${m.sym} (~$${n((!r.full?r.got:c.got)*ref)}) в первых 100 заявках. Цифры ниже — на то, что есть.</div>`:''}
+      ${exit&&!hp?`<div class="sub" style="margin-bottom:6px">Монеты нет в позиции — выход связки «${short?'шорт RH / лонг Core':'лонг RH / шорт Core'}» посчитан на сумму из калькулятора.</div>`:''}
       ${legsTbl}
       <div class="sum">
-        <div class="kv key"><span>Спред на вашу сумму</span><b class="${cls(short?spread:-spread)}">${pc(spread)}</b></div>
+        <div class="kv key"><span>Спред на ${hp?'позицию':'вашу сумму'}</span><b class="${cls(g*spread)}">${pc(spread)}</b></div>
         <div class="kv"><span>Спред по лучшим ценам</span><b>${pc((rLv[0].p-cLv[0].p)/cLv[0].p*100)}</b></div>
-        <div class="kv key"><span>Заложено на входе, обе маркетом</span><b class="${cls(lock)}">${usd(lock)}</b></div>
-        <div class="kv key"><span>…если Core лимиткой</span><b class="${cls(lockLim)}">${usd(lockLim)}</b></div>
+        <div class="kv key"><span>${exit?'Выход, обе маркетом':'Заложено на входе, обе маркетом'}</span><b class="${cls(val)}">${usd(val)}</b></div>
+        <div class="kv key"><span>…если Core лимиткой</span><b class="${cls(valLim)}">${usd(valLim)}</b></div>
+        ${total}
         <div class="kv"><span>Медиана окна ${WIN_TXT[ui.h]}</span><b>${med==null?'—':pc(med)}</b></div>
-        <div class="kv key"><span>Вход против обычного</span><b class="${cls(vsMed)}">${vsMed==null?'—':(vsMed>=0?'лучше на ':'хуже на ')+'$'+n(Math.abs(vsMed))}</b></div>
+        <div class="kv key"><span title="Середина стаканов сейчас против медианы окна — удачный ли момент. Ширина стаканов в эту строку не входит, она уже в строке выше">${exit?'Выход':'Вход'} против обычного</span><b class="${cls(vsMed)}">${vsMed==null?'—':Math.abs(vsMed)<0.005?'как обычно':(vsMed>=0?'лучше на ':'хуже на ')+'$'+n(Math.abs(vsMed))}</b></div>
         <div class="kv"><span>Макс. размер, проскальз. ≤ 0.05%</span><b>~$${n(maxUsd)}</b></div>
         <div class="kv"><span>Всего проскальзывание</span><b class="${cls(-(slipR+slipC))}">$${n(slipR+slipC)}</b></div>
       </div>`;
@@ -2093,7 +2134,7 @@ const Scan=(()=>{
         <td>${ok?Math.round(s.pctl)+'%':'—'}</td>
         <td>${usdk(m.oi)}</td><td>${usdk(m.vol)}</td>${premCell(m.sym)}</tr>`;
       if(ui.open===m.sym) h+=`<tr class="detail"><td colspan="13">${ui.bells[m.sym]?'<div id="cfgslot"></div>':''}
-        <div class="tlinks"><a class="tl rh" href="${TRADE.RH}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Robinhood ↗</a><a class="tl core" href="${TRADE.CORE}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Core ↗</a></div>
+        <div class="tlinks">${cmodeBtns(m.sym)}<a class="tl rh" href="${TRADE.RH}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Robinhood ↗</a><a class="tl core" href="${TRADE.CORE}${encodeURIComponent(m.sym)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Открыть ${m.sym} на Core ↗</a></div>
         <div id="calcslot"></div>
         <div class="sub">${m.sym}: сделка RH ${+m.lRH.toFixed(6)} / Core ${+m.lCore.toFixed(6)} · марк RH ${+m.mRH.toFixed(6)} / Core ${+m.mCore.toFixed(6)}</div>${chart(s,m,openPts)}</td></tr>`;
       return h;
@@ -2142,6 +2183,7 @@ const Scan=(()=>{
         if(act.dataset.act==='goal') return toggleGoal(sym);
         if(act.dataset.act==='cfg'){ if(ui.open!==sym){ui.open=sym; openPts=null; render(false); await refreshOpen(false); render(false);} setTimeout(()=>cfgEl&&cfgEl.scrollIntoView({block:'center',behavior:'smooth'}),50); return; } }
       ui.open=ui.open===tr.dataset.sym?null:tr.dataset.sym; openPts=null; render(false); if(ui.open){await refreshOpen(false); render(false)}};
+    $('#tb').addEventListener('click',e=>{const b=e.target.closest('.cmb'); if(!b) return; e.stopPropagation(); calcMode=b.dataset.m; document.querySelectorAll('#tb .cmb').forEach(x=>{const on=x.dataset.m===calcMode; x.classList.toggle('on',on); x.setAttribute('aria-pressed',String(on));}); drawCalc();},true);
     $('#tb').addEventListener('click',e=>{const b=e.target.closest('.lgbtn'); if(!b) return; e.stopPropagation(); legendOpen=!legendOpen; b.closest('.legend').classList.toggle('open',legendOpen);},true);
     $('#tb').addEventListener('pointermove',onHover);
     $('#tb').addEventListener('pointerdown',onHover);
@@ -2253,7 +2295,7 @@ const Desk2=(()=>{
       return null; };
     const opened={}; [...new Set([...Object.keys(RA),...Object.keys(RB)])].forEach(s=>{const t=[openedAt('A',RA[s]),openedAt('B',RB[s])].filter(Boolean); opened[s]=t.length?Math.min(...t):null;});
     const syms=Object.keys(opened).sort((x,y)=>(opened[y]??-1)-(opened[x]??-1)||x.localeCompare(y));
-    held={}; syms.forEach(s=>{ const x=RA[s], y=RB[s]; held[s]={a:x?Math.abs(+x.position)*(+x.avg_entry_price):0,b:y?Math.abs(+y.position)*(+y.avg_entry_price):0}; });
+    held={}; syms.forEach(s=>{ const x=RA[s], y=RB[s]; held[s]={a:x?Math.abs(+x.position)*(+x.avg_entry_price):0,b:y?Math.abs(+y.position)*(+y.avg_entry_price):0,qa:x?(+x.position)*x.sign:0,qb:y?(+y.position)*y.sign:0}; });
     const PK=pairKey();
     if(alertsOn()&&st.al.leg){ const legs={}; syms.forEach(s=>legs[s]={a:!!RA[s],b:!!RB[s]});
       for(const s in prevLegs){ const was=prevLegs[s], now=legs[s]||{a:false,b:false};
@@ -2654,6 +2696,7 @@ const Depth=(()=>{
   const kindOk=m=>{const k=ui.kind; if(k==='all')return true; if(k==='nocrypto')return m.kind!=='крипта'; if(k==='etf')return m.kind==='ETF'||m.kind==='сырьё'; return m.kind===k};
   async function loadMarkets(){
     const a=await j(API.RH+'/orderBookDetails');
+    MKT.learn(a.order_book_details);
     markets=(a.order_book_details||[]).filter(x=>x.status==='active').map(x=>({sym:x.symbol,id:x.market_id,kind:MKT.kind(x.symbol),
       mark:+x.mark_price,last:+x.last_trade_price,oi:(+x.open_interest)*(+x.mark_price),vol:+x.daily_quote_token_volume}));
   }
@@ -2746,7 +2789,10 @@ const Depth=(()=>{
     if(!g){ el.innerHTML='<span class="sub">Загружаю стакан…</span>'; return; }
     const {bids,asks}=g;
     if(!bids.length||!asks.length){ el.innerHTML='<span class="sub">В стакане нет заявок с одной из сторон.</span>'; return; }
-    const bb=bids[0].p, ba=asks[0].p, mid=(bb+ba)/2, qty=ui.size/mid;
+    const bb=bids[0].p, ba=asks[0].p, mid=(bb+ba)/2;
+    // v2.1: если монета у пары в позиции (лонг на одном, шорт на другом) — считаем на размер позиции
+    const hp=Desk2.held()[m.sym], pairPos=hp&&hp.qa&&hp.qb&&Math.sign(hp.qa)!==Math.sign(hp.qb)?Math.min(Math.abs(hp.qa),Math.abs(hp.qb)):0;
+    const qty=pairPos||ui.size/mid;
     const L=walk(asks,qty), S=walk(bids,qty), q=Math.min(L.got,S.got);
     const slipL=L.avg!=null?(L.avg-L.best)*L.got:0, slipS=S.avg!=null?(S.best-S.avg)*S.got:0;
     const mkt=L.avg!=null&&S.avg!=null?(S.avg-L.avg)*q:null;         // шорт по средней в биды минус лонг по средней из асков
@@ -2764,13 +2810,13 @@ const Depth=(()=>{
     const ladder=(lv,isBid)=>{ const top=lv.slice(0,10); let cum=0; const rows=top.map(l=>{cum+=l.p*l.q; return {...l,cum};}); const mx=rows.length?rows[rows.length-1].cum:1;
       return rows.map(r=>`<div class="lr${ownSet.has((isBid?'bid':'ask')+'|'+r.p)?' own':''}"${ownSet.has((isBid?'bid':'ask')+'|'+r.p)?' title="Здесь стоит заявка вашего аккаунта"':''}><i style="width:${(r.cum/mx*100).toFixed(1)}%"></i><span>${fpx2(r.p)}</span><span>${fq2(r.q)}</span><span>${usdS2(r.cum)}</span></div>`).join(''); };
     const ownBox=own.length?`<div class="warnbox">⚠ В стакане стоят заявки ваших аккаунтов: ${own.slice(0,6).map(o=>`«${escH(o.who)}» ${o.side==='bid'?'покупка':'продажа'} ${fpx2(o.p)} × ${fq2(o.q)}`).join('; ')}. Маркет-ордер второго аккаунта в ${own.some(o=>o.side==='bid')&&own.some(o=>o.side==='ask')?'любую сторону':own[0].side==='bid'?'биды (шорт)':'аски (лонг)'} может налиться на них — это self-trade.</div>`:'';
-    el.innerHTML=`<div class="ch"><b>Стакан ${m.sym} на Robinhood на $${n(ui.size)} на ногу</b><span class="sub">${age}</span></div>
-      ${thin?`<div class="warnbox">⚠ Стакан не держит $${n(ui.size)}: ${!L.full?`в аски (лонг) набралось только ${fq2(L.got)} ${m.sym}`:''}${!L.full&&!S.full?', ':''}${!S.full?`в биды (шорт) только ${fq2(S.got)} ${m.sym}`:''} в первых уровнях. Цифры ниже — на то, что есть.</div>`:''}
+    el.innerHTML=`<div class="ch"><b>Стакан ${m.sym} на Robinhood ${pairPos?`на вашу позицию: ${fq2(pairPos)} ${m.sym} ≈ $${n(pairPos*mid)} на ногу`:`на $${n(ui.size)} на ногу`}</b><span class="sub">${age}</span></div>
+      ${thin?`<div class="warnbox">⚠ Стакан не держит ${pairPos?'вашу позицию':'$'+n(ui.size)}: ${!L.full?`в аски (лонг) набралось только ${fq2(L.got)} ${m.sym}`:''}${!L.full&&!S.full?', ':''}${!S.full?`в биды (шорт) только ${fq2(S.got)} ${m.sym}`:''} в первых уровнях. Цифры ниже — на то, что есть.</div>`:''}
       ${ownBox}
       <div class="legs">${card('покупка по аскам','лонг',L,slipL,d5L,d10L,'покупка по '+fpx2(bb)+' (бид)',false)}${card('продажа в биды','шорт',S,slipS,d5S,d10S,'продажа по '+fpx2(ba)+' (аск)',true)}</div>
       <div class="sum">
         <div class="kv key"><span>Спред стакана</span><b>${fpx2(bb)} / ${fpx2(ba)} · ${((ba-bb)/mid*100).toFixed(3)}%</b></div>
-        <div class="kv key"><span>Вход в пару, обе ноги маркетом</span><b class="${cls(mkt)}">${usdSigned(mkt)}</b></div>
+        <div class="kv key"><span>${pairPos?'Вход или выход пары, обе маркетом':'Вход в пару, обе ноги маркетом'}</span><b class="${cls(mkt)}">${usdSigned(mkt)}</b></div>
         <div class="kv key"><span>…обе лимитками, если обе нальются</span><b class="${cls(lim)}">${usdSigned(lim)}</b></div>
         <div class="kv key"><span>Макс. пара, проскальз. ≤ 0.05% в обе стороны</span><b>~$${n(Math.min(d5L,d5S))}</b></div>
         <div class="kv"><span>Всего проскальзывание</span><b class="${cls(-(slipL+slipS))}">$${n(slipL+slipS)}</b></div>
