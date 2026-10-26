@@ -275,6 +275,14 @@ input.pnum{width:52px;text-align:center}
 .sg-tbl th,.sg-tbl td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
 .sg-tbl th{color:var(--muted);font-weight:500}
 .kboxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:10px}
+.refbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;background:linear-gradient(90deg,rgba(63,191,140,.12),transparent 70%),var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;position:relative}
+.refbar[hidden]{display:none}
+.refbar .rt{font-size:14px} .refbar .rt b.code{font-family:var(--mono);color:var(--accent);letter-spacing:.04em}
+.refbar .ra{display:flex;gap:8px;flex-wrap:wrap}
+.refbar .ra a,.refbar .ra button{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;padding:5px 10px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none}
+.refbar .ra a.go{background:var(--accent);color:#06140e;border-color:var(--accent);font-weight:600}
+.refbar .rs{flex-basis:100%;font-size:11px;color:var(--muted)}
+.refbar .rx{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--muted);cursor:pointer;font-size:14px}
 .kv.hl{border:2px solid var(--line);border-radius:6px;padding:2px 6px;margin:-2px -6px}
 .kv.hl.good{border-color:var(--good)} .kv.hl.warn{border-color:var(--warn)} .kv.hl.bad{border-color:var(--bad)}
 .kbx{border:2px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--bg)}
@@ -510,6 +518,12 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       <span><b>Это пример.</b> Вы смотрите публичный кошелёк одного из активных фармеров Lighter — только чтение, так выглядит PerpHedge с реальными связками. Позиции в нём меняются: он может закрыть их или уйти в минус. Чтобы видеть свои связки, добавьте свой адрес выше.</span>
       <button id="exexit">Выйти из примера</button>
     </div>
+    <div class="refbar" data-ref hidden id="refdesk">
+      <span class="rt"><b>Ещё не торгуете на Lighter RH?</b> Регистрируйтесь по коду <b class="code">PERPHEDGE</b> — получите <b>+10% к недельным поинтам</b>.</span>
+      <span class="ra"><a class="go" href="https://robinhoodchain.lighter.xyz/?referral=PERPHEDGE" target="_blank" rel="noopener">Открыть Lighter ↗</a><button type="button" data-refcopy>📋 Скопировать код</button></span>
+      <span class="rs">Это реферальная ссылка: PerpHedge получает часть поинтов от Lighter, у вас ничего не убавляется. Код работает только для новых кошельков.</span>
+      <button class="rx" type="button" data-refx title="Скрыть" aria-label="Скрыть">✕</button>
+    </div>
     <div class="cards" id="acc"></div>
 
     <section>
@@ -617,6 +631,12 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
         <tr><td><b>«Итог закр.»</b>, «ваш итог», «Итог, если закрыть сейчас»</td><td>с <b>вашей ценой входа</b></td><td>«Я <b>в плюсе или в минусе</b>?»</td></tr></table>
         <div style="margin-top:6px">Пример: вошли в хороший момент, через несколько часов загорелось «закрывать». Если «ваш итог» +$1.30 — закрываете в плюс. Если −$6 — момент по меркам последних 12 часов неплохой, но вы всё равно в минусе: рынок сдвинулся, и «обычный уровень» стал другим.
         <b>Вход — по сигналу. Выход — по «ваш итог».</b> В калькуляторе эти цифры выделены рамкой.</div></div>
+    </div>
+    <div class="refbar" data-ref hidden id="refscan">
+      <span class="rt"><b>Ещё не торгуете на Lighter RH?</b> Регистрируйтесь по коду <b class="code">PERPHEDGE</b> — получите <b>+10% к недельным поинтам</b>.</span>
+      <span class="ra"><a class="go" href="https://robinhoodchain.lighter.xyz/?referral=PERPHEDGE" target="_blank" rel="noopener">Открыть Lighter ↗</a><button type="button" data-refcopy>📋 Скопировать код</button></span>
+      <span class="rs">Это реферальная ссылка: PerpHedge получает часть поинтов от Lighter, у вас ничего не убавляется. Код работает только для новых кошельков.</span>
+      <button class="rx" type="button" data-refx title="Скрыть" aria-label="Скрыть">✕</button>
     </div>
     <div class="vbar"><div class="seg" id="view">
       <button data-v="all">Все рынки</button><button data-v="fav">★ Избранное (<span id="nfav">0</span>)</button><button data-v="bell">🔔 С уведомлениями (<span id="nbell">0</span>)</button><button data-v="held">💼 В позиции (<span id="nheld">0</span>)</button>
@@ -780,6 +800,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
 
     <header class="g-hero">
       <h2>Как пользоваться PerpHedge</h2>
+      <p class="sub">Ещё не зарегистрированы на Lighter RH? Код <a href="https://robinhoodchain.lighter.xyz/?referral=PERPHEDGE" target="_blank" rel="noopener"><b>PERPHEDGE</b></a> даёт +10% к недельным поинтам (реферальная ссылка — PerpHedge получает часть поинтов от Lighter, у вас ничего не убавляется).</p>
       <p>PerpHedge помогает фармить поинты Lighter хеджем: держать противоположные позиции по одному рынку на <b>Lighter on Robinhood Chain (RH)</b> и на <b>Lighter Core</b>. Рыночный риск почти нулевой, а заработок или потери на самой связке определяются только разницей цен между двумя площадками.</p>
       <nav class="g-toc" aria-label="Содержание">
         <a href="#g-start">Быстрый старт</a><a href="#g-formula">Главная формула</a><a href="#g-desk">Мои связки</a><a href="#g-example">Разбор примера</a><a href="#g-scan">Сканер спреда</a><a href="#g-chart">График</a><a href="#g-choose">Как выбрать рынок</a><a href="#g-tools">Калькулятор и уведомления</a><a href="#g-rh2">Режим RH ↔ RH</a><a href="#g-risks">Риски</a><a href="#g-faq">Вопросы</a>
@@ -1013,7 +1034,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.5 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>. Реферальный код Lighter: <a href="https://robinhoodchain.lighter.xyz/?referral=PERPHEDGE" target="_blank" rel="noopener">PERPHEDGE</a>.<br>PerpHedge v2.5 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -3095,6 +3116,11 @@ else if(fromHash==='desk'||fromHash==='scan') PAIR='core';
 setPair(PAIR,false);
 Desk.init();
 Desk2.init();
+// v2.5: реферальный код — плашка видна, пока её не закрыли
+(()=>{ const K='perphedge.ref'; let hid=false; try{hid=localStorage.getItem(K)==='hidden'}catch(e){}
+  document.querySelectorAll('[data-ref]').forEach(el=>el.hidden=hid);
+  document.querySelectorAll('[data-refx]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('[data-ref]').forEach(el=>el.hidden=true); try{localStorage.setItem(K,'hidden')}catch(e){} });
+  document.querySelectorAll('[data-refcopy]').forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText('PERPHEDGE'); const t=b.textContent; b.textContent='✓ Скопировано'; setTimeout(()=>b.textContent=t,1500); }catch(e){ prompt('Скопируйте код:','PERPHEDGE'); } }); })();
 // v2.5: инструкция по сканеру — видна, пока её не скрыли; кнопка «❓» открывает снова
 (()=>{ const K='perphedge.sguide', el=$('#sguide'); let hid=false; try{hid=localStorage.getItem(K)==='hidden'}catch(e){}
   el.hidden=hid; $('#sgclose').onclick=()=>{el.hidden=true; try{localStorage.setItem(K,'hidden')}catch(e){}};
