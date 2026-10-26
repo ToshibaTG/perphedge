@@ -258,6 +258,32 @@ input.pnum{width:52px;text-align:center}
 .xb{padding:2px 4px !important;vertical-align:middle;opacity:.45} .xb.on{opacity:1}
 .xb svg{width:14px;height:14px}
 .yours{display:block;font-size:11px;margin-top:3px;white-space:nowrap}
+.sgbtn{margin-left:auto;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+.sgbtn:hover{border-color:var(--accent)}
+.sguide{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.sguide[hidden]{display:none}
+.sg-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sg-h b{font-size:15px}
+.sg-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.sg-col{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.sg-col h4{margin:0 0 8px;font-size:14px}
+.sg-col ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.45}
+.sg-col .k{font-weight:600}
+.sg-rule{font-size:13px;background:var(--chip);border-radius:8px;padding:8px 12px}
+.sg-in{color:var(--good)} .sg-out{color:var(--warn)}
+.sg-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.sg-tbl th,.sg-tbl td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.sg-tbl th{color:var(--muted);font-weight:500}
+.kboxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:10px}
+.kv.hl{border:2px solid var(--line);border-radius:6px;padding:2px 6px;margin:-2px -6px}
+.kv.hl.good{border-color:var(--good)} .kv.hl.warn{border-color:var(--warn)} .kv.hl.bad{border-color:var(--bad)}
+.kbx{border:2px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--bg)}
+.kbx .kl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kbx .kv2{font:700 20px var(--mono);margin:4px 0 2px}
+.kbx .kn{font-size:12px;color:var(--muted)}
+.kbx.good{border-color:var(--good)} .kbx.warn{border-color:var(--warn)} .kbx.bad{border-color:var(--bad)}
+.kbx.good .kv2{color:var(--good)} .kbx.warn .kv2{color:var(--warn)} .kbx.bad .kv2{color:var(--bad)}
+
 .tw{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px}
 th{font:500 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -565,6 +591,32 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
         <option value="shortRH">Шорт RH / лонг Core</option>
         <option value="longRH">Лонг RH / шорт Core</option>
       </select>
+      <button class="sgbtn" id="sgbtn" title="Короткая инструкция по сканеру">❓ Как читать сканер</button>
+    </div>
+    <div class="sguide" id="sguide">
+      <div class="sg-h"><b>Сканер за 30 секунд</b><button class="link" id="sgclose">Понятно, скрыть</button></div>
+      <div class="sg-cols">
+        <div class="sg-col"><h4 class="sg-in">▶ Вход — когда открывать</h4><ol>
+          <li>Направление <span class="k">«Шорт RH / лонг Core»</span> (акции и pre-IPO, хедж-буст 2.5×), окно <span class="k">12 ч</span>. Свои монеты отметьте ★ — по ним цены считаются по живому стакану.</li>
+          <li>В списке смотрите <span class="k">«Сигнал»</span> и <span class="k">«Выгоду входа ↑»</span>: больше — лучше. 0 — как обычно, 1 — заметно лучше, 2+ — редкий момент, минус — хуже.</li>
+          <li>Нажмите на монету → <span class="k">«Вход»</span> → впишите сумму на ногу. Решает строка <span class="k">«Вход против обычного»</span>: «лучше» — заходите; «хуже» на центы — можно; «хуже» на доллары — подождите.</li>
+          <li>Не хотите караулить — 🔔 у монеты, сайт сам скажет. Открывайте обе ноги подряд.</li></ol></div>
+        <div class="sg-col"><h4 class="sg-out">■ Выход — когда закрывать</h4><ol>
+          <li>Сигнал <span class="k">«закрывать»</span> говорит только, что <span class="k">момент</span> неплохой. Заработали ли вы — смотрите «ваш итог».</li>
+          <li><span class="k">Насовсем</span> (перед отчётом, в конце недели): смотрите <span class="k">«Итог закр.»</span> во «Моих связках» или <span class="k">«ваш итог»</span> под сигналом — столько получите, закрыв сейчас.</li>
+          <li>Задайте <span class="k">«Цель, $»</span> и оставьте 🔔 у связки включённым — придёт «можно закрывать».</li>
+          <li><span class="k">Перекрутка</span> (закрыл и сразу открыл ради объёма): сигнала выхода не ждите — потеря на выходе вернётся на новом входе. Проверьте только, что новый вход не сильно хуже обычного.</li></ol></div>
+        <div class="sg-col"><h4>📈 График</h4><ol>
+          <li><span class="sg-in k">Зелёная зона</span> — спред выгоден для входа, <span class="sg-out k">оранжевая</span> — для выхода.</li>
+          <li><span class="k">Точка «сейчас»</span> — где рынок прямо сейчас, пунктир <span class="k">«медиана»</span> — обычный уровень за окно.</li>
+          <li>Спред = (цена RH − цена Core) / Core. Выше нуля — RH дороже.</li></ol></div>
+      </div>
+      <div class="sg-rule"><b>⚠ Главное: у выхода две разные цифры</b>
+        <table class="sg-tbl" style="margin-top:6px"><tr><th>Цифра</th><th>С чем сравнивает</th><th>Отвечает на вопрос</th></tr>
+        <tr><td>Сигнал «закрывать», «Выход против обычного»</td><td>с <b>медианой</b> за окно (например, 12 ч)</td><td>«Сейчас удачный <b>момент</b>?»</td></tr>
+        <tr><td><b>«Итог закр.»</b>, «ваш итог», «Итог, если закрыть сейчас»</td><td>с <b>вашей ценой входа</b></td><td>«Я <b>в плюсе или в минусе</b>?»</td></tr></table>
+        <div style="margin-top:6px">Пример: вошли в хороший момент, через несколько часов загорелось «закрывать». Если «ваш итог» +$1.30 — закрываете в плюс. Если −$6 — момент по меркам последних 12 часов неплохой, но вы всё равно в минусе: рынок сдвинулся, и «обычный уровень» стал другим.
+        <b>Вход — по сигналу. Выход — по «ваш итог».</b> В калькуляторе эти цифры выделены рамкой.</div></div>
     </div>
     <div class="vbar"><div class="seg" id="view">
       <button data-v="all">Все рынки</button><button data-v="fav">★ Избранное (<span id="nfav">0</span>)</button><button data-v="bell">🔔 С уведомлениями (<span id="nbell">0</span>)</button><button data-v="held">💼 В позиции (<span id="nheld">0</span>)</button>
@@ -961,7 +1013,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.4.1 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.5 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -2041,8 +2093,17 @@ const Scan=(()=>{
     if(hp&&hp.er!=null&&hp.ec!=null){ const qq=Math.min(Math.abs(hp.qr),Math.abs(hp.qc));
       const entry=hp.qr<0?(hp.er-hp.ec)*qq:(hp.ec-hp.er)*qq, tot=entry+val+(hp.fund||0);
       total=`<div class="kv key"><span>Заложено на входе · фандинг</span><b><span class="${cls(entry)}">${usd(entry)}</span> · <span class="${cls(hp.fund)}">${usd(hp.fund||0)}</span></b></div>
-        <div class="kv key"><span>Итог, если закрыть сейчас</span><b class="${cls(tot)}">${usd(tot)}</b></div>`; }
+        <div class="kv key hl ${tot>=0?'good':'bad'}" title="От вашей цены входа: в плюсе или в минусе, если закрыть прямо сейчас (с фандингом, без комиссий)"><span>Итог, если закрыть сейчас</span><b class="${cls(tot)}">${usd(tot)}</b></div>`; }
     const what=exit?'выход':'вход';
+    // v2.5: две главные цифры — в рамке, чтобы сразу было видно, куда смотреть
+    const per1k=vsMed!=null&&q*ref>0?vsMed/(q*ref)*1000:null;
+    const mcls=vsMed==null?'':Math.abs(vsMed)<0.005||vsMed>=0?'good':per1k>-0.3?'warn':'bad';
+    const momTxt=vsMed==null?'—':Math.abs(vsMed)<0.005?'как обычно':(vsMed>=0?'лучше на ':'хуже на ')+'$'+n(Math.abs(vsMed));
+    let kb=`<div class="kbx ${mcls}"><div class="kl">Момент · ${exit?'выход':'вход'} против обычного</div><div class="kv2">${momTxt}</div><div class="kn">сравнение с медианой за ${WIN_TXT[ui.h]} — удачно ли сейчас</div></div>`;
+    if(hp&&hp.er!=null&&hp.ec!=null){ const qq=Math.min(Math.abs(hp.qr),Math.abs(hp.qc));
+      const entry=hp.qr<0?(hp.er-hp.ec)*qq:(hp.ec-hp.er)*qq, tot=entry+val+(hp.fund||0);
+      kb+=`<div class="kbx ${tot>=0?'good':'bad'}"><div class="kl">Ваша связка · итог, если закрыть сейчас</div><div class="kv2">${usd(tot)}</div><div class="kn">от вашей цены входа, с фандингом, без комиссий — в плюсе или в минусе</div></div>`; }
+    const keyBoxes=`<div class="kboxes">${kb}</div>`;
     if(add){ const now=Math.abs(hpAny.qr)*ref; total=`<div class="kv key"><span>Позиция станет</span><b>$${n(now)} → $${n(now+ui.size)}</b></div>`; }
     out.innerHTML=`${thin?`<div class="warnbox">⚠ Стакан не держит ${hp?'вашу позицию':'$'+n(ui.size)}: на ${!r.full?'Robinhood':'Core'} набралось только ${fq(!r.full?r.got:c.got)} ${m.sym} (~$${n((!r.full?r.got:c.got)*ref)}) в первых 100 заявках. Цифры ниже — на то, что есть.</div>`:''}
       ${exit&&!hp?`<div class="sub" style="margin-bottom:6px">Монеты нет в позиции — выход связки «${short?'шорт RH / лонг Core':'лонг RH / шорт Core'}» посчитан на сумму из калькулятора.</div>`:''}
@@ -2054,7 +2115,7 @@ const Scan=(()=>{
         <div class="kv key"><span>…если Core лимиткой</span><b class="${cls(valLim)}">${usd(valLim)}</b></div>
         ${total}
         <div class="kv"><span>Медиана окна ${WIN_TXT[ui.h]}</span><b>${med==null?'—':pc(med)}</b></div>
-        <div class="kv key"><span title="Середина стаканов сейчас против медианы окна — удачный ли момент. Ширина стаканов в эту строку не входит, она уже в строке выше">${exit?'Выход':'Вход'} против обычного</span><b class="${cls(vsMed)}">${vsMed==null?'—':Math.abs(vsMed)<0.005?'как обычно':(vsMed>=0?'лучше на ':'хуже на ')+'$'+n(Math.abs(vsMed))}</b></div>
+        <div class="kv key hl ${mcls}"><span title="Середина стаканов сейчас против медианы окна — удачный ли момент. Ширина стаканов в эту строку не входит, она уже в строке выше">${exit?'Выход':'Вход'} против обычного</span><b class="${cls(vsMed)}">${vsMed==null?'—':Math.abs(vsMed)<0.005?'как обычно':(vsMed>=0?'лучше на ':'хуже на ')+'$'+n(Math.abs(vsMed))}</b></div>
         <div class="kv"><span>Макс. размер, проскальз. ≤ 0.05%</span><b>~$${n(maxUsd)}</b></div>
         <div class="kv"><span>Всего проскальзывание</span><b class="${cls(-(slipR+slipC))}">$${n(slipR+slipC)}</b></div>
       </div>`;
@@ -3034,6 +3095,10 @@ else if(fromHash==='desk'||fromHash==='scan') PAIR='core';
 setPair(PAIR,false);
 Desk.init();
 Desk2.init();
+// v2.5: инструкция по сканеру — видна, пока её не скрыли; кнопка «❓» открывает снова
+(()=>{ const K='perphedge.sguide', el=$('#sguide'); let hid=false; try{hid=localStorage.getItem(K)==='hidden'}catch(e){}
+  el.hidden=hid; $('#sgclose').onclick=()=>{el.hidden=true; try{localStorage.setItem(K,'hidden')}catch(e){}};
+  $('#sgbtn').onclick=()=>{el.hidden=!el.hidden; try{localStorage.setItem(K,el.hidden?'hidden':'shown')}catch(e){} if(!el.hidden) el.scrollIntoView({block:'nearest',behavior:'smooth'});}; })();
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ Desk.poke(); Desk2.poke(); if(activeTab==='scan') Scan.marks(); } });
 setInterval(()=>Scan.bgCheck(),60e3);
 let startTab=TABS[PAIR][0]; try{startTab=localStorage.getItem(PAIR==='rh2'?'perphedge.tab2':'perphedge.tab')||startTab}catch(e){}
