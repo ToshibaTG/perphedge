@@ -961,7 +961,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   </div>
 
   <footer>
-    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.4 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
+    <b>Бета-тестирование.</b> Сайт ещё обкатывается: цифры могут содержать ошибки — сверяйте их с Lighter перед сделкой. Новости, вопросы и баги — в Telegram-канале <a href="https://t.me/perphedge" target="_blank" rel="noopener">t.me/perphedge</a>.<br>PerpHedge v2.4.1 (бета) — независимый инструмент, не связан с Lighter, Robinhood и их командами. Данные берутся из публичного API Lighter и могут запаздывать или содержать ошибки. Ничто на этом сайте не является финансовой или инвестиционной рекомендацией; торговля бессрочными контрактами с плечом может привести к потере всех средств. Перед использованием проверьте, разрешён ли доступ к Lighter в вашей юрисдикции.
   </footer>
 </div>
 
@@ -1318,12 +1318,14 @@ const Desk=(()=>{
         <td class="${cls(close)}"><b>${sgn(close)}</b></td>
         <td><input class="tgt" data-k="${key}" value="${tgtV??''}" placeholder="${st.al.exit}" inputmode="decimal" aria-label="Цель выхода для ${s}, $"></td></tr>`;
     }));
-    if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#pairs')) return;   // не мешаем вводу цели
+    if(document.activeElement&&document.activeElement.matches&&document.activeElement.matches('#pairs input.tgt')) return;   // не мешаем вводу цели (v2.4.1: только когда курсор в поле цели)
     $('#pairs').innerHTML=rows.join(''); labelize('#pairs');
     { const tb=Object.values(bundles), sum=tb.reduce((a,b)=>a+(b.total||0),0), sc=tb.reduce((a,b)=>a+(b.close||0),0), el=$('#bsum');
       lastBsum=tb.length?`Связки вместе: <span class="${cls(sum)}">${sgn(sum)}</span> · итог закр. <span class="${cls(sc)}">${sgn(sc)}</span>`:''; if(el) el.innerHTML=tb.length?`Связки вместе: <span class="${cls(sum)}">${sgn(sum)}</span> · итог закр. <span class="${cls(sc)}">${sgn(sc)}</span>`:''; }
     if(activeTab==='scan') Scan.rerender();
-    $('#pairs').onclick=async e=>{ const xb=e.target.closest('button.xb'); if(xb){ const k=xb.dataset.x; if(st.xoff[k]) delete st.xoff[k]; else st.xoff[k]=true; save(); Alerts.reset('x|'); tick(true); return; }
+    $('#pairs').onclick=async e=>{ const xb=e.target.closest('button.xb'); if(xb){ const k=xb.dataset.x; if(st.xoff[k]) delete st.xoff[k]; else st.xoff[k]=true; save();
+        const on=!st.xoff[k]; xb.classList.toggle('on',on); xb.title=on?'Сигналы выхода по этой связке включены — нажмите, чтобы выключить':'Сигналы выхода по этой связке выключены — нажмите, чтобы включить'; xb.blur();
+        Alerts.reset('x|'); tick(true); return; }
       const b=e.target.closest('button.fix'); if(!b) return;
       try{ await navigator.clipboard.writeText(b.dataset.copy); const t=b.textContent; b.textContent='✓ скопировано: '+b.dataset.copy+' шт'; setTimeout(()=>{ if(b.isConnected) b.textContent=t; },1500); }
       catch(err){ prompt('Скопируйте количество:',b.dataset.copy); } };
