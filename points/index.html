@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lighter RH Points Tracker — weekly drops, rules, cost per point | PerpHedge</title>
+<meta name="description" content="Every Lighter Robinhood Chain points drop, hedge boost directions, rules and real cost per point. Updated every Friday.">
+<meta property="og:title" content="Lighter RH Points Tracker — weekly drops, rules, cost per point">
+<meta property="og:description" content="Every Lighter Robinhood Chain points drop, hedge boost directions, rules and real cost per point. Updated every Friday.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://perphedge.com/points/">
+<meta property="og:image" content="https://perphedge.com/points/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://perphedge.com/points/og.png">
+<meta name="theme-color" content="#1f7a5a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%228%22%20fill%3D%22%231f7a5a%22/%3E%3Cpath%20d%3D%22M7%2021%20L13%2011%20L19%2021%20L25%2011%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M7%2011%20L25%2011%22%20stroke%3D%22%23fff%22%20stroke-opacity%3D%22.45%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%222%203%22/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem('perphedge.theme')||'dark';if(t!=='auto')document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f3f5f4; --panel:#fff; --fg:#14201b; --muted:#5d6b65; --line:#d9e0dc; --hover:#eef3f0;
+  --accent:#1f7a5a; --good:#1a8a4f; --bad:#c2412d; --warn:#b7791f; --chip:#e8eeeb;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1412; --panel:#151d1a; --fg:#e4ece8; --muted:#8a9a93; --line:#25312c; --hover:#1b2622;
+  --accent:#3fbf8c; --good:#3fcf7f; --bad:#ff6b57; --warn:#e3a740; --chip:#1d2723; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1412; --panel:#151d1a; --fg:#e4ece8; --muted:#8a9a93; --line:#25312c; --hover:#1b2622;
+  --accent:#3fbf8c; --good:#3fcf7f; --bad:#ff6b57; --warn:#e3a740; --chip:#1d2723; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--sans);
+  padding:0 max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.wrap>*{min-width:0;max-width:100%}
+/* bar */
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}
+.brand{display:flex;align-items:center;gap:10px;color:var(--fg);text-decoration:none}
+.brand svg{width:32px;height:32px;flex:none}
+.brand b{font-size:17px}
+.back{color:var(--muted);text-decoration:none;font-size:14px;border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.back:hover{color:var(--fg);border-color:var(--accent)}
+.sp{flex:1}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{border:0;background:transparent;color:var(--muted);font:600 13px var(--sans);padding:5px 12px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#06140e}
+/* hero */
+.hero h1{margin:18px 0 4px;font-size:30px;line-height:1.2;letter-spacing:-.01em}
+.hero p{margin:0;color:var(--muted)}
+.drop{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:14px}
+.cd{display:inline-flex;align-items:baseline;gap:10px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:10px 16px}
+.cd .k{color:var(--muted);font-size:13px}
+.cd .v{font:600 22px var(--mono);color:var(--accent)}
+.cd .w{color:var(--muted);font-size:13px}
+.upd{color:var(--muted);font-size:13px}
+/* cards */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
+.card h2{margin:0 0 12px;font-size:18px}
+.card h2 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
+.wm{position:absolute;right:14px;bottom:8px;font:600 11px var(--mono);color:var(--muted);opacity:.35;pointer-events:none}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font:500 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);white-space:nowrap;text-align:right}
+th.n{text-align:right}
+.pair b{font-family:var(--mono)}
+.lg{color:var(--good)} .sh{color:var(--bad)}
+.boost{display:inline-block;background:var(--accent);color:#06140e;border-radius:6px;padding:1px 7px;font:600 12px var(--mono)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font:600 13px var(--mono)}
+.sub{margin-top:16px}
+.sub h3{margin:0 0 6px;font-size:14px;color:var(--muted);font-weight:500}
+.sub ul{margin:0;padding-left:18px}
+.src{display:inline-block;margin-top:14px;font-size:13px}
+.thisweek{border-left:3px solid var(--accent)}
+/* chart */
+.chart{width:100%;height:auto;display:block}
+.chart .b{fill:var(--accent)}
+.chart .bx{fill:none;stroke:var(--muted);stroke-dasharray:4 4}
+.chart text{font:12px var(--mono);fill:var(--muted)}
+.chart .lb{fill:var(--fg);font-weight:600}
+tr.next td{color:var(--muted);font-style:italic}
+.d{font-family:var(--mono);color:var(--good);white-space:nowrap}
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.rule{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px}
+.rule b{display:block;margin-bottom:4px}
+.rule.ban{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.rule.ban b{color:var(--bad)}
+.docs{margin-top:12px;font-size:13px}
+/* cpp */
+.comm{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.comm .big{font:600 22px var(--mono);color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:9px;padding:8px 14px;font:500 14px var(--sans);text-decoration:none;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#06140e;font-weight:600}
+.dim{color:var(--muted)}
+/* cta */
+.cta{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.ref{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;width:100%;background:linear-gradient(90deg,rgba(63,191,140,.12),transparent 70%),var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.ref code{font:600 15px var(--mono);color:var(--accent);letter-spacing:.04em}
+.links{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+.links a{color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.links a:hover{color:var(--accent)}
+.links svg{width:15px;height:15px}
+.disc{font-size:12px;color:var(--muted)}
+.err{border-color:var(--bad);color:var(--bad)}
+@media (max-width:720px){
+  .hero h1{font-size:23px}
+  .card{padding:14px 14px}
+  .cd .v{font-size:19px}
+  td,th{padding:8px 8px}
+  table{font-size:13px}
+  .wm{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <a class="brand" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f7a5a"/><path d="M7 21 L13 11 L19 21 L25 11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 11 L25 11" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 3"/></svg><b>PerpHedge</b></a>
+    <a class="back" href="/" data-t="back">← Scanner</a>
+    <span class="sp"></span>
+    <span class="lang" role="group" aria-label="Language"><button type="button" data-l="en">EN</button><button type="button" data-l="ru">RU</button></span>
+  </div>
+
+  <header class="hero">
+    <h1 data-t="h1">Lighter RH Points — weekly tracker</h1>
+    <p data-t="sub">Every weekly drop, every rule change, real cost per point. Updated every Friday.</p>
+    <div class="drop">
+      <div class="cd"><span class="k" data-t="next">Next drop</span><span class="v" id="cd">—</span><span class="w" id="cdw"></span></div>
+      <span class="upd"><span data-t="upd">Last update</span>: <b id="upd">—</b></span>
+    </div>
+  </header>
+
+  <div class="card err" id="err" hidden></div>
+
+  <section class="card thisweek">
+    <h2 data-t="tw">This week</h2>
+    <div class="tw"><table>
+      <thead><tr><th data-t="cat">Category</th><th data-t="pairh">Hedge for 2.5× boost</th></tr></thead>
+      <tbody id="dirs"></tbody>
+    </table></div>
+    <div class="sub"><h3 data-t="boosted">Earnings boost this week (weekly points)</h3><div class="chips" id="boosted"></div></div>
+    <div class="sub"><h3 data-t="changed">What changed vs last week</h3><ul id="changes"></ul></div>
+    <a class="src" id="twsrc" href="https://t.me/lighter_announcements" target="_blank" rel="noopener" data-t="srcpost">Source: Lighter Telegram post ↗</a>
+    <span class="wm">perphedge.com</span>
+  </section>
+
+  <section class="card">
+    <h2><span data-t="pool">Weekly pool</span> <small data-t="poolsub">points distributed every Friday</small></h2>
+    <svg class="chart" id="chart" viewBox="0 0 800 260" role="img" aria-label="Weekly pool chart"></svg>
+    <div class="tw" style="margin-top:12px"><table>
+      <thead><tr><th data-t="date">Date</th><th class="n" data-t="poolc">Pool</th><th class="n" data-t="dw">Δ w/w</th><th data-t="what">What changed</th><th data-t="src">Source</th></tr></thead>
+      <tbody id="pools"></tbody>
+    </table></div>
+    <span class="wm">perphedge.com</span>
+  </section>
+
+  <section class="card">
+    <h2 data-t="rules">Rules cheat-sheet</h2>
+    <div class="rules" id="rules"></div>
+    <div class="docs"><a id="docs" href="https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points" target="_blank" rel="noopener" data-t="docs">Official rules — Lighter docs ↗</a></div>
+  </section>
+
+  <section class="card">
+    <h2 data-t="cpp">Cost per point</h2>
+    <div class="tw"><table>
+      <thead><tr><th data-t="week">Week</th><th data-t="acc">Account type</th><th class="n" data-t="lw">Live → Weekly</th><th class="n" data-t="mult">Multiplier</th><th class="n" data-t="ppp">$ / point</th></tr></thead>
+      <tbody id="ours"></tbody>
+    </table></div>
+    <div class="comm" id="comm"></div>
+    <span class="wm">perphedge.com</span>
+  </section>
+
+  <section class="cta">
+    <a class="btn go" href="/" data-t="open">Open the free spread scanner →</a>
+    <div class="ref">
+      <span data-t="ref1">Not on Lighter RH yet? Sign up with code</span> <code>PERPHEDGE</code> <span data-t="ref2">— +10% to your weekly points.</span>
+      <a class="btn go" href="https://robinhoodchain.lighter.xyz/?referral=PERPHEDGE" target="_blank" rel="noopener" data-t="openl">Open Lighter ↗</a>
+      <button type="button" class="btn" id="copy" data-t="copy">📋 Copy code</button>
+    </div>
+    <div class="links">
+      <a href="https://x.com/StrawHatLabs" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-7.3 8.3L23 22h-6.6l-5.1-6.7L5.4 22H2.3l7.8-8.9L1.8 2h6.7l4.7 6.2L18.9 2Zm-1.2 18h1.8L7.4 3.9H5.5L17.7 20Z"/></svg>@StrawHatLabs</a>
+      <a href="https://t.me/perphedge" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.5 3.5 2.8 10.8c-.9.4-.9 1.6.1 1.9l4.6 1.5 1.8 5.6c.3.8 1.3 1 1.9.4l2.6-2.5 4.8 3.5c.7.5 1.6.1 1.8-.7l3-15.2c.2-1-.8-1.8-1.9-1.3Z"/></svg>t.me/perphedge</a>
+      <a href="/">perphedge.com</a>
+    </div>
+    <div class="disc" data-t="disc">Not financial advice. Data from Lighter announcements and docs; community numbers are self-reported.</div>
+  </section>
+</div>
+
+<script>
+(function(){
+// ---------- язык: ?lang → сохранённый → EN по умолчанию ----------
+var LANG='en';
+try{ var q=new URLSearchParams(location.search).get('lang'); if(q==='en'||q==='ru'){ LANG=q; localStorage.setItem('perphedge.points.lang',q); } else { var sv=localStorage.getItem('perphedge.points.lang'); if(sv==='ru'||sv==='en') LANG=sv; } }catch(e){}
+var T={ru:{
+  back:'← Сканер', h1:'Поинты Lighter RH — недельный трекер', sub:'Каждая недельная раздача, каждое изменение правил, реальная цена поинта. Обновляется по пятницам.',
+  next:'Следующая раздача', upd:'Обновлено', tw:'Эта неделя', cat:'Категория', pairh:'Хедж для буста 2.5×',
+  boosted:'Буст за отчёты на этой неделе (недельные поинты)', changed:'Что изменилось с прошлой недели', srcpost:'Источник: пост Lighter в Telegram ↗',
+  pool:'Недельный пул', poolsub:'поинтов раздают каждую пятницу', date:'Дата', poolc:'Пул', dw:'Δ за неделю', what:'Что изменилось', src:'Источник',
+  rules:'Правила одним экраном', docs:'Официальные правила — документация Lighter ↗', cpp:'Сколько стоит поинт',
+  week:'Неделя', acc:'Тип аккаунта', lw:'Лайв → Недельные', mult:'Множитель', ppp:'$ за поинт',
+  open:'Открыть бесплатный сканер спреда →', ref1:'Ещё не на Lighter RH? Регистрируйтесь по коду', ref2:'— +10% к недельным поинтам.',
+  openl:'Открыть Lighter ↗', copy:'📋 Скопировать код', copied:'✓ Скопировано',
+  disc:'Не финансовый совет. Данные из анонсов и документации Lighter; цифры сообщества — со слов участников.',
+  expected:'ожидается', est:'оценка', post:'пост ↗', pending:'после раздачи', soon:'идёт сейчас или скоро', inN:'через',
+  d:'д', h:'ч', m:'мин', usual:'обычно в течение ~2 ч', comm:'Медиана сообщества', range:'диапазон', share:'Поделиться своей цифрой ↗', nodata:'Нет данных',
+  err:'Не удалось загрузить данные (points-data.json). Обновите страницу.'
+},en:{
+  expected:'expected', est:'estimate', post:'post ↗', pending:'after the drop', soon:'happening now or soon', inN:'in',
+  d:'d', h:'h', m:'m', usual:'usually within ~2h', comm:'Community median', range:'range', share:'Share your number ↗', nodata:'No data',
+  copied:'✓ Copied', copy:'📋 Copy code', err:'Could not load data (points-data.json). Please refresh.'
+}};
+var RULES={en:[
+  ['Standard ↔ Standard = 0','No points when both sides of a trade are Standard accounts. One side must be Plus or Premium.'],
+  ['Hedge boost 2.5×','Weekly points only. Hedge your RH position on Lighter Core in the boosted direction (see “This week”). Can change weekly.'],
+  ['Partial hedge counts','$100 on RH hedged with $50 on Core = 1.75× boost. Equal or larger Core position = full 2.5×.'],
+  ['Mobile boost 1× → 2×','Linear by the share of your volume placed from the Robinhood Wallet app. Applies to live and weekly points.'],
+  ['Market boosts','Earnings boost for weekly points when the company reports during the week. Pre-IPO and new listings may be boosted too.'],
+  ['Referral','Referred traders get +10% weekly points; the referrer gets 10% of their points. Code PERPHEDGE.'],
+  ['Week = Fri → Thu','Weekly points cover Friday (incl.) to Thursday (incl.) and are dropped every Friday.'],
+  ['Banned','Wash trading, sybil, referral abuse, automated or artificial participation — points can be cut, even retroactively.',1]
+],ru:[
+  ['Standard ↔ Standard = 0','Сделки, где обе стороны — Standard, поинтов не дают. Хотя бы одна сторона должна быть Plus или Premium.'],
+  ['Хедж-буст 2.5×','Только недельные поинты. Хеджируйте позицию RH на Lighter Core в бустовом направлении (см. «Эта неделя»). Может меняться каждую неделю.'],
+  ['Частичный хедж тоже считается','$100 на RH и $50 хеджа на Core = буст 1.75×. Позиция на Core такая же или больше — полный 2.5×.'],
+  ['Мобильный буст 1× → 2×','Линейно по доле объёма, отправленного из приложения Robinhood Wallet. Действует на лайв и недельные.'],
+  ['Бусты рынков','Буст за отчёты к недельным, если компания отчитывается на этой неделе. Pre-IPO и новые листинги тоже могут быть с бустом.'],
+  ['Рефералка','Приглашённые получают +10% к недельным, пригласивший — 10% их поинтов. Код PERPHEDGE.'],
+  ['Неделя = пт → чт','Недельные считаются с пятницы по четверг включительно, раздача каждую пятницу.'],
+  ['Запрещено','Wash trading, sybil, абуз рефералки, автоматическое или искусственное участие — поинты могут урезать, в том числе задним числом.',1]
+]};
+var EN_DEF={};
+function t(k){ return (T[LANG]&&T[LANG][k])||EN_DEF[k]||T.en[k]||k; }
+document.querySelectorAll('[data-t]').forEach(function(el){ EN_DEF[el.dataset.t]=el.textContent; });
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-t]').forEach(function(el){ el.textContent=t(el.dataset.t); });
+  document.querySelectorAll('.lang button').forEach(function(b){ b.setAttribute('aria-pressed',String(b.dataset.l===LANG)); });
+}
+document.querySelectorAll('.lang button').forEach(function(b){ b.onclick=function(){ LANG=b.dataset.l; try{localStorage.setItem('perphedge.points.lang',LANG)}catch(e){} applyLang(); render(); }; });
+
+var LOCALE=function(){ return LANG==='ru'?'ru-RU':'en-GB'; };
+var esc=function(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); };
+var k=function(v){ return v>=1000?(v/1000).toLocaleString(LOCALE(),{maximumFractionDigits:1})+'k':String(v); };
+var fd=function(s,opt){ var d=new Date(s+'T12:00:00Z'); return d.toLocaleDateString(LOCALE(),opt||{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}); };
+var safeUrl=function(u){ return /^https:\/\//.test(u||'')?u:''; };
+
+var DATA=null;
+function nextDrop(){
+  // берём дату из json, если она в будущем (или раздача идёт ~2 ч); иначе — ближайшая пятница 12:30 UTC
+  var now=Date.now(), j=DATA&&DATA.next_drop_utc?Date.parse(DATA.next_drop_utc):NaN;
+  if(isFinite(j)&&j+2*3600e3>now) return j;
+  var d=new Date(now); d.setUTCHours(12,30,0,0);
+  var add=(5-d.getUTCDay()+7)%7; d.setUTCDate(d.getUTCDate()+add);
+  if(d.getTime()+2*3600e3<=now) d.setUTCDate(d.getUTCDate()+7);
+  return d.getTime();
+}
+function tick(){
+  if(!DATA) return;
+  var at=nextDrop(), ms=at-Date.now(), el=document.getElementById('cd');
+  if(ms<=0){ el.textContent=t('soon'); }
+  else { var dd=Math.floor(ms/864e5), hh=Math.floor(ms%864e5/36e5), mm=Math.floor(ms%36e5/6e4);
+    el.textContent=t('inN')+' '+(dd?dd+t('d')+' ':'')+hh+t('h')+(dd?'':' '+mm+t('m')); }
+  var when=new Date(at).toLocaleString(LOCALE(),{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('cdw').textContent='~'+when+' · '+t('usual');
+}
+
+function render(){
+  if(!DATA) return;
+  var D=DATA, tw=D.this_week||{};
+  document.getElementById('upd').textContent=D.updated?fd(D.updated):'—';
+  // эта неделя
+  var col=function(s){ return esc(s).replace(/Long RH/g,'<span class="lg">Long RH</span>').replace(/Short RH/g,'<span class="sh">Short RH</span>').replace(/Long Core/g,'<span class="lg">Long Core</span>').replace(/Short Core/g,'<span class="sh">Short Core</span>'); };
+  document.getElementById('dirs').innerHTML=(tw.hedge_directions||[]).map(function(x){ return '<tr><td>'+esc(x.category)+'</td><td class="pair"><b>'+col(x.boost_pair)+'</b> <span class="boost">2.5×</span></td></tr>'; }).join('')||'<tr><td colspan="2" class="dim">'+t('nodata')+'</td></tr>';
+  document.getElementById('boosted').innerHTML=(tw.earnings_boosted||[]).map(function(s){ return '<span class="chip">'+esc(s)+'</span>'; }).join('')||'<span class="dim">—</span>';
+  document.getElementById('changes').innerHTML=(tw.changes||[]).map(function(s){ return '<li>'+esc(s)+'</li>'; }).join('')||'<li class="dim">—</li>';
+  var su=safeUrl(tw.source_url); var se=document.getElementById('twsrc'); if(su) se.href=su;
+  if(safeUrl(D.docs_url)) document.getElementById('docs').href=D.docs_url;
+  // пул: график + таблица
+  var P=(D.weekly_pools||[]).slice().sort(function(a,b){ return a.date<b.date?-1:1; });
+  drawChart(P);
+  var rows=[], prev=null;
+  P.forEach(function(x){
+    var isNext=x.pool==null, val=isNext?x.expected:x.pool, dlt=(!isNext&&prev!=null)?x.pool-prev:null;
+    var src=safeUrl(x.src);
+    rows.push('<tr class="'+(isNext?'next':'')+'"><td style="white-space:nowrap">'+fd(x.date,{day:'numeric',month:'short',timeZone:'UTC'})+'</td>'+
+      '<td class="n">'+(val==null?'—':(isNext?'~':'')+Math.round(val).toLocaleString(LOCALE()))+'</td>'+
+      '<td class="n">'+(isNext?'<span class="dim">'+t('est')+'</span>':dlt==null?'—':'<span class="d">'+(dlt>=0?'+':'')+k(dlt)+'</span>')+'</td>'+
+      '<td>'+(isNext?t('expected'):esc(x.note||''))+'</td>'+
+      '<td>'+(src?'<a href="'+esc(src)+'" target="_blank" rel="noopener">'+t('post')+'</a>':'')+'</td></tr>');
+    if(!isNext) prev=x.pool;
+  });
+  document.getElementById('pools').innerHTML=rows.reverse().join('')||'<tr><td colspan="5" class="dim">'+t('nodata')+'</td></tr>';
+  // правила
+  document.getElementById('rules').innerHTML=RULES[LANG].map(function(r){ return '<div class="rule'+(r[2]?' ban':'')+'"><b>'+esc(r[0])+'</b>'+esc(r[1])+'</div>'; }).join('');
+  // цена поинта
+  var f2=function(v,p){ return v==null?'<span class="dim">'+t('pending')+'</span>':(p||'')+(+v).toLocaleString(LOCALE(),{maximumFractionDigits:2}); };
+  document.getElementById('ours').innerHTML=(D.our_results||[]).map(function(x){
+    var lw=x.live==null&&x.weekly==null?'<span class="dim">'+t('pending')+'</span>':f2(x.live)+' → '+f2(x.weekly);
+    return '<tr><td style="white-space:nowrap">'+esc(x.week)+'</td><td>'+esc(x.account)+'</td><td class="n">'+lw+'</td><td class="n">'+(x.multiplier==null?'—':'×'+(+x.multiplier).toLocaleString(LOCALE(),{maximumFractionDigits:1}))+'</td><td class="n">'+(x.usd_per_point==null?'—':'$'+(+x.usd_per_point).toFixed(2))+'</td></tr>';
+  }).join('')||'<tr><td colspan="5" class="dim">'+t('nodata')+'</td></tr>';
+  var c=D.community_cpp, sh=safeUrl(D.share_post_url);
+  document.getElementById('comm').innerHTML=(c?'<span>'+t('comm')+':</span> <span class="big">$'+(+c.median).toFixed(2)+'</span><span class="dim">'+t('range')+' $'+(+c.min).toFixed(2)+'–'+(+c.max).toFixed(2)+', n = '+esc(c.n)+(c.source?' · '+esc(c.source):'')+'</span>':'')+
+    (sh?'<a class="btn" href="'+esc(sh)+'" target="_blank" rel="noopener">'+t('share')+'</a>':'');
+  tick();
+}
+
+function drawChart(P){
+  var svg=document.getElementById('chart'), W=800, H=260, L=8, R=8, TOP=26, B=28;
+  if(!P.length){ svg.innerHTML=''; return; }
+  var vals=P.map(function(x){ return x.pool==null?(x.expected||0):x.pool; }), max=Math.max.apply(null,vals)*1.08||1;
+  var n=P.length, gap=8, bw=(W-L-R-gap*(n-1))/n, out='';
+  var lastReal=-1; P.forEach(function(x,i){ if(x.pool!=null) lastReal=i; });
+  P.forEach(function(x,i){
+    var v=vals[i], h=(H-TOP-B)*v/max, xx=L+i*(bw+gap), y=H-B-h, isNext=x.pool==null;
+    out+='<rect class="'+(isNext?'bx':'b')+'" x="'+xx.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="4"><title>'+fd(x.date,{day:'numeric',month:'short',timeZone:'UTC'})+': '+(isNext?'~':'')+v.toLocaleString(LOCALE())+'</title></rect>';
+    if(i===lastReal||isNext) out+='<text class="'+(isNext?'':'lb')+'" x="'+(xx+bw/2).toFixed(1)+'" y="'+(y-7).toFixed(1)+'" text-anchor="middle">'+(isNext?'~':'')+k(v)+'</text>';
+    if(n<=14||i%2===0) out+='<text x="'+(xx+bw/2).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle">'+fd(x.date,{day:'numeric',month:'numeric',timeZone:'UTC'})+'</text>';
+  });
+  out+='<text x="'+(W-R)+'" y="14" text-anchor="end" opacity=".5">perphedge.com</text>';
+  svg.innerHTML=out;
+}
+
+document.getElementById('copy').onclick=function(){
+  var b=this; try{ navigator.clipboard.writeText('PERPHEDGE').then(function(){ b.textContent=t('copied'); setTimeout(function(){ b.textContent=t('copy'); },1500); }); }catch(e){ prompt('PERPHEDGE','PERPHEDGE'); }
+};
+
+applyLang();
+fetch('points-data.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(function(j){ DATA=j; render(); setInterval(tick,30000); })
+  .catch(function(){ var e=document.getElementById('err'); e.textContent=t('err'); e.hidden=false; });
+})();
+</script>
+</body>
+</html>

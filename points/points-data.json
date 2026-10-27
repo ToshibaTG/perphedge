@@ -1,0 +1,34 @@
+{
+  "updated": "2026-10-27",
+  "next_drop_utc": "2026-10-30T12:30:00Z",
+  "this_week": {
+    "hedge_directions": [
+      {"category": "Crypto", "boost_pair": "Long RH / Short Core"},
+      {"category": "Commodities, ETFs", "boost_pair": "Long RH / Short Core"},
+      {"category": "Pre-IPO, Equities", "boost_pair": "Short RH / Long Core"}
+    ],
+    "earnings_boosted": ["GOOGL", "HOOD", "MSFT", "META", "AMZN", "INTC", "COIN", "SNDK", "MSTR"],
+    "changes": ["Rules doc published on Oct 23", "Referral: +10% weekly for referred users"],
+    "source_url": "https://t.me/lighter_announcements"
+  },
+  "weekly_pools": [
+    {"date": "2026-08-21", "pool": 65000,  "note": "Focus on RWA markets; Robinhood Wallet = 2x points", "src": "https://t.me/lighter_announcements/403"},
+    {"date": "2026-08-28", "pool": 70000,  "note": "Focus on Pre-IPO markets", "src": "https://t.me/lighter_announcements/413"},
+    {"date": "2026-09-04", "pool": 75000,  "note": "", "src": "https://t.me/lighter_announcements/423"},
+    {"date": "2026-09-11", "pool": 80000,  "note": "First 2.5x hedge boost: hedge RH longs on Core", "src": "https://t.me/lighter_announcements/429"},
+    {"date": "2026-09-18", "pool": 85000,  "note": "2.5x hedge boost back", "src": "https://t.me/lighter_announcements/435"},
+    {"date": "2026-09-25", "pool": 90000,  "note": "Hedge single-stock longs on RH with shorts on Core", "src": "https://t.me/lighter_announcements/441"},
+    {"date": "2026-10-02", "pool": 95000,  "note": "Keep hedging stock longs on RH with shorts on Core", "src": "https://t.me/lighter_announcements/446"},
+    {"date": "2026-10-09", "pool": 100000, "note": "Same hedge direction", "src": "https://t.me/lighter_announcements/452"},
+    {"date": "2026-10-16", "pool": 105000, "note": "Hedge direction flipped for stocks & pre-IPO (Short RH / Long Core); earnings boost added", "src": "https://t.me/lighter_announcements/455"},
+    {"date": "2026-10-23", "pool": 110000, "note": "Official rules doc published", "src": "https://t.me/lighter_announcements/461"},
+    {"date": "2026-10-30", "pool": null, "expected": 115000}
+  ],
+  "our_results": [
+    {"week": "Oct 16–22", "account": "mostly Standard", "live": 0.76, "weekly": 6.57, "multiplier": 8.64, "usd_per_point": 2.4},
+    {"week": "Oct 23–29", "account": "mostly Premium", "live": null, "weekly": null, "multiplier": null, "usd_per_point": null}
+  ],
+  "community_cpp": {"median": 3.85, "min": 2.94, "max": 10.53, "n": 7, "source": "@RiskAssetLens on X, Oct 26"},
+  "share_post_url": "https://x.com/StrawHatLabs/status/2115147791999873282",
+  "docs_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
+}
