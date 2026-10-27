@@ -549,6 +549,8 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
   .legend{font-size:11px}
   .guide{font-size:14.5px}
 }
+.wm-bg.wm-bg{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='560' height='200'><text x='280' y='108' text-anchor='middle' transform='rotate(-8 280 100)' font-family='Inter,Arial,sans-serif' font-size='26' font-weight='700' fill='%23888' fill-opacity='0.09'>perphedge.com</text></svg>");background-repeat:repeat;background-position:40px 20px}
+.calc.calc{position:relative}.calc::after{content:"perphedge.com";position:absolute;right:12px;bottom:6px;font:600 11px var(--mono);color:var(--muted);opacity:.55;pointer-events:none}
 .langwrap{display:flex;align-items:center;gap:18px;margin-left:auto}
 .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:13px;background:var(--panel)}
 .lang button{border:0;border-radius:0;padding:6px 14px;background:transparent;color:var(--muted);font-weight:600}
@@ -623,7 +625,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
         <label class="ck"><input type="checkbox" id="pleg"> одна нога / позицию закрыли или ликвидировали</label>
         <span class="sub">Порог для конкретной связки можно задать в колонке «Цель, $» — он важнее общего. Колокольчик у связки в таблице включает или выключает сигналы выхода только по ней (уведомления о риске — ликвидация, маржа, одна нога — приходят всегда). Пороги вводите числом и нажимайте Enter.</span>
       </div>
-      <div class="tw"><table id="t-pairs">
+      <div class="tw wm-bg"><table id="t-pairs">
         <thead><tr>
           <th class="l">Рынок</th><th class="l">Статус</th>
           <th>RH, $</th><th>Вход RH</th><th>Core, $</th><th>Вход Core</th>
@@ -746,7 +748,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
       <label class="ck adv" title="Только рынки, где выбранное направление получает хедж-буст 2.5x"><input type="checkbox" id="fboost"> только с бустом 2.5x</label>
       <span class="cnt"><span id="fcnt"></span> <button class="link" id="freset">сбросить</button></span>
     </div>
-    <div class="tw"><table id="t-scan">
+    <div class="tw wm-bg"><table id="t-scan">
       <thead id="sthead"><tr>
         <th class="l" data-s="sym">Рынок</th>
         <th data-s="sig">Сигнал</th>
@@ -801,7 +803,7 @@ html:not(.rh2) #tab-desk2,html:not(.rh2) #tab-depth{display:none}
         <label class="ck"><input type="checkbox" id="p2leg"> одна нога / позицию закрыли или ликвидировали</label>
         <span class="sub">Порог для конкретной связки можно задать в колонке «Цель, $» — он важнее общего.</span>
       </div>
-      <div class="tw"><table id="t-pairs2">
+      <div class="tw wm-bg"><table id="t-pairs2">
         <thead><tr>
           <th class="l">Рынок</th><th class="l">Статус</th>
           <th id="h2a">А, $</th><th id="h2ae">Вход А</th><th id="h2b">Б, $</th><th id="h2be">Вход Б</th>
@@ -1256,7 +1258,7 @@ let activeTab='desk';
 // v2.0: какие связки отслеживаем — 'core' (Robinhood ↔ Core) или 'rh2' (два аккаунта Robinhood)
 let PAIR='core'; try{ if(localStorage.getItem('perphedge.pair')==='rh2') PAIR='rh2'; }catch(e){}
 const TABS={core:['desk','scan','guide'],rh2:['desk2','depth','guide']};
-function setStatus(tab,txt){statusText[tab]=txt; if(tab===activeTab) $('#status').textContent=txt}
+function setStatus(tab,txt){if(txt&&!/perphedge\.com/.test(txt)&&/·/.test(txt))txt+=' · perphedge.com';statusText[tab]=txt; if(tab===activeTab) $('#status').textContent=txt}
 function spinning(on){$('#refresh').classList.toggle('spin',on)}
 
 /* ---------- УВЕДОМЛЕНИЯ: звук, всплывашки браузера, тосты, журнал ---------- */
@@ -3085,7 +3087,7 @@ const Depth=(()=>{
         <div class="kv"><span>Всего проскальзывание</span><b class="${cls(-(slipL+slipS))}">$${n(slipL+slipS)}</b></div>
         <div class="kv"><span>Объём 24ч / OI на RH</span><b>${usdk(m.vol)} / ${usdk(m.oi)}</b></div>
       </div>
-      <div class="ladder"><div class="lc bidc"><h4><span class="pos">Биды</span> — сюда продаёт шорт</h4><div class="lr lhd"><span>цена</span><span>кол-во</span><span>всего $</span></div>${ladder(bids,true)}</div>
+      <div class="ladder wm-bg"><div class="lc bidc"><h4><span class="pos">Биды</span> — сюда продаёт шорт</h4><div class="lr lhd"><span>цена</span><span>кол-во</span><span>всего $</span></div>${ladder(bids,true)}</div>
         <div class="lc askc"><h4><span class="neg">Аски</span> — отсюда покупает лонг</h4><div class="lr lhd"><span>цена</span><span>кол-во</span><span>всего $</span></div>${ladder(asks,false)}</div></div>
       <ul class="rules"><li><b class="ok">Безопасно:</b> обе ноги маркетом (лонг забирает аски, шорт — биды) или обе лимитками на разных сторонах (лонг на биде, шорт на аске).</li>
         <li><b class="no">Опасно:</b> одна нога лимиткой, другая маркетом — маркет второго аккаунта может налиться на вашу же лимитку. Это self-trade: поинтов нет, недельные могут обнулить.</li>
