@@ -209,11 +209,11 @@ var T={ru:{
   openl:'Открыть Lighter ↗', copy:'📋 Скопировать код', copied:'✓ Скопировано',
   disc:'Не финансовый совет. Данные из анонсов и документации Lighter; цифры сообщества — со слов участников.',
   expected:'ожидается', est:'оценка', post:'пост ↗', pending:'после раздачи', soon:'идёт сейчас или скоро', inN:'через',
-  d:'д', h:'ч', m:'мин', usual:'обычно в течение ~2 ч', comm:'Медиана сообщества', range:'диапазон', share:'Поделиться своей цифрой ↗', nodata:'Нет данных',
+  yourtime:'по вашему времени', d:'д', h:'ч', m:'мин', usual:'обычно в течение ~2 ч', comm:'Медиана сообщества', range:'диапазон', share:'Поделиться своей цифрой ↗', nodata:'Нет данных',
   err:'Не удалось загрузить данные (points-data.json). Обновите страницу.'
 },en:{
   expected:'expected', est:'estimate', post:'post ↗', pending:'after the drop', soon:'happening now or soon', inN:'in',
-  d:'d', h:'h', m:'m', usual:'usually within ~2h', comm:'Community median', range:'range', share:'Share your number ↗', nodata:'No data',
+  yourtime:'your time', d:'d', h:'h', m:'m', usual:'usually within ~2h', comm:'Community median', range:'range', share:'Share your number ↗', nodata:'No data',
   copied:'✓ Copied', copy:'📋 Copy code', err:'Could not load data (points-data.json). Please refresh.'
 }};
 var RULES={en:[
@@ -268,7 +268,8 @@ function tick(){
   else { var dd=Math.floor(ms/864e5), hh=Math.floor(ms%864e5/36e5), mm=Math.floor(ms%36e5/6e4);
     el.textContent=t('inN')+' '+(dd?dd+t('d')+' ':'')+hh+t('h')+(dd?'':' '+mm+t('m')); }
   var when=new Date(at).toLocaleString(LOCALE(),{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-  document.getElementById('cdw').textContent='~'+when+' · '+t('usual');
+  var utc=new Date(at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'});
+  document.getElementById('cdw').textContent='~'+when+' '+t('yourtime')+' ('+utc+' UTC) · '+t('usual');
 }
 
 function render(){
@@ -303,7 +304,7 @@ function render(){
   var f2=function(v,p){ return v==null?'<span class="dim">'+t('pending')+'</span>':(p||'')+(+v).toLocaleString(LOCALE(),{maximumFractionDigits:2}); };
   document.getElementById('ours').innerHTML=(D.our_results||[]).map(function(x){
     var lw=x.live==null&&x.weekly==null?'<span class="dim">'+t('pending')+'</span>':f2(x.live)+' → '+f2(x.weekly);
-    return '<tr><td style="white-space:nowrap">'+esc(x.week)+'</td><td>'+esc(x.account)+'</td><td class="n">'+lw+'</td><td class="n">'+(x.multiplier==null?'—':'×'+(+x.multiplier).toLocaleString(LOCALE(),{maximumFractionDigits:1}))+'</td><td class="n">'+(x.usd_per_point==null?'—':'$'+(+x.usd_per_point).toFixed(2))+'</td></tr>';
+    return '<tr><td style="white-space:nowrap">'+esc(x.week)+'</td><td>'+esc(x.account)+'</td><td class="n">'+lw+'</td><td class="n">'+(x.multiplier==null?'—':'×'+(+x.multiplier).toLocaleString(LOCALE(),{minimumFractionDigits:2,maximumFractionDigits:2}))+'</td><td class="n">'+(x.usd_per_point==null?'—':'$'+(+x.usd_per_point).toFixed(2))+'</td></tr>';
   }).join('')||'<tr><td colspan="5" class="dim">'+t('nodata')+'</td></tr>';
   var c=D.community_cpp, sh=safeUrl(D.share_post_url);
   document.getElementById('comm').innerHTML=(c?'<span>'+t('comm')+':</span> <span class="big">$'+(+c.median).toFixed(2)+'</span><span class="dim">'+t('range')+' $'+(+c.min).toFixed(2)+'–'+(+c.max).toFixed(2)+', n = '+esc(c.n)+(c.source?' · '+esc(c.source):'')+'</span>':'')+
