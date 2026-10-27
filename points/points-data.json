@@ -8,7 +8,7 @@
       {"category": "Pre-IPO, Equities", "boost_pair": "Short RH / Long Core"}
     ],
     "earnings_boosted": ["GOOGL", "HOOD", "MSFT", "META", "AMZN", "INTC", "COIN", "SNDK", "MSTR"],
-    "changes": ["Rules doc published on Oct 23", "Referral: +10% weekly for referred users"],
+    "changes": ["Official rules doc published (Oct 23)", "Docs clarified: partial hedges count pro rata (Oct 26)"],
     "source_url": "https://t.me/lighter_announcements"
   },
   "weekly_pools": [
