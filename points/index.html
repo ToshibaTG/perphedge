@@ -56,6 +56,9 @@ a{color:var(--accent)}
 .cd .w{color:var(--muted);font-size:13px}
 .upd{color:var(--muted);font-size:13px}
 /* cards */
+.follow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:14px 18px}
+.follow .ft{font-size:15px}
+@media (max-width:560px){.follow .btn{width:100%;text-align:center}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
 .card h2{margin:0 0 12px;font-size:18px}
 .card h2 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
@@ -177,6 +180,11 @@ tr.next td{color:var(--muted);font-style:italic}
     <span class="wm">perphedge.com</span>
   </section>
 
+  <section class="follow">
+    <div class="ft"><b data-t="fw1">Weekly Lighter data</b> <span data-t="fw2">— every Friday after the drop</span></div>
+    <a class="btn go" href="https://x.com/StrawHatLabs" target="_blank" rel="noopener" data-t="fbtn">Follow @StrawHatLabs ↗</a>
+  </section>
+
   <section class="cta">
     <a class="btn go" href="/" data-t="open">Open the free spread scanner →</a>
     <div class="ref">
@@ -205,6 +213,7 @@ var T={ru:{
   pool:'Недельный пул', poolsub:'поинтов раздают каждую пятницу', date:'Дата', poolc:'Пул', dw:'Δ за неделю', what:'Что изменилось', src:'Источник',
   rules:'Правила одним экраном', docs:'Официальные правила — документация Lighter ↗', cpp:'Сколько стоит поинт',
   week:'Неделя', acc:'Тип аккаунта', lw:'Лайв → Недельные', mult:'Множитель', ppp:'$ за поинт',
+  fw1:'Данные Lighter каждую неделю', fw2:'— после пятничной раздачи', fbtn:'Подписаться на @StrawHatLabs ↗',
   open:'Открыть бесплатный сканер спреда →', ref1:'Ещё не на Lighter RH? Регистрируйтесь по коду', ref2:'— +10% к недельным поинтам.',
   openl:'Открыть Lighter ↗', copy:'📋 Скопировать код', copied:'✓ Скопировано',
   disc:'Не финансовый совет. Данные из анонсов и документации Lighter; цифры сообщества — со слов участников.',
