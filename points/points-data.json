@@ -2,6 +2,7 @@
   "updated": "2026-10-27",
   "next_drop_utc": "2026-10-30T12:30:00Z",
   "this_week": {
+    "week_start": "2026-10-23",
     "hedge_directions": [
       {"category": "Crypto", "boost_pair": "Long RH / Short Core"},
       {"category": "Commodities, ETFs", "boost_pair": "Long RH / Short Core"},
