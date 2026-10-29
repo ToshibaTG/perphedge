@@ -12,6 +12,17 @@
     "changes": ["Official rules doc published (Oct 23)", "Docs clarified: partial hedges count pro rata (Oct 26)"],
     "source_url": "https://t.me/lighter_announcements"
   },
+  "earnings": [
+    {"sym": "GOOGL", "date": "2026-10-27", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "HOOD", "date": "2026-10-27", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "MSFT", "date": "2026-10-28", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "META", "date": "2026-10-28", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "AMZN", "date": "2026-10-29", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "INTC", "date": "2026-10-29", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "COIN", "date": "2026-10-29", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "SNDK", "date": "2026-10-29", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"},
+    {"sym": "MSTR", "date": "2026-10-29", "when": "amc", "src": "https://stockti.com/earnings-calendar/oct-26-30-2026"}
+  ],
   "weekly_pools": [
     {"date": "2026-08-21", "pool": 65000,  "note": "Focus on RWA markets; Robinhood Wallet = 2x points", "src": "https://t.me/lighter_announcements/403"},
     {"date": "2026-08-28", "pool": 70000,  "note": "Focus on Pre-IPO markets", "src": "https://t.me/lighter_announcements/413"},

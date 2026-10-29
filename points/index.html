@@ -75,6 +75,13 @@ th.n{text-align:right}
 .boost{display:inline-block;background:var(--accent);color:#06140e;border-radius:6px;padding:1px 7px;font:600 12px var(--mono)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font:600 13px var(--mono)}
+/* v1.4: дата и время отчёта у монеты */
+#boosted .chip[data-tip]{cursor:help}
+#boosted .chip .dd{font:500 11px var(--sans,system-ui);opacity:.75;margin-left:6px}
+#boosted .chip.past{opacity:.5}
+#boosted .chip.today{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+#etip{position:absolute;z-index:50;background:var(--panel);border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.35);border-radius:10px;padding:8px 12px;font:13px/1.4 var(--sans,system-ui);color:var(--fg);max-width:330px;white-space:normal;display:none}
+#etip small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
 .sub{margin-top:16px}
 .sub h3{margin:0 0 6px;font-size:14px;color:var(--muted);font-weight:500}
 .sub ul{margin:0;padding-left:18px}
@@ -261,6 +268,51 @@ var fd=function(s,opt){ var d=new Date(s+'T12:00:00Z'); return d.toLocaleDateStr
 var safeUrl=function(u){ return /^https:\/\//.test(u||'')?u:''; };
 
 var DATA=null;
+// ---------- v1.4: дата и время отчёта (DATA.earnings: [{sym,date:'ГГГГ-ММ-ДД' по США,when:'amc'|'bmo',time?:'ЧЧ:ММ' Нью-Йорк,expected?}]) ----------
+// amc = после закрытия США (16:00 Нью-Йорк); bmo = до открытия (09:30 Нью-Йорк — открытие; сам отчёт обычно раньше, точное время — только из поля time)
+var NYF=null; try{ NYF=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',hourCycle:'h23'}); }catch(e){}
+function nyUTC(date,hm){ var p=date.split('-').map(Number), t=hm.split(':').map(Number), T=Date.UTC(p[0],p[1]-1,p[2],t[0],t[1]);
+  if(!NYF) return T+(T<Date.UTC(2026,10,1,6)?4:5)*36e5;
+  var wall=function(g){ var o={}; NYF.formatToParts(new Date(g)).forEach(function(x){ o[x.type]=+x.value; }); return Date.UTC(o.year,o.month-1,o.day,o.hour%24,o.minute); };
+  var g=T; for(var i=0;i<3;i++) g=T-(wall(g)-g); return g; }
+function earnInfo(sym){
+  var L=(DATA&&DATA.earnings)||[], x=null; for(var i=0;i<L.length;i++) if(L[i]&&String(L[i].sym).toUpperCase()===sym&&/^\d{4}-\d\d-\d\d$/.test(L[i].date||'')) x=L[i];
+  if(!x) return null;
+  var ru=LANG==='ru', loc=LOCALE(), w=x.when==='amc'||x.when==='bmo'?x.when:'', tm=/^\d{1,2}:\d\d$/.test(x.time||'')?x.time:'';
+  var exact=w==='amc'||(w==='bmo'&&!!tm), ts=nyUTC(x.date,w==='amc'?(tm||'16:00'):w==='bmo'?(tm||'09:30'):'12:00');
+  var d=new Date(ts), n=new Date(), now=Date.now();
+  var hm=d.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}), wd=d.toLocaleDateString(loc,{weekday:'short'}).replace('.',''), dd=d.toLocaleDateString(loc,{day:'2-digit',month:'2-digit'});
+  var hmU=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'});
+  var diff=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);
+  var night=!!w&&d.getHours()<6, passed=now>ts;
+  var kind=w==='amc'?(ru?'после закрытия США':'after US close'):w==='bmo'?(ru?'до открытия США':'before US open'):'';
+  var when=!w?(wd+' '+dd+(ru?' (время уточняется)':' (time TBC)'))
+    :night?((ru?'в ночь на ':'overnight into ')+wd+' '+dd+', '+(exact?'':(ru?'до ':'before '))+hm)
+    :(wd+' '+dd+(exact?(ru?' в ':' at '):(ru?' до ':' before '))+hm);
+  var tip=(ru?'📊 Отчёт '+sym+(passed?' (был)':'')+': ':'📊 '+sym+' earnings'+(passed?' (done)':'')+': ')+when;
+  if(w) tip+=(ru?' по вашему времени (':' your time (')+kind+', '+hmU+' UTC)';
+  if(w==='bmo'&&!exact) tip+=ru?' — это открытие биржи США; сам отчёт обычно выходит раньше.':' — that is the US market open; the report itself usually comes out earlier.';
+  if(x.expected) tip+=ru?' Дата ожидается.':' Date expected.';
+  var label, cls='';
+  if(passed){ label=ru?'отчёт был':'reported'; cls='past'; }
+  else if(diff===0){ label=ru?'сегодня':'today'; cls='today'; }
+  else if(diff===1&&night){ label=ru?'в ночь на '+wd:'overnight into '+wd; cls='today'; }
+  else if(diff===1){ label=ru?'завтра':'tomorrow'; }
+  else label=wd+' '+dd;
+  tip+='\n'+(ru?'Буст за отчёт к недельным поинтам (размер Lighter не раскрывает). Даты — из календаря отчётности.':'Earnings boost to weekly points (Lighter does not disclose the size). Dates come from the earnings calendar.');
+  return {label:label,cls:cls,tip:tip}; }
+// подсказка: наведение, фокус, нажатие (телефон)
+(function(){ var box=document.createElement('div'); box.id='etip'; document.body.appendChild(box); var cur=null;
+  function show(el){ cur=el; var p=el.dataset.tip.split('\n'); box.innerHTML=esc(p[0])+(p[1]?'<small>'+esc(p[1])+'</small>':''); box.style.display='block';
+    var r=el.getBoundingClientRect(), bw=box.offsetWidth; box.style.left=Math.max(8,Math.min(r.left+scrollX-10,scrollX+document.documentElement.clientWidth-bw-8))+'px'; box.style.top=(r.bottom+scrollY+8)+'px'; }
+  function hide(){ cur=null; box.style.display='none'; }
+  var tipOf=function(t){ return t&&t.closest?t.closest('#boosted .chip[data-tip]'):null; };
+  document.addEventListener('mouseover',function(e){ var el=tipOf(e.target); if(el) show(el); else if(cur&&e.target!==box) hide(); });
+  document.addEventListener('focusin',function(e){ var el=tipOf(e.target); if(el) show(el); });
+  document.addEventListener('click',function(e){ var el=tipOf(e.target); if(el){ if(cur===el&&box.style.display==='block') hide(); else show(el); } else hide(); });
+  window.addEventListener('scroll',function(){ if(cur) show(cur); },{passive:true});
+})();
+
 function nextDrop(){
   // берём дату из json, если она в будущем (или раздача идёт ~2 ч); иначе — ближайшая пятница 12:30 UTC
   var now=Date.now(), j=DATA&&DATA.next_drop_utc?Date.parse(DATA.next_drop_utc):NaN;
@@ -288,7 +340,8 @@ function render(){
   // эта неделя
   var col=function(s){ return esc(s).replace(/Long RH/g,'<span class="lg">Long RH</span>').replace(/Short RH/g,'<span class="sh">Short RH</span>').replace(/Long Core/g,'<span class="lg">Long Core</span>').replace(/Short Core/g,'<span class="sh">Short Core</span>'); };
   document.getElementById('dirs').innerHTML=(tw.hedge_directions||[]).map(function(x){ return '<tr><td>'+esc(x.category)+'</td><td class="pair"><b>'+col(x.boost_pair)+'</b> <span class="boost">2.5×</span></td></tr>'; }).join('')||'<tr><td colspan="2" class="dim">'+t('nodata')+'</td></tr>';
-  document.getElementById('boosted').innerHTML=(tw.earnings_boosted||[]).map(function(s){ return '<span class="chip">'+esc(s)+'</span>'; }).join('')||'<span class="dim">—</span>';
+  document.getElementById('boosted').innerHTML=(tw.earnings_boosted||[]).map(function(s){ var e=earnInfo(s);
+    return e?'<span class="chip '+e.cls+'" tabindex="0" data-tip="'+esc(e.tip)+'">'+esc(s)+'<span class="dd">'+esc(e.label)+'</span></span>':'<span class="chip">'+esc(s)+'</span>'; }).join('')||'<span class="dim">—</span>';
   document.getElementById('changes').innerHTML=(tw.changes||[]).map(function(s){ return '<li>'+esc(s)+'</li>'; }).join('')||'<li class="dim">—</li>';
   var su=safeUrl(tw.source_url); var se=document.getElementById('twsrc'); if(su) se.href=su;
   if(safeUrl(D.docs_url)) document.getElementById('docs').href=D.docs_url;
