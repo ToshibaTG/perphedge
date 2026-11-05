@@ -1,8 +1,8 @@
 {
-  "updated": "2026-10-30",
+  "updated": "2026-11-05",
   "next_drop_utc": "2026-11-06T12:30:00Z",
   "this_week": {
-    "week_start": "2026-10-30",
+    "week_start": "2026-11-06",
     "hedge_directions": [
       {
         "category": "Crypto",
@@ -14,76 +14,178 @@
       },
       {
         "category": "Pre-IPO, Equities",
-        "boost_pair": "Short RH / Long Core"
+        "boost_pair": "Long RH / Short Core"
       }
     ],
-    "earnings_boosted": [
-      "AAPL",
-      "PLTR",
-      "AMD",
-      "SMCI",
-      "CRCL",
-      "AMC",
-      "IREN"
-    ],
+    "earnings_boosted": [],
     "changes": [
-      "Earnings and hedge boosts continue (Oct 30)",
-      "Extra boosts for newly listed markets — multiplier not published (Oct 30)"
+      "W13 (Nov 6–12): 2.5x hedge boost is Long RH / Short Core for ALL markets, incl. stocks and pre-IPO — from Fri Nov 6, 00:00 UTC (03:00 MSK)",
+      "W12 (Oct 30 – Nov 5) was Short RH / Long Core for stocks and pre-IPO",
+      "Earnings-boosted markets for W13 — after Lighter's Friday post"
     ],
     "source_url": "https://t.me/lighter_announcements"
   },
+  "hedge_weeks": [
+    {
+      "week": "W12",
+      "week_start": "2026-10-30",
+      "week_end": "2026-11-05",
+      "hedge_directions": [
+        {
+          "category": "Crypto",
+          "boost_pair": "Long RH / Short Core"
+        },
+        {
+          "category": "Commodities, ETFs",
+          "boost_pair": "Long RH / Short Core"
+        },
+        {
+          "category": "Pre-IPO, Equities",
+          "boost_pair": "Short RH / Long Core"
+        }
+      ],
+      "source_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
+    },
+    {
+      "week": "W13",
+      "week_start": "2026-11-06",
+      "week_end": "2026-11-12",
+      "hedge_directions": [
+        {
+          "category": "Crypto",
+          "boost_pair": "Long RH / Short Core"
+        },
+        {
+          "category": "Commodities, ETFs",
+          "boost_pair": "Long RH / Short Core"
+        },
+        {
+          "category": "Pre-IPO, Equities",
+          "boost_pair": "Long RH / Short Core"
+        }
+      ],
+      "source_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
+    }
+  ],
   "earnings": [
     {
-      "sym": "AAPL",
-      "date": "2026-11-02",
-      "when": "amc",
-      "src": "https://www.mactrast.com/2026/10/apple-to-announce-fiscal-q4-2026-earnings-on-november-2/"
-    },
-    {
-      "sym": "PLTR",
-      "date": "2026-11-02",
-      "when": "amc",
-      "expected": true,
-      "src": "https://www.earningswhispers.com/calweek/20261102"
-    },
-    {
-      "sym": "AMD",
-      "date": "2026-11-03",
-      "when": "amc",
-      "src": "https://ir.amd.com/news-events/press-releases/detail/1300/amd-to-report-fiscal-third-quarter-2026-financial-results"
-    },
-    {
-      "sym": "SMCI",
-      "date": "2026-11-03",
-      "when": "amc",
-      "expected": true,
-      "src": "https://www.earningswhispers.com/calweek/20261102"
-    },
-    {
-      "sym": "CRCL",
-      "date": "2026-11-04",
+      "sym": "OKLO",
+      "date": "2026-11-06",
       "when": "bmo",
-      "src": "https://www.circle.com/pressroom/circle-to-announce-q3-2026-financial-results-on-november-4-2026"
-    },
-    {
-      "sym": "AMC",
-      "date": "2026-11-04",
-      "when": "amc",
       "expected": true,
-      "src": "https://www.earningswhispers.com/calweek/20261102"
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
     },
     {
-      "sym": "IREN",
-      "date": "2026-11-05",
-      "when": "amc",
-      "src": "https://irisenergy.gcs-web.com/news-releases/news-release-details/iren-release-q1-fy27-results-november-5-2026"
+      "sym": "VST",
+      "date": "2026-11-06",
+      "when": "bmo",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "MRNA",
+      "date": "2026-11-06",
+      "when": "bmo",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
     },
     {
       "sym": "WULF",
       "date": "2026-11-06",
       "when": "bmo",
       "expected": true,
-      "src": "https://www.earningswhispers.com/calweek/20261102"
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "CHTR",
+      "date": "2026-11-06",
+      "when": "bmo",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "RKLB",
+      "date": "2026-11-09",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "HIMS",
+      "date": "2026-11-09",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "ASTS",
+      "date": "2026-11-09",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "ACHR",
+      "date": "2026-11-09",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "PLUG",
+      "date": "2026-11-09",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "TTD",
+      "date": "2026-11-09",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "LCID",
+      "date": "2026-11-09",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "SE",
+      "date": "2026-11-10",
+      "when": "bmo",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "CRWV",
+      "date": "2026-11-10",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "RGTI",
+      "date": "2026-11-10",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "CSCO",
+      "date": "2026-11-11",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
+    },
+    {
+      "sym": "AMAT",
+      "date": "2026-11-12",
+      "when": "amc",
+      "expected": true,
+      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
     }
   ],
   "weekly_pools": [
