@@ -1,291 +1,237 @@
 {
-  "updated": "2026-11-05",
-  "next_drop_utc": "2026-11-06T12:30:00Z",
-  "this_week": {
-    "week_start": "2026-11-06",
-    "hedge_directions": [
-      {
-        "category": "Crypto",
-        "boost_pair": "Long RH / Short Core"
-      },
-      {
-        "category": "Commodities, ETFs",
-        "boost_pair": "Long RH / Short Core"
-      },
-      {
-        "category": "Pre-IPO, Equities",
-        "boost_pair": "Long RH / Short Core"
-      }
-    ],
-    "earnings_boosted": [],
-    "changes": [
-      "W13 (Nov 6–12): 2.5x hedge boost is Long RH / Short Core for ALL markets, incl. stocks and pre-IPO — from Fri Nov 6, 00:00 UTC (03:00 MSK)",
-      "W12 (Oct 30 – Nov 5) was Short RH / Long Core for stocks and pre-IPO",
-      "Earnings-boosted markets for W13 — after Lighter's Friday post"
-    ],
-    "source_url": "https://t.me/lighter_announcements"
+ "updated": "2026-11-13",
+ "next_drop_utc": "2026-11-20T12:30:00Z",
+ "this_week": {
+  "week_start": "2026-11-13",
+  "hedge_directions": [
+   {
+    "category": "Crypto",
+    "boost_pair": "Long RH / Short Core"
+   },
+   {
+    "category": "Commodities, ETFs",
+    "boost_pair": "Long RH / Short Core"
+   },
+   {
+    "category": "Pre-IPO, Equities",
+    "boost_pair": "Long RH / Short Core"
+   }
+  ],
+  "earnings_boosted": [
+   "NVDA",
+   "BABA"
+  ],
+  "changes": [
+   "W14 (Nov 13–19): 2.5x hedge boost stays Long RH / Short Core for ALL markets, incl. stocks and pre-IPO (same as W13)",
+   "125,000 points distributed on Nov 13 (+5k)",
+   "Collateral boost continues: live points for using assets other than USDG as collateral and margin",
+   "Earnings boost (weekly points) per docs: NVDA (Nov 17, after close) and BABA (Nov 19, before open, time expected) report inside W14, so these markets are boosted. Nov 13 post does not mention it, docs still list it as current (checked 2026-11-13)"
+  ],
+  "source_url": "https://t.me/lighter_announcements/481"
+ },
+ "hedge_weeks": [
+  {
+   "week": "W12",
+   "week_start": "2026-10-30",
+   "week_end": "2026-11-05",
+   "hedge_directions": [
+    {
+     "category": "Crypto",
+     "boost_pair": "Long RH / Short Core"
+    },
+    {
+     "category": "Commodities, ETFs",
+     "boost_pair": "Long RH / Short Core"
+    },
+    {
+     "category": "Pre-IPO, Equities",
+     "boost_pair": "Short RH / Long Core"
+    }
+   ],
+   "source_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
   },
-  "hedge_weeks": [
+  {
+   "week": "W13",
+   "week_start": "2026-11-06",
+   "week_end": "2026-11-12",
+   "hedge_directions": [
     {
-      "week": "W12",
-      "week_start": "2026-10-30",
-      "week_end": "2026-11-05",
-      "hedge_directions": [
-        {
-          "category": "Crypto",
-          "boost_pair": "Long RH / Short Core"
-        },
-        {
-          "category": "Commodities, ETFs",
-          "boost_pair": "Long RH / Short Core"
-        },
-        {
-          "category": "Pre-IPO, Equities",
-          "boost_pair": "Short RH / Long Core"
-        }
-      ],
-      "source_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
+     "category": "Crypto",
+     "boost_pair": "Long RH / Short Core"
     },
     {
-      "week": "W13",
-      "week_start": "2026-11-06",
-      "week_end": "2026-11-12",
-      "hedge_directions": [
-        {
-          "category": "Crypto",
-          "boost_pair": "Long RH / Short Core"
-        },
-        {
-          "category": "Commodities, ETFs",
-          "boost_pair": "Long RH / Short Core"
-        },
-        {
-          "category": "Pre-IPO, Equities",
-          "boost_pair": "Long RH / Short Core"
-        }
-      ],
-      "source_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
+     "category": "Commodities, ETFs",
+     "boost_pair": "Long RH / Short Core"
+    },
+    {
+     "category": "Pre-IPO, Equities",
+     "boost_pair": "Long RH / Short Core"
     }
-  ],
-  "earnings": [
-    {
-      "sym": "OKLO",
-      "date": "2026-11-06",
-      "when": "bmo",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "VST",
-      "date": "2026-11-06",
-      "when": "bmo",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "MRNA",
-      "date": "2026-11-06",
-      "when": "bmo",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "WULF",
-      "date": "2026-11-06",
-      "when": "bmo",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "CHTR",
-      "date": "2026-11-06",
-      "when": "bmo",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "RKLB",
-      "date": "2026-11-09",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "HIMS",
-      "date": "2026-11-09",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "ASTS",
-      "date": "2026-11-09",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "ACHR",
-      "date": "2026-11-09",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "PLUG",
-      "date": "2026-11-09",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "TTD",
-      "date": "2026-11-09",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "LCID",
-      "date": "2026-11-09",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "SE",
-      "date": "2026-11-10",
-      "when": "bmo",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "CRWV",
-      "date": "2026-11-10",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "RGTI",
-      "date": "2026-11-10",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "CSCO",
-      "date": "2026-11-11",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    },
-    {
-      "sym": "AMAT",
-      "date": "2026-11-12",
-      "when": "amc",
-      "expected": true,
-      "src": "earnings-watcher.com, marketbeat.com (checked 2026-11-05)"
-    }
-  ],
-  "weekly_pools": [
-    {
-      "date": "2026-08-21",
-      "pool": 65000,
-      "note": "Focus on RWA markets; Robinhood Wallet = 2x points",
-      "src": "https://t.me/lighter_announcements/403"
-    },
-    {
-      "date": "2026-08-28",
-      "pool": 70000,
-      "note": "Focus on Pre-IPO markets",
-      "src": "https://t.me/lighter_announcements/413"
-    },
-    {
-      "date": "2026-09-04",
-      "pool": 75000,
-      "note": "",
-      "src": "https://t.me/lighter_announcements/423"
-    },
-    {
-      "date": "2026-09-11",
-      "pool": 80000,
-      "note": "First 2.5x hedge boost: hedge RH longs on Core",
-      "src": "https://t.me/lighter_announcements/429"
-    },
-    {
-      "date": "2026-09-18",
-      "pool": 85000,
-      "note": "2.5x hedge boost back",
-      "src": "https://t.me/lighter_announcements/435"
-    },
-    {
-      "date": "2026-09-25",
-      "pool": 90000,
-      "note": "Hedge single-stock longs on RH with shorts on Core",
-      "src": "https://t.me/lighter_announcements/441"
-    },
-    {
-      "date": "2026-10-02",
-      "pool": 95000,
-      "note": "Keep hedging stock longs on RH with shorts on Core",
-      "src": "https://t.me/lighter_announcements/446"
-    },
-    {
-      "date": "2026-10-09",
-      "pool": 100000,
-      "note": "Same hedge direction",
-      "src": "https://t.me/lighter_announcements/452"
-    },
-    {
-      "date": "2026-10-16",
-      "pool": 105000,
-      "note": "Hedge direction flipped for stocks & pre-IPO (Short RH / Long Core); earnings boost added",
-      "src": "https://t.me/lighter_announcements/455"
-    },
-    {
-      "date": "2026-10-23",
-      "pool": 110000,
-      "note": "Official rules doc published",
-      "src": "https://t.me/lighter_announcements/461"
-    },
-    {
-      "date": "2026-10-30",
-      "pool": 115000,
-      "note": "Earnings + hedge boosts continue; extra boosts for newly listed markets",
-      "src": null
-    },
-    {
-      "date": "2026-11-06",
-      "pool": null,
-      "expected": 120000
-    }
-  ],
-  "our_results": [
-    {
-      "week": "Oct 16–22",
-      "account": "mostly Standard",
-      "live": 0.76,
-      "weekly": 6.57,
-      "multiplier": 8.64,
-      "usd_per_point": 2.4
-    },
-    {
-      "week": "Oct 23–29",
-      "account": "mostly Premium",
-      "live": null,
-      "weekly": null,
-      "multiplier": null,
-      "usd_per_point": null
-    }
-  ],
-  "community_cpp": {
-    "median": 3.85,
-    "min": 2.94,
-    "max": 10.53,
-    "n": 7,
-    "source": "@RiskAssetLens on X, Oct 26"
+   ],
+   "source_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
   },
-  "share_post_url": "https://x.com/StrawHatLabs/status/2115147791999873282",
-  "docs_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
+  {
+   "week": "W14",
+   "week_start": "2026-11-13",
+   "week_end": "2026-11-19",
+   "hedge_directions": [
+    {
+     "category": "Crypto",
+     "boost_pair": "Long RH / Short Core"
+    },
+    {
+     "category": "Commodities, ETFs",
+     "boost_pair": "Long RH / Short Core"
+    },
+    {
+     "category": "Pre-IPO, Equities",
+     "boost_pair": "Long RH / Short Core"
+    }
+   ],
+   "source_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
+  }
+ ],
+ "earnings": [
+  {
+   "sym": "NVDA",
+   "date": "2026-11-17",
+   "when": "amc",
+   "src": "investor.nvidia.com press release Oct 28, 2026: call Nov 17, 2:00 PM PT / 5:00 PM ET (checked 2026-11-13)"
+  },
+  {
+   "sym": "BABA",
+   "date": "2026-11-19",
+   "when": "bmo",
+   "expected": true,
+   "src": "alibabagroup.com press release Nov 6, 2026: results on Nov 19; time not stated, usually before US open (checked 2026-11-13)"
+  }
+ ],
+ "weekly_pools": [
+  {
+   "date": "2026-08-21",
+   "pool": 65000,
+   "note": "Focus on RWA markets; Robinhood Wallet = 2x points",
+   "src": "https://t.me/lighter_announcements/403"
+  },
+  {
+   "date": "2026-08-28",
+   "pool": 70000,
+   "note": "Focus on Pre-IPO markets",
+   "src": "https://t.me/lighter_announcements/413"
+  },
+  {
+   "date": "2026-09-04",
+   "pool": 75000,
+   "note": "",
+   "src": "https://t.me/lighter_announcements/423"
+  },
+  {
+   "date": "2026-09-11",
+   "pool": 80000,
+   "note": "First 2.5x hedge boost: hedge RH longs on Core",
+   "src": "https://t.me/lighter_announcements/429"
+  },
+  {
+   "date": "2026-09-18",
+   "pool": 85000,
+   "note": "2.5x hedge boost back",
+   "src": "https://t.me/lighter_announcements/435"
+  },
+  {
+   "date": "2026-09-25",
+   "pool": 90000,
+   "note": "Hedge single-stock longs on RH with shorts on Core",
+   "src": "https://t.me/lighter_announcements/441"
+  },
+  {
+   "date": "2026-10-02",
+   "pool": 95000,
+   "note": "Keep hedging stock longs on RH with shorts on Core",
+   "src": "https://t.me/lighter_announcements/446"
+  },
+  {
+   "date": "2026-10-09",
+   "pool": 100000,
+   "note": "Same hedge direction",
+   "src": "https://t.me/lighter_announcements/452"
+  },
+  {
+   "date": "2026-10-16",
+   "pool": 105000,
+   "note": "Hedge direction flipped for stocks & pre-IPO (Short RH / Long Core); earnings boost added",
+   "src": "https://t.me/lighter_announcements/455"
+  },
+  {
+   "date": "2026-10-23",
+   "pool": 110000,
+   "note": "Official rules doc published",
+   "src": "https://t.me/lighter_announcements/461"
+  },
+  {
+   "date": "2026-10-30",
+   "pool": 115000,
+   "note": "Earnings + hedge boosts continue; extra boosts for newly listed markets",
+   "src": "https://t.me/lighter_announcements/468"
+  },
+  {
+   "date": "2026-11-06",
+   "pool": 120000,
+   "note": "Earnings + new-listing boosts continue, updated hedge boosts (all Long RH / Short Core); collateral incentives introduced",
+   "src": "https://t.me/lighter_announcements/476"
+  },
+  {
+   "date": "2026-11-13",
+   "pool": 125000,
+   "note": "Collateral + hedge boosts continue",
+   "src": "https://t.me/lighter_announcements/481"
+  },
+  {
+   "date": "2026-11-20",
+   "pool": null,
+   "expected": 130000
+  }
+ ],
+ "our_results": [
+  {
+   "week": "Oct 16–22",
+   "account": "mostly Standard",
+   "live": 0.76,
+   "weekly": 6.57,
+   "multiplier": 8.64,
+   "usd_per_point": 2.42
+  },
+  {
+   "week": "Oct 23–29",
+   "account": "mostly Premium",
+   "live": 6.072,
+   "weekly": 64.86,
+   "multiplier": 10.7,
+   "usd_per_point": 3.48
+  },
+  {
+   "week": "Oct 30 – Nov 5",
+   "account": "Standard",
+   "live": 8.628,
+   "weekly": 154.82,
+   "multiplier": 17.9,
+   "usd_per_point": 2.95
+  },
+  {
+   "week": "Nov 6–12",
+   "account": "Standard",
+   "live": null,
+   "weekly": null,
+   "multiplier": null,
+   "usd_per_point": null
+  }
+ ],
+ "community_cpp": {
+  "median": 3.85,
+  "min": 2.94,
+  "max": 10.53,
+  "n": 7,
+  "source": "@RiskAssetLens on X, Oct 26"
+ },
+ "share_post_url": "https://x.com/StrawHatLabs/status/2115147791999873282",
+ "docs_url": "https://docs.lighter.xyz/programs/lighter-on-robinhood-chain-points"
 }
